@@ -3,17 +3,15 @@
 @tailwind utilities;
 
 :root {
-  /* Couleurs de base */
+  /* Couleurs de base - Light mode */
   --background: #f8fafc;
   --foreground: #0f172a;
 
-  /* Couleurs saisonnières par défaut (été jour) */
-  --sky-start: #87ceeb;
-  --sky-end: #e0f4ff;
-  --accent-primary: #3b82f6;
-  --accent-secondary: #60a5fa;
+  /* Accent colors */
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #a78bfa;
 
-  /* Glass effect */
+  /* Glass effect - Light */
   --glass-background: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.3);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -28,16 +26,15 @@
   --content-padding: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f1f5f9;
-    --sky-start: #1e293b;
-    --sky-end: #0f172a;
-    --glass-background: rgba(30, 41, 59, 0.7);
-    --glass-border: rgba(71, 85, 105, 0.3);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
+/* Dark mode - Orion Style */
+.dark {
+  --background: #020617;
+  --foreground: #f1f5f9;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #a78bfa;
+  --glass-background: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(51, 65, 85, 0.5);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 /* Reset et base */
@@ -60,29 +57,34 @@ body {
   overflow-x: hidden;
 }
 
+/* Dark body background */
+.dark body {
+  background: linear-gradient(to bottom, #020617, #0f172a);
+}
+
 /* Focus visible pour accessibilité */
 :focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
-/* Scrollbar personnalisée */
+/* Scrollbar personnalisée - Dark Orion style */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #0f172a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent-secondary);
+  background: #334155;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-primary);
+  background: #475569;
 }
 
 /* Sélection de texte */
@@ -115,6 +117,25 @@ body {
   .animate-pulse-slow {
     animation: pulse 4s ease-in-out infinite;
   }
+
+  /* Orion gradient backgrounds */
+  .bg-orion-gradient {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+  }
+
+  .bg-orion-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+  }
+
+  /* Glow effects */
+  .glow-violet {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  .glow-emerald {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  }
 }
 
 /* Animations */
@@ -136,6 +157,15 @@ body {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 /* Support reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -145,4 +175,14 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Recharts dark mode customization */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #334155;
+}
+
+.dark .recharts-text {
+  fill: #94a3b8;
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,19 +35,22 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        {children}
+        <DashboardShell>
+          {children}
+        </DashboardShell>
         <Toaster
           position="bottom-right"
           toastOptions={{
             style: {
-              background: "rgba(255, 255, 255, 0.9)",
+              background: "rgba(30, 41, 59, 0.95)",
               backdropFilter: "blur(8px)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(51, 65, 85, 0.5)",
+              color: "#f1f5f9",
             },
-            className: "glass",
+            className: "dark-toast",
           }}
           richColors
           closeButton

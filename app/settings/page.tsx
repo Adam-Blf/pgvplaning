@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Database, AlertTriangle, Save, Trash2, Check, Mail, User, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
-import { AppLayout } from '@/components/layout/app-layout';
 import { useCalendarData } from '@/hooks/use-calendar-data';
-import { Spotlight } from '@/components/ui/spotlight';
 
 export default function SettingsPage() {
   const [notificationEmail, setNotificationEmail] = useState('');
@@ -50,182 +48,171 @@ export default function SettingsPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="max-w-2xl mx-auto space-y-6 relative">
-        <Spotlight
-          className="-top-40 left-0 md:left-20 md:-top-20 opacity-40"
-          fill="rgba(34, 197, 94, 0.3)"
-        />
-
-        {/* Assistant IA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10"
-        >
-          <div className="bg-white/70 backdrop-blur-2xl rounded-3xl border-2 border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(99,102,241,0.05),inset_0_2px_0_rgba(255,255,255,0.9)] p-8">
-            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center shadow-sm border border-purple-200/50">
-                <Sparkles className="w-5 h-5 text-purple-500" />
-              </div>
-              Assistant IA
-            </h3>
-
-            {/* Status IA */}
-            <div className="p-4 rounded-xl bg-gradient-to-r from-green-50/80 to-emerald-50/80 border border-green-200/50 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                <div>
-                  <p className="font-medium text-green-900">IA Active</p>
-                  <p className="text-xs text-green-700">Propulsé par Mistral 7B (Open Source, Gratuit)</p>
-                </div>
-              </div>
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Assistant IA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
+            Assistant IA
+          </h3>
 
-            <div className="border-t border-slate-200/50 pt-6">
-              <h4 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
-                <Database className="w-4 h-4" />
-                Données de Démonstration
-              </h4>
-              <p className="text-sm text-slate-500 mb-3">
-                Chargez un exemple de planning avec alternance, télétravail et congés.
-              </p>
-              <motion.button
-                onClick={handleLoadDemo}
-                className="px-5 py-2.5 bg-white/90 backdrop-blur-sm border-2 border-slate-200 text-slate-700 rounded-2xl hover:bg-slate-50 hover:border-slate-300 text-sm font-semibold transition-all shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex items-center gap-2"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Database className="w-4 h-4" />
-                Charger un exemple (Alternance)
-              </motion.button>
+          {/* Status IA */}
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+              <div>
+                <p className="font-medium text-emerald-400">IA Active</p>
+                <p className="text-xs text-emerald-400/70">Propulsé par Mistral 7B (Open Source, Gratuit)</p>
+              </div>
             </div>
           </div>
-        </motion.div>
 
-        {/* Notifications Email */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="relative z-10"
-        >
-          <div className="bg-white/70 backdrop-blur-2xl rounded-3xl border-2 border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(99,102,241,0.05),inset_0_2px_0_rgba(255,255,255,0.9)] p-8">
-            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center shadow-sm border border-indigo-200/50">
-                <Mail className="w-5 h-5 text-indigo-500" />
+          <div className="border-t border-slate-700/50 pt-6">
+            <h4 className="font-semibold text-white mb-2 flex items-center gap-2">
+              <Database className="w-4 h-4 text-slate-400" />
+              Données de Démonstration
+            </h4>
+            <p className="text-sm text-slate-400 mb-3">
+              Chargez un exemple de planning avec alternance, télétravail et congés.
+            </p>
+            <motion.button
+              onClick={handleLoadDemo}
+              className="px-5 py-2.5 bg-slate-700/50 border border-slate-600 text-white rounded-xl hover:bg-slate-700 text-sm font-medium transition-all flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Database className="w-4 h-4" />
+              Charger un exemple (Alternance)
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Notifications Email */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
+          <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center">
+              <Mail className="w-5 h-5 text-white" />
+            </div>
+            Notifications d&apos;Absence
+          </h3>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Votre nom (pour les notifications)
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => {
+                    setUserName(e.target.value);
+                    setIsEmailSaved(false);
+                  }}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-600 bg-slate-700/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
+                  placeholder="Jean Dupont"
+                />
               </div>
-              Notifications d&apos;Absence
-            </h3>
+            </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Votre nom (pour les notifications)
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400" />
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Email destinataire des notifications
+              </label>
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                   <input
-                    type="text"
-                    value={userName}
+                    type="email"
+                    value={notificationEmail}
                     onChange={(e) => {
-                      setUserName(e.target.value);
+                      setNotificationEmail(e.target.value);
                       setIsEmailSaved(false);
                     }}
-                    className="w-full pl-10 pr-4 py-3.5 rounded-2xl border-2 border-indigo-200/60 bg-white/90 backdrop-blur-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(99,102,241,0.08)] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 outline-none transition-all"
-                    placeholder="Jean Dupont"
+                    className="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-600 bg-slate-700/50 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all"
+                    placeholder="manager@entreprise.com"
                   />
+                  {isEmailSaved && notificationEmail && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <Check className="w-5 h-5 text-emerald-500" />
+                    </div>
+                  )}
                 </div>
+                <motion.button
+                  onClick={saveEmailSettings}
+                  className="px-6 py-3 bg-violet-500 text-white rounded-xl hover:bg-violet-600 transition-all font-medium flex items-center gap-2"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Save className="w-4 h-4" />
+                  Sauvegarder
+                </motion.button>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email destinataire des notifications
-                </label>
-                <div className="flex gap-3">
-                  <div className="flex-1 relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400" />
-                    <input
-                      type="email"
-                      value={notificationEmail}
-                      onChange={(e) => {
-                        setNotificationEmail(e.target.value);
-                        setIsEmailSaved(false);
-                      }}
-                      className="w-full pl-10 pr-10 py-3.5 rounded-2xl border-2 border-indigo-200/60 bg-white/90 backdrop-blur-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(99,102,241,0.08)] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 outline-none transition-all"
-                      placeholder="manager@entreprise.com"
-                    />
-                    {isEmailSaved && notificationEmail && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Check className="w-5 h-5 text-green-500" />
-                      </div>
-                    )}
-                  </div>
-                  <motion.button
-                    onClick={saveEmailSettings}
-                    className="px-6 py-3.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl hover:from-indigo-600 hover:to-purple-600 transition-all font-semibold flex items-center gap-2 shadow-[0_4px_20px_rgba(99,102,241,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]"
-                    whileHover={{ scale: 1.02, y: -1 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Save className="w-4 h-4" />
-                    Sauvegarder
-                  </motion.button>
-                </div>
-                <p className="text-xs text-slate-500 mt-2">
-                  Cet email recevra les notifications d&apos;absence générées depuis la page Exports.
-                </p>
-              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                Cet email recevra les notifications d&apos;absence générées depuis la page Exports.
+              </p>
             </div>
           </div>
-        </motion.div>
+        </div>
+      </motion.div>
 
-        {/* Zone de Danger */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="relative z-10"
-        >
-          {/* Liquid Glass Red Card */}
-          <div className="bg-gradient-to-br from-red-50/80 to-rose-50/80 backdrop-blur-2xl rounded-3xl border-2 border-red-200/60 shadow-[0_8px_32px_rgba(239,68,68,0.12),inset_0_2px_0_rgba(255,255,255,0.8)] p-8">
-            <h3 className="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center shadow-sm border border-red-200/50">
-                <AlertTriangle className="w-5 h-5 text-red-500" />
-              </div>
-              Zone de Danger
-            </h3>
-
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div>
-                <p className="font-bold text-red-900">Réinitialiser le calendrier</p>
-                <p className="text-sm text-red-700 opacity-80">
-                  Efface tous les statuts et revient à zéro.
-                </p>
-              </div>
-              <motion.button
-                onClick={handleReset}
-                className="px-5 py-2.5 bg-white/90 backdrop-blur-sm border-2 border-red-200 text-red-600 rounded-2xl hover:bg-red-50 hover:border-red-300 transition-all font-semibold shadow-[0_4px_12px_rgba(239,68,68,0.15)] flex items-center gap-2"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Trash2 className="w-4 h-4" />
-                Tout effacer
-              </motion.button>
+      {/* Zone de Danger */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="bg-rose-500/10 backdrop-blur-sm rounded-2xl border border-rose-500/20 p-6">
+          <h3 className="text-lg font-semibold text-rose-400 mb-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-rose-400" />
             </div>
-          </div>
-        </motion.div>
+            Zone de Danger
+          </h3>
 
-        {/* Info */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-center text-sm text-slate-400 relative z-10"
-        >
-          <p>PGV Planning Pro • Version 9.0</p>
-          <p className="text-xs mt-1">Fait avec ❤️ en France</p>
-        </motion.div>
-      </div>
-    </AppLayout>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <p className="font-medium text-rose-300">Réinitialiser le calendrier</p>
+              <p className="text-sm text-rose-400/70">
+                Efface tous les statuts et revient à zéro.
+              </p>
+            </div>
+            <motion.button
+              onClick={handleReset}
+              className="px-5 py-2.5 bg-rose-500/20 border border-rose-500/30 text-rose-400 rounded-xl hover:bg-rose-500/30 transition-all font-medium flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Trash2 className="w-4 h-4" />
+              Tout effacer
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Info */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        className="text-center text-sm text-slate-500"
+      >
+        <p>PGV Planning Pro • Version 9.0</p>
+        <p className="text-xs mt-1">Fait avec ❤️ en France</p>
+      </motion.div>
+    </div>
   );
 }

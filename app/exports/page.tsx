@@ -4,9 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Home as HomeIcon, GraduationCap, Plane, Mail, Copy, Loader2, Send, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
-import { AppLayout } from '@/components/layout/app-layout';
 import { useCalendarData } from '@/hooks/use-calendar-data';
-import { Spotlight } from '@/components/ui/spotlight';
 import { NotificationSender } from '@/components/features/notification-sender';
 
 const exportCards = [
@@ -15,33 +13,27 @@ const exportCards = [
     title: 'Télétravail',
     description: 'Export des jours "Remote"',
     icon: HomeIcon,
-    color: 'purple',
-    gradient: 'from-purple-500/20 to-purple-600/20',
-    hoverBorder: 'hover:border-purple-300',
-    hoverShadow: 'hover:shadow-purple-100',
-    iconColor: 'text-purple-500',
+    gradient: 'from-emerald-500/20 to-emerald-600/10',
+    iconBg: 'bg-emerald-500',
+    borderHover: 'hover:border-emerald-500/30',
   },
   {
     id: 'SCHOOL',
     title: 'Formation',
     description: 'Statut "Absent du bureau"',
     icon: GraduationCap,
-    color: 'orange',
-    gradient: 'from-orange-500/20 to-orange-600/20',
-    hoverBorder: 'hover:border-orange-300',
-    hoverShadow: 'hover:shadow-orange-100',
-    iconColor: 'text-orange-500',
+    gradient: 'from-amber-500/20 to-amber-600/10',
+    iconBg: 'bg-amber-500',
+    borderHover: 'hover:border-amber-500/30',
   },
   {
     id: 'LEAVE',
     title: 'Congés',
     description: 'Jours de repos posés',
     icon: Plane,
-    color: 'pink',
-    gradient: 'from-pink-500/20 to-pink-600/20',
-    hoverBorder: 'hover:border-pink-300',
-    hoverShadow: 'hover:shadow-pink-100',
-    iconColor: 'text-pink-500',
+    gradient: 'from-rose-500/20 to-rose-600/10',
+    iconBg: 'bg-rose-500',
+    borderHover: 'hover:border-rose-500/30',
   },
 ];
 
@@ -56,7 +48,6 @@ export default function ExportsPage() {
     const events: string[] = [];
     const currentYear = new Date().getFullYear();
 
-    // Collecter les dates pour ce mode
     const start = new Date(currentYear - 1, 0, 1);
     const end = new Date(currentYear + 1, 11, 31);
     const current = new Date(start);
@@ -145,176 +136,166 @@ export default function ExportsPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-8 relative">
-        <Spotlight
-          className="-top-40 right-0 md:right-40 md:-top-20 opacity-40"
-          fill="rgba(139, 92, 246, 0.4)"
-        />
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Section Exports ICS */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-white flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center">
+                <Download className="w-5 h-5 text-white" />
+              </div>
+              Exports Calendrier
+            </h3>
+            <span className="text-xs font-mono bg-slate-700 text-slate-300 px-2 py-1 rounded-lg">
+              Format .ICS
+            </span>
+          </div>
 
-        {/* Section Exports ICS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative z-10"
-        >
-          {/* Liquid Glass Card */}
-          <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-slate-800 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 backdrop-blur-sm border border-blue-200/50 text-blue-600 flex items-center justify-center">
-                  <Download className="w-5 h-5" />
-                </div>
-                Exports Calendrier
-              </h3>
-              <span className="text-xs font-mono bg-slate-100/80 text-slate-500 px-2 py-1 rounded-lg border border-slate-200/50">
-                Format .ICS
-              </span>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {exportCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <motion.button
-                    key={card.id}
-                    onClick={() => downloadICS(card.id)}
-                    className={`group p-5 bg-white/60 backdrop-blur-xl rounded-2xl border border-white/50 ${card.hoverBorder} hover:shadow-lg ${card.hoverShadow} transition-all relative overflow-hidden text-left`}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${card.gradient} rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500`} />
-                    <div className="relative z-10">
-                      <div className="flex justify-between items-start mb-3">
-                        <Icon className={`text-2xl ${card.iconColor}`} />
-                        <Download className="w-4 h-4 text-slate-300 group-hover:text-current transition-colors" />
+          <div className="grid md:grid-cols-3 gap-4">
+            {exportCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <motion.button
+                  key={card.id}
+                  onClick={() => downloadICS(card.id)}
+                  className={`group p-5 bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 ${card.borderHover} hover:bg-slate-700/50 transition-all relative overflow-hidden text-left`}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${card.gradient} rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500`} />
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className={`w-10 h-10 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                        <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <h4 className="font-bold text-slate-800">{card.title}</h4>
-                      <p className="text-xs text-slate-500 mt-1">{card.description}</p>
+                      <Download className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
                     </div>
-                  </motion.button>
-                );
-              })}
+                    <h4 className="font-semibold text-white">{card.title}</h4>
+                    <p className="text-xs text-slate-400 mt-1">{card.description}</p>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Section Notifications Email */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
+              <Send className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-white">Notifications d&apos;Absence</h3>
+              <p className="text-sm text-slate-400">Informez vos collègues de vos absences par email</p>
             </div>
           </div>
-        </motion.div>
+          <NotificationSender />
+        </div>
+      </motion.div>
 
-        {/* Section Notifications Email */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="relative z-10"
-        >
-          <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
+      {/* Section Assistant IA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="bg-gradient-to-br from-violet-600/90 to-purple-700/90 backdrop-blur-sm rounded-2xl border border-violet-500/30 p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
+
+          <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 backdrop-blur-sm border border-emerald-200/50 text-emerald-600 flex items-center justify-center">
-                <Send className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-violet-600" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-800">Notifications d&apos;Absence</h3>
-                <p className="text-sm text-slate-500">Informez vos collègues de vos absences par email</p>
+                <h3 className="text-lg font-semibold text-white">Assistant IA</h3>
+                <p className="text-violet-200 text-sm">Mistral 7B (Open Source)</p>
               </div>
             </div>
-            <NotificationSender />
-          </div>
-        </motion.div>
 
-        {/* Section Assistant IA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="relative z-10"
-        >
-          {/* Liquid Glass Gradient Card */}
-          <div className="bg-gradient-to-br from-indigo-600/90 to-purple-700/90 backdrop-blur-2xl rounded-3xl shadow-xl text-white p-8 relative overflow-hidden border border-white/10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/20 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
-
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 bg-white rounded-xl shadow-sm">
-                  <Sparkles className="w-6 h-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Assistant IA</h3>
-                  <p className="text-indigo-100 text-sm">Mistral 7B (Open Source)</p>
-                </div>
-              </div>
-
-              {/* OOF Generator - Full Width */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <h4 className="font-bold mb-4 flex items-center gap-2 text-slate-800">
-                  <Mail className="w-4 h-4 text-indigo-600" /> Générateur de Message d&apos;Absence
-                </h4>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-xs text-slate-600 mb-1 block font-medium">Ton du message</label>
-                      <select
-                        value={aiTone}
-                        onChange={(e) => setAiTone(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-300 border border-slate-200"
-                      >
-                        <option value="professionnel">Professionnel</option>
-                        <option value="amical">Amical</option>
-                        <option value="formel">Formel</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs text-slate-600 mb-1 block font-medium">Raison de l&apos;absence</label>
-                      <select
-                        value={aiReason}
-                        onChange={(e) => setAiReason(e.target.value)}
-                        className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-300 border border-slate-200"
-                      >
-                        <option value="formation">Formation</option>
-                        <option value="congés">Congés</option>
-                        <option value="déplacement">Déplacement professionnel</option>
-                        <option value="maladie">Arrêt maladie</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button
-                    onClick={generateOOFMessage}
-                    disabled={isLoading}
-                    className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                  >
-                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                    Générer le message
-                  </button>
-                </div>
-
-                {/* Result Area */}
-                {aiResult && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4"
-                  >
-                    <label className="text-xs font-bold text-slate-600 uppercase mb-2 block">
-                      Message généré
-                    </label>
-                    <textarea
-                      value={aiResult}
-                      readOnly
-                      rows={4}
-                      className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl p-4 outline-none border border-slate-200 resize-none"
-                    />
-                    <button
-                      onClick={copyToClipboard}
-                      className="mt-2 text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer font-medium"
+            {/* OOF Generator */}
+            <div className="bg-slate-800/80 rounded-xl p-5 border border-slate-700/50">
+              <h4 className="font-semibold mb-4 flex items-center gap-2 text-white">
+                <Mail className="w-4 h-4 text-violet-400" /> Générateur de Message d&apos;Absence
+              </h4>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block font-medium">Ton du message</label>
+                    <select
+                      value={aiTone}
+                      onChange={(e) => setAiTone(e.target.value)}
+                      className="w-full bg-slate-700/50 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 border border-slate-600"
                     >
-                      <Copy className="w-3 h-3" /> Copier le texte
-                    </button>
-                  </motion.div>
-                )}
+                      <option value="professionnel">Professionnel</option>
+                      <option value="amical">Amical</option>
+                      <option value="formel">Formel</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block font-medium">Raison de l&apos;absence</label>
+                    <select
+                      value={aiReason}
+                      onChange={(e) => setAiReason(e.target.value)}
+                      className="w-full bg-slate-700/50 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 border border-slate-600"
+                    >
+                      <option value="formation">Formation</option>
+                      <option value="congés">Congés</option>
+                      <option value="déplacement">Déplacement professionnel</option>
+                      <option value="maladie">Arrêt maladie</option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  onClick={generateOOFMessage}
+                  disabled={isLoading}
+                  className="w-full py-3 bg-violet-500 text-white rounded-lg font-semibold text-sm hover:bg-violet-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  Générer le message
+                </button>
               </div>
+
+              {/* Result Area */}
+              {aiResult && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4"
+                >
+                  <label className="text-xs font-medium text-slate-400 uppercase mb-2 block">
+                    Message généré
+                  </label>
+                  <textarea
+                    value={aiResult}
+                    readOnly
+                    rows={4}
+                    className="w-full bg-slate-700/50 text-white text-sm rounded-lg p-4 outline-none border border-slate-600 resize-none"
+                  />
+                  <button
+                    onClick={copyToClipboard}
+                    className="mt-2 text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 cursor-pointer font-medium"
+                  >
+                    <Copy className="w-3 h-3" /> Copier le texte
+                  </button>
+                </motion.div>
+              )}
             </div>
           </div>
-        </motion.div>
-      </div>
-    </AppLayout>
+        </div>
+      </motion.div>
+    </div>
   );
 }
