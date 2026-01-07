@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// System prompt optimisé pour les messages d'absence
+const SYSTEM_PROMPT = `Tu es un assistant RH spécialisé dans la rédaction de messages d'absence professionnels pour une entreprise française.
+
+Règles:
+1. Génère UNIQUEMENT le corps du message, jamais l'objet
+2. Inclus TOUJOURS "[DATE_RETOUR]" là où la date de retour doit apparaître
+3. Adapte le ton selon la demande (professionnel, amical, formel)
+4. Les messages doivent être concis (5-8 lignes maximum)
+5. Termine toujours par une formule de politesse appropriée au ton`;
+
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, apiKey, apiEndpoint } = await request.json();
+    const { prompt, apiKey, apiEndpoint, modelName } = await request.json();
 
     if (!prompt) {
       return NextResponse.json(
@@ -18,13 +28,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Format compatible OpenAI API (standard pour la plupart des LLMs)
+    // Détecter si c'est Ollama pour adapter le nom du modèle
+    const isOllama = apiEndpoint.includes('11434');
+    const model = modelName || (isOllama ? 'pgv-absence' : 'gpt-3.5-turbo');
+
+    // Format compatible OpenAI API (Ollama, vLLM, OpenAI, etc.)
     const requestBody = {
-      model: 'pgv-absence-model', // Nom du modèle fine-tuné
+      model,
       messages: [
         {
           role: 'system',
-          content: 'Tu es un assistant RH spécialisé dans la rédaction de messages professionnels pour une entreprise française. Tu génères des messages d\'absence clairs, professionnels et personnalisés.',
+          content: SYSTEM_PROMPT,
         },
         {
           role: 'user',
@@ -33,6 +47,7 @@ export async function POST(request: NextRequest) {
       ],
       temperature: 0.7,
       max_tokens: 500,
+      stream: false,
     };
 
     const headers: Record<string, string> = {
