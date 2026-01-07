@@ -1,0 +1,120 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Build
+.next
+out
+dist
+build
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# VibeCoding/AI Tools
+.claude
+CLAUDE.md
+.prdet
+.cursor
+.cursorrules
+.windsurfrules
+.vibecoding
+.history
+.aider*
+.continue
+.copilot
+.codeium
+.tabnine
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# Testing
+coverage
+.nyc_output
+*.lcov
+junit.xml
+test-results/
+
+# Security
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.*
+credentials.*
+
+# Deployment
+.vercel
+.netlify
+.serverless
+.amplify
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug
+.debug
+*.map
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+*.cache
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# OS generated
+Icon?
+.AppleDouble
+.LSOverride
+Network Trash Folder
+Temporary Items
+.fseventsd
