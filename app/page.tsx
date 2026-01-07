@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from 'lucide-react';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -13,7 +13,12 @@ type Tool = DayStatus | 'ERASER';
 
 export default function Home() {
   const [currentTool, setCurrentTool] = useState<Tool>('WORK');
+  const [currentDate, setCurrentDate] = useState<string>('');
   const { getDayStatus, setDayStatus, formatDateKey } = useCalendarData();
+
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+  }, []);
 
   return (
     <AppLayout>
@@ -47,7 +52,7 @@ export default function Home() {
                 Planning Global
               </h1>
               <p className="text-sm text-slate-500">
-                {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                {currentDate || 'Chargement...'}
               </p>
             </div>
           </div>
