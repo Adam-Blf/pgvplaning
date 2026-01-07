@@ -98,7 +98,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }
 
   return (
-    <div className="h-screen flex overflow-hidden bg-slate-950">
+    <div className="h-screen flex bg-slate-950">
       {/* Sidebar */}
       <aside
         className={cn(
@@ -194,7 +194,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       </aside>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <header className="h-14 flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-sm border-b border-slate-800/50 flex-shrink-0">
           <div>
