@@ -1,12 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Calendar } from 'lucide-react';
+import { Calendar, Sparkles } from 'lucide-react';
 import { WorldWrapper } from '@/components/layout/world-wrapper';
 import { PageTransition } from '@/components/layout/page-transition';
 import { VacationForm } from '@/components/features/vacation-form';
 import { HistoryList } from '@/components/features/history-list';
 import { useContextualTheme } from '@/hooks/use-contextual-theme';
+import { Spotlight } from '@/components/ui/spotlight';
+import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
+import { BackgroundBeams } from '@/components/ui/background-beams';
 
 export default function Home() {
   const { season, dayCycle, specialEvent } = useContextualTheme();
@@ -44,88 +47,115 @@ export default function Home() {
   return (
     <WorldWrapper>
       <PageTransition>
-        <main className="min-h-screen py-8 px-4 md:py-12 md:px-6">
-          <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-            {/* En-tête */}
+        <main className="relative min-h-screen py-8 px-4 md:py-12 md:px-6 overflow-hidden">
+          {/* Spotlight Effect */}
+          <Spotlight
+            className="-top-40 left-0 md:left-60 md:-top-20"
+            fill="rgba(59, 130, 246, 0.5)"
+          />
+
+          {/* Background Beams */}
+          <BackgroundBeams className="opacity-40" />
+
+          <div className="relative z-10 max-w-4xl mx-auto space-y-8 md:space-y-12">
+            {/* En-tête avec effets */}
             <motion.header
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="text-center space-y-4"
             >
+              {/* Logo animé avec glow */}
               <motion.div
-                className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30"
-                whileHover={{ scale: 1.05, rotate: 5 }}
+                className="relative inline-flex items-center justify-center"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Calendar className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                <div className="absolute inset-0 bg-blue-500 rounded-2xl blur-xl opacity-50 animate-pulse" />
+                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 shadow-lg shadow-blue-500/50 flex items-center justify-center">
+                  <Calendar className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
               </motion.div>
 
               <div>
-                <motion.h1
-                  className="text-3xl md:text-5xl font-bold"
+                {/* Titre avec effet de génération */}
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
+                  className="flex items-center justify-center gap-3"
                 >
-                  <span className="text-gradient">PGV Planning</span>{' '}
+                  <h1 className="text-3xl md:text-5xl font-bold">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-shimmer bg-[length:200%_100%]">
+                      PGV Planning
+                    </span>
+                  </h1>
                   <span className="text-2xl md:text-4xl">{getSeasonEmoji()}</span>
-                </motion.h1>
+                </motion.div>
 
-                <motion.p
-                  className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mt-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  {getGreeting()} ! Créez vos fichiers de calendrier en quelques clics.
-                </motion.p>
+                {/* Sous-titre avec TextGenerateEffect */}
+                <div className="mt-4">
+                  <TextGenerateEffect
+                    words={`${getGreeting()} ! Créez vos fichiers de calendrier en quelques clics.`}
+                    className="text-lg md:text-xl text-gray-600 dark:text-gray-300"
+                    duration={0.3}
+                  />
+                </div>
 
+                {/* Badge événement spécial */}
                 {specialEvent && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm text-sm"
+                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ delay: 0.5, type: 'spring' }}
+                    className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-md border border-white/20 text-sm font-medium"
                   >
-                    <span className="animate-pulse">✨</span>
-                    {specialEvent.name}
-                    <span className="animate-pulse">✨</span>
+                    <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                      {specialEvent.name}
+                    </span>
+                    <Sparkles className="w-4 h-4 text-yellow-400 animate-pulse" />
                   </motion.div>
                 )}
               </div>
             </motion.header>
 
-            {/* Formulaire principal */}
+            {/* Formulaire principal avec effet de carte */}
             <motion.section
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              transition={{ delay: 0.4, duration: 0.6, type: 'spring' }}
+              className="relative"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-3xl blur-2xl" />
               <VacationForm />
             </motion.section>
 
-            {/* Historique */}
+            {/* Historique avec animation */}
             <motion.section
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
+              transition={{ delay: 0.6, duration: 0.6, type: 'spring' }}
             >
               <HistoryList />
             </motion.section>
 
-            {/* Footer */}
+            {/* Footer moderne */}
             <motion.footer
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="text-center text-sm text-gray-500 py-8"
+              className="text-center py-8"
             >
-              <p>
-                PGV Planning V9 • Générateur ICS sécurisé
-              </p>
-              <p className="mt-1">
-                Fait avec ❤️ en France
-              </p>
+              <div className="inline-flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  PGV Planning • Générateur ICS sécurisé
+                </div>
+                <p className="text-xs text-gray-400">
+                  Fait avec ❤️ en France
+                </p>
+              </div>
             </motion.footer>
           </div>
         </main>
