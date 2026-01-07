@@ -218,7 +218,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               >
                 <User className="w-4 h-4" />
                 <span className="text-sm hidden sm:block max-w-[150px] truncate">
-                  {user?.email || 'Non connecté'}
+                  {user?.user_metadata?.full_name || user?.email || 'Non connecté'}
                 </span>
               </button>
               {showUserMenu && (
@@ -226,8 +226,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   {user ? (
                     <>
                       <div className="px-4 py-3 border-b border-slate-700">
-                        <p className="text-xs text-slate-400">Connecté en tant que</p>
-                        <p className="text-sm text-white truncate">{user.email}</p>
+                        <p className="text-sm text-white truncate">
+                          {user.user_metadata?.full_name || 'Utilisateur'}
+                        </p>
+                        <p className="text-xs text-slate-400 truncate">{user.email}</p>
                       </div>
                       <button
                         onClick={handleLogout}
