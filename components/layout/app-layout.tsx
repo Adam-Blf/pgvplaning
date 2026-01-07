@@ -26,9 +26,9 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="h-screen flex overflow-hidden">
       <AppSidebar stats={stats} year={currentYear} />
-      <main className="flex-1 flex flex-col relative overflow-hidden">
+      <main className="flex-1 relative overflow-y-auto">
         <WorldWrapper>
-          <div className="flex-1 overflow-auto p-6">
+          <div className="min-h-screen p-6 pb-12">
             {children}
           </div>
         </WorldWrapper>

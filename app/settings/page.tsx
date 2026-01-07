@@ -2,30 +2,63 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Key, Database, AlertTriangle, Save, Trash2, Check } from 'lucide-react';
+import { Key, Database, AlertTriangle, Save, Trash2, Check, Mail, User, Server, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { Spotlight } from '@/components/ui/spotlight';
 
 export default function SettingsPage() {
-  const [apiKey, setApiKey] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
+  const [llmEndpoint, setLlmEndpoint] = useState('');
+  const [llmApiKey, setLlmApiKey] = useState('');
+  const [isLlmSaved, setIsLlmSaved] = useState(false);
+  const [notificationEmail, setNotificationEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [isEmailSaved, setIsEmailSaved] = useState(false);
   const { resetData, loadDemoData } = useCalendarData();
 
   useEffect(() => {
-    const saved = localStorage.getItem('gemini_api_key');
-    if (saved) {
-      setApiKey(saved);
-      setIsSaved(true);
+    const savedEndpoint = localStorage.getItem('llm_api_endpoint');
+    const savedKey = localStorage.getItem('llm_api_key');
+    if (savedEndpoint) {
+      setLlmEndpoint(savedEndpoint);
+      setIsLlmSaved(true);
+    }
+    if (savedKey) {
+      setLlmApiKey(savedKey);
+    }
+    const savedEmail = localStorage.getItem('notification_email');
+    const savedName = localStorage.getItem('user_name');
+    if (savedEmail) {
+      setNotificationEmail(savedEmail);
+      setIsEmailSaved(true);
+    }
+    if (savedName) {
+      setUserName(savedName);
     }
   }, []);
 
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('gemini_api_key', apiKey.trim());
-      setIsSaved(true);
-      toast.success('Clé API sauvegardée');
+  const saveLlmSettings = () => {
+    if (llmEndpoint.trim()) {
+      localStorage.setItem('llm_api_endpoint', llmEndpoint.trim());
+      if (llmApiKey.trim()) {
+        localStorage.setItem('llm_api_key', llmApiKey.trim());
+      }
+      setIsLlmSaved(true);
+      toast.success('Configuration LLM sauvegardée');
+    } else {
+      toast.error('Veuillez entrer l\'URL de l\'endpoint');
+    }
+  };
+
+  const saveEmailSettings = () => {
+    if (notificationEmail.trim()) {
+      localStorage.setItem('notification_email', notificationEmail.trim());
+      localStorage.setItem('user_name', userName.trim());
+      setIsEmailSaved(true);
+      toast.success('Paramètres de notification sauvegardés');
+    } else {
+      toast.error('Veuillez entrer une adresse email');
     }
   };
 
@@ -49,7 +82,7 @@ export default function SettingsPage() {
           fill="rgba(34, 197, 94, 0.3)"
         />
 
-        {/* Configuration */}
+        {/* Configuration LLM */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -58,55 +91,69 @@ export default function SettingsPage() {
           {/* Liquid Glass Card */}
           <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
             <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-slate-100/80 flex items-center justify-center">
-                <Key className="w-4 h-4 text-slate-500" />
+              <div className="w-8 h-8 rounded-lg bg-purple-100/80 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-purple-500" />
               </div>
-              Configuration
+              Assistant IA (LLM Custom)
             </h3>
 
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Clé API Gemini (Optionnel)
-              </label>
-              <div className="flex gap-2">
-                <div className="flex-1 relative">
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  URL de l&apos;endpoint LLM
+                </label>
+                <div className="relative">
+                  <Server className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
-                    type="password"
-                    value={apiKey}
+                    type="url"
+                    value={llmEndpoint}
                     onChange={(e) => {
-                      setApiKey(e.target.value);
-                      setIsSaved(false);
+                      setLlmEndpoint(e.target.value);
+                      setIsLlmSaved(false);
                     }}
-                    className="w-full px-4 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-                    placeholder="AIza..."
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-purple-500 outline-none transition-all"
+                    placeholder="https://votre-llm.entreprise.com/v1/chat/completions"
                   />
-                  {isSaved && apiKey && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <Check className="w-5 h-5 text-green-500" />
-                    </div>
-                  )}
                 </div>
-                <motion.button
-                  onClick={saveApiKey}
-                  className="px-6 py-3 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition font-medium flex items-center gap-2"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Save className="w-4 h-4" />
-                  Sauvegarder
-                </motion.button>
+                <p className="text-xs text-slate-500 mt-1">
+                  Compatible avec l&apos;API OpenAI (vLLM, Ollama, etc.)
+                </p>
               </div>
-              <p className="text-xs text-slate-500 mt-2">
-                La clé est stockée uniquement dans votre navigateur pour l&apos;IA.
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-indigo-500 hover:underline ml-1"
-                >
-                  Obtenir une clé
-                </a>
-              </p>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Clé API (Optionnel)
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="password"
+                      value={llmApiKey}
+                      onChange={(e) => {
+                        setLlmApiKey(e.target.value);
+                        setIsLlmSaved(false);
+                      }}
+                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-purple-500 outline-none transition-all"
+                      placeholder="sk-..."
+                    />
+                    {isLlmSaved && llmEndpoint && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <Check className="w-5 h-5 text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  <motion.button
+                    onClick={saveLlmSettings}
+                    className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition font-medium flex items-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Save className="w-4 h-4" />
+                    Sauvegarder
+                  </motion.button>
+                </div>
+              </div>
             </div>
 
             <div className="border-t border-slate-200/50 pt-6">
@@ -126,6 +173,82 @@ export default function SettingsPage() {
                 <Database className="w-4 h-4" />
                 Charger un exemple (Alternance)
               </motion.button>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Notifications Email */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="relative z-10"
+        >
+          <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
+            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-indigo-100/80 flex items-center justify-center">
+                <Mail className="w-4 h-4 text-indigo-500" />
+              </div>
+              Notifications d&apos;Absence
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Votre nom (pour les notifications)
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={userName}
+                    onChange={(e) => {
+                      setUserName(e.target.value);
+                      setIsEmailSaved(false);
+                    }}
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    placeholder="Jean Dupont"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Email destinataire des notifications
+                </label>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      type="email"
+                      value={notificationEmail}
+                      onChange={(e) => {
+                        setNotificationEmail(e.target.value);
+                        setIsEmailSaved(false);
+                      }}
+                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                      placeholder="manager@entreprise.com"
+                    />
+                    {isEmailSaved && notificationEmail && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <Check className="w-5 h-5 text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  <motion.button
+                    onClick={saveEmailSettings}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium flex items-center gap-2"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Save className="w-4 h-4" />
+                    Sauvegarder
+                  </motion.button>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  Cet email recevra les notifications d&apos;absence générées depuis la page Exports.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>

@@ -12,12 +12,14 @@ interface WorldWrapperProps {
 
 export function WorldWrapper({ children }: WorldWrapperProps) {
   return (
-    <div className="relative min-h-screen">
-      {/* Couches de fond (du plus éloigné au plus proche) */}
-      <SkyLayer />
-      <CelestialBody />
-      <SeasonalParticles />
-      <SpecialEvents />
+    <div className="relative">
+      {/* Couches de fond fixes */}
+      <div className="fixed inset-0 pointer-events-none">
+        <SkyLayer />
+        <CelestialBody />
+        <SeasonalParticles />
+        <SpecialEvents />
+      </div>
 
       {/* Contenu principal */}
       <div className="relative z-10">{children}</div>

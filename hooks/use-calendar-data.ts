@@ -201,6 +201,7 @@ export function useCalendarData() {
 
   return {
     data,
+    calendarData: data,
     isLoaded,
     setDayStatus,
     getDayStatus,
