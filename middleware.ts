@@ -43,7 +43,7 @@ if (typeof setInterval !== 'undefined') {
 }
 
 // Routes publiques qui ne nécessitent pas d'authentification
-const publicRoutes = ['/login', '/auth/callback', '/auth/confirm'];
+const publicRoutes = ['/login', '/auth/callback', '/auth/confirm', '/setup'];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({

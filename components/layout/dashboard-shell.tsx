@@ -43,8 +43,8 @@ const statusConfig = {
   leave: { icon: Palmtree, label: 'Congés', color: 'bg-rose-500', text: 'text-rose-400' },
 };
 
-// Routes qui ne doivent pas afficher le shell (authentification)
-const authRoutes = ['/login', '/auth'];
+// Routes qui ne doivent pas afficher le shell (authentification, setup)
+const authRoutes = ['/login', '/auth', '/setup'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
