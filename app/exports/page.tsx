@@ -234,52 +234,52 @@ export default function ExportsPage() {
 
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/20">
-                  <Sparkles className="w-6 h-6" />
+                <div className="p-2.5 bg-white rounded-xl shadow-sm">
+                  <Sparkles className="w-6 h-6 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Assistant IA</h3>
-                  <p className="text-indigo-200 text-sm">Mistral 7B (Open Source)</p>
+                  <h3 className="text-xl font-bold text-white">Assistant IA</h3>
+                  <p className="text-indigo-100 text-sm">Mistral 7B (Open Source)</p>
                 </div>
               </div>
 
               {/* OOF Generator - Full Width */}
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10">
-                <h4 className="font-bold mb-4 flex items-center gap-2">
-                  <Mail className="w-4 h-4" /> Générateur de Message d&apos;Absence
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <h4 className="font-bold mb-4 flex items-center gap-2 text-slate-800">
+                  <Mail className="w-4 h-4 text-indigo-600" /> Générateur de Message d&apos;Absence
                 </h4>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-indigo-200 mb-1 block">Ton du message</label>
+                      <label className="text-xs text-slate-600 mb-1 block font-medium">Ton du message</label>
                       <select
                         value={aiTone}
                         onChange={(e) => setAiTone(e.target.value)}
-                        className="w-full bg-white/20 border-none text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-white/50"
+                        className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-300 border border-slate-200"
                       >
-                        <option className="text-slate-800" value="professionnel">Professionnel</option>
-                        <option className="text-slate-800" value="amical">Amical</option>
-                        <option className="text-slate-800" value="formel">Formel</option>
+                        <option value="professionnel">Professionnel</option>
+                        <option value="amical">Amical</option>
+                        <option value="formel">Formel</option>
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs text-indigo-200 mb-1 block">Raison de l&apos;absence</label>
+                      <label className="text-xs text-slate-600 mb-1 block font-medium">Raison de l&apos;absence</label>
                       <select
                         value={aiReason}
                         onChange={(e) => setAiReason(e.target.value)}
-                        className="w-full bg-white/20 border-none text-white text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-white/50"
+                        className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:ring-2 focus:ring-indigo-300 border border-slate-200"
                       >
-                        <option className="text-slate-800" value="formation">Formation</option>
-                        <option className="text-slate-800" value="congés">Congés</option>
-                        <option className="text-slate-800" value="déplacement">Déplacement professionnel</option>
-                        <option className="text-slate-800" value="maladie">Arrêt maladie</option>
+                        <option value="formation">Formation</option>
+                        <option value="congés">Congés</option>
+                        <option value="déplacement">Déplacement professionnel</option>
+                        <option value="maladie">Arrêt maladie</option>
                       </select>
                     </div>
                   </div>
                   <button
                     onClick={generateOOFMessage}
                     disabled={isLoading}
-                    className="w-full py-3 bg-white text-indigo-600 rounded-xl font-bold text-sm hover:bg-indigo-50 transition shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                     Générer le message
@@ -293,18 +293,18 @@ export default function ExportsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4"
                   >
-                    <label className="text-xs font-bold text-indigo-200 uppercase mb-2 block">
+                    <label className="text-xs font-bold text-slate-600 uppercase mb-2 block">
                       Message généré
                     </label>
                     <textarea
                       value={aiResult}
                       readOnly
                       rows={4}
-                      className="w-full bg-white/90 text-slate-800 text-sm rounded-xl p-4 outline-none border-none shadow-inner resize-none"
+                      className="w-full bg-slate-50 text-slate-800 text-sm rounded-xl p-4 outline-none border border-slate-200 resize-none"
                     />
                     <button
                       onClick={copyToClipboard}
-                      className="mt-2 text-xs text-white/80 hover:text-white flex items-center gap-1 cursor-pointer"
+                      className="mt-2 text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <Copy className="w-3 h-3" /> Copier le texte
                     </button>
