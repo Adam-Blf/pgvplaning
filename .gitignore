@@ -120,3 +120,9 @@ Temporary Items
 .fseventsd
 
 .vercel
+
+# LLM models (too large)
+llm/pgv-absence-model/
+llm/pgv-absence-model-merged/
+llm/*.gguf
+nul

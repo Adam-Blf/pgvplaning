@@ -2,31 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Key, Database, AlertTriangle, Save, Trash2, Check, Mail, User, Server, Sparkles } from 'lucide-react';
+import { Database, AlertTriangle, Save, Trash2, Check, Mail, User, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout/app-layout';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { Spotlight } from '@/components/ui/spotlight';
 
 export default function SettingsPage() {
-  const [llmEndpoint, setLlmEndpoint] = useState('');
-  const [llmApiKey, setLlmApiKey] = useState('');
-  const [isLlmSaved, setIsLlmSaved] = useState(false);
   const [notificationEmail, setNotificationEmail] = useState('');
   const [userName, setUserName] = useState('');
   const [isEmailSaved, setIsEmailSaved] = useState(false);
   const { resetData, loadDemoData } = useCalendarData();
 
   useEffect(() => {
-    const savedEndpoint = localStorage.getItem('llm_api_endpoint');
-    const savedKey = localStorage.getItem('llm_api_key');
-    if (savedEndpoint) {
-      setLlmEndpoint(savedEndpoint);
-      setIsLlmSaved(true);
-    }
-    if (savedKey) {
-      setLlmApiKey(savedKey);
-    }
     const savedEmail = localStorage.getItem('notification_email');
     const savedName = localStorage.getItem('user_name');
     if (savedEmail) {
@@ -37,19 +25,6 @@ export default function SettingsPage() {
       setUserName(savedName);
     }
   }, []);
-
-  const saveLlmSettings = () => {
-    if (llmEndpoint.trim()) {
-      localStorage.setItem('llm_api_endpoint', llmEndpoint.trim());
-      if (llmApiKey.trim()) {
-        localStorage.setItem('llm_api_key', llmApiKey.trim());
-      }
-      setIsLlmSaved(true);
-      toast.success('Configuration LLM sauvegardée');
-    } else {
-      toast.error('Veuillez entrer l\'URL de l\'endpoint');
-    }
-  };
 
   const saveEmailSettings = () => {
     if (notificationEmail.trim()) {
@@ -82,76 +57,27 @@ export default function SettingsPage() {
           fill="rgba(34, 197, 94, 0.3)"
         />
 
-        {/* Configuration LLM */}
+        {/* Assistant IA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10"
         >
-          {/* Liquid Glass Card */}
           <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
             <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-purple-100/80 flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-purple-500" />
               </div>
-              Assistant IA (LLM Custom)
+              Assistant IA
             </h3>
 
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  URL de l&apos;endpoint LLM
-                </label>
-                <div className="relative">
-                  <Server className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="url"
-                    value={llmEndpoint}
-                    onChange={(e) => {
-                      setLlmEndpoint(e.target.value);
-                      setIsLlmSaved(false);
-                    }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                    placeholder="https://votre-llm.entreprise.com/v1/chat/completions"
-                  />
-                </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  Compatible avec l&apos;API OpenAI (vLLM, Ollama, etc.)
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Clé API (Optionnel)
-                </label>
-                <div className="flex gap-2">
-                  <div className="flex-1 relative">
-                    <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input
-                      type="password"
-                      value={llmApiKey}
-                      onChange={(e) => {
-                        setLlmApiKey(e.target.value);
-                        setIsLlmSaved(false);
-                      }}
-                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-purple-500 outline-none transition-all"
-                      placeholder="sk-..."
-                    />
-                    {isLlmSaved && llmEndpoint && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Check className="w-5 h-5 text-green-500" />
-                      </div>
-                    )}
-                  </div>
-                  <motion.button
-                    onClick={saveLlmSettings}
-                    className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition font-medium flex items-center gap-2"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Save className="w-4 h-4" />
-                    Sauvegarder
-                  </motion.button>
+            {/* Status IA */}
+            <div className="p-4 rounded-xl bg-gradient-to-r from-green-50/80 to-emerald-50/80 border border-green-200/50 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                <div>
+                  <p className="font-medium text-green-900">IA Active</p>
+                  <p className="text-xs text-green-700">Propulsé par Mistral 7B (Open Source, Gratuit)</p>
                 </div>
               </div>
             </div>

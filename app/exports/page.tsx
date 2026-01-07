@@ -110,14 +110,7 @@ export default function ExportsPage() {
   };
 
   const generateOOFMessage = async () => {
-    const apiEndpoint = localStorage.getItem('llm_api_endpoint');
-    const apiKey = localStorage.getItem('llm_api_key');
     const userName = localStorage.getItem('user_name') || 'Collaborateur';
-
-    if (!apiEndpoint) {
-      toast.error('Endpoint LLM non configuré. Allez dans Paramètres.');
-      return;
-    }
 
     setIsLoading(true);
     setAiResult('');
@@ -128,7 +121,7 @@ export default function ExportsPage() {
       const response = await fetch('/api/llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, apiKey, apiEndpoint }),
+        body: JSON.stringify({ prompt, useHuggingFace: true }),
       });
 
       const result = await response.json();
@@ -246,7 +239,7 @@ export default function ExportsPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">Assistant IA</h3>
-                  <p className="text-indigo-200 text-sm">LLM personnalisé pour votre entreprise</p>
+                  <p className="text-indigo-200 text-sm">Mistral 7B (Open Source)</p>
                 </div>
               </div>
 
