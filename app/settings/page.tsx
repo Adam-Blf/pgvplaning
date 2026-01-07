@@ -63,10 +63,10 @@ export default function SettingsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10"
         >
-          <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-3xl border-2 border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(99,102,241,0.05),inset_0_2px_0_rgba(255,255,255,0.9)] p-8">
             <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-purple-100/80 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-purple-500" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center shadow-sm border border-purple-200/50">
+                <Sparkles className="w-5 h-5 text-purple-500" />
               </div>
               Assistant IA
             </h3>
@@ -92,8 +92,8 @@ export default function SettingsPage() {
               </p>
               <motion.button
                 onClick={handleLoadDemo}
-                className="px-4 py-2 bg-white/60 backdrop-blur-sm border border-slate-200/50 text-slate-700 rounded-xl hover:bg-white/80 text-sm font-medium transition flex items-center gap-2"
-                whileHover={{ scale: 1.02 }}
+                className="px-5 py-2.5 bg-white/90 backdrop-blur-sm border-2 border-slate-200 text-slate-700 rounded-2xl hover:bg-slate-50 hover:border-slate-300 text-sm font-semibold transition-all shadow-[0_4px_12px_rgba(0,0,0,0.06)] flex items-center gap-2"
+                whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Database className="w-4 h-4" />
@@ -110,10 +110,10 @@ export default function SettingsPage() {
           transition={{ delay: 0.05 }}
           className="relative z-10"
         >
-          <div className="bg-white/40 backdrop-blur-2xl rounded-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] p-8">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-3xl border-2 border-white/80 shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(99,102,241,0.05),inset_0_2px_0_rgba(255,255,255,0.9)] p-8">
             <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-100/80 flex items-center justify-center">
-                <Mail className="w-4 h-4 text-indigo-500" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center shadow-sm border border-indigo-200/50">
+                <Mail className="w-5 h-5 text-indigo-500" />
               </div>
               Notifications d&apos;Absence
             </h3>
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                   Votre nom (pour les notifications)
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400" />
                   <input
                     type="text"
                     value={userName}
@@ -132,7 +132,7 @@ export default function SettingsPage() {
                       setUserName(e.target.value);
                       setIsEmailSaved(false);
                     }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-3.5 rounded-2xl border-2 border-indigo-200/60 bg-white/90 backdrop-blur-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(99,102,241,0.08)] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 outline-none transition-all"
                     placeholder="Jean Dupont"
                   />
                 </div>
@@ -142,9 +142,9 @@ export default function SettingsPage() {
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Email destinataire des notifications
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <div className="flex-1 relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-400" />
                     <input
                       type="email"
                       value={notificationEmail}
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                         setNotificationEmail(e.target.value);
                         setIsEmailSaved(false);
                       }}
-                      className="w-full pl-10 pr-10 py-3 rounded-xl border border-white/50 bg-white/60 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                      className="w-full pl-10 pr-10 py-3.5 rounded-2xl border-2 border-indigo-200/60 bg-white/90 backdrop-blur-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.06),0_4px_12px_rgba(99,102,241,0.08)] text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 outline-none transition-all"
                       placeholder="manager@entreprise.com"
                     />
                     {isEmailSaved && notificationEmail && (
@@ -163,8 +163,8 @@ export default function SettingsPage() {
                   </div>
                   <motion.button
                     onClick={saveEmailSettings}
-                    className="px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition font-medium flex items-center gap-2"
-                    whileHover={{ scale: 1.02 }}
+                    className="px-6 py-3.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-2xl hover:from-indigo-600 hover:to-purple-600 transition-all font-semibold flex items-center gap-2 shadow-[0_4px_20px_rgba(99,102,241,0.4),inset_0_1px_0_rgba(255,255,255,0.2)]"
+                    whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Save className="w-4 h-4" />
@@ -187,10 +187,10 @@ export default function SettingsPage() {
           className="relative z-10"
         >
           {/* Liquid Glass Red Card */}
-          <div className="bg-red-50/60 backdrop-blur-2xl rounded-3xl border border-red-200/50 shadow-[0_8px_32px_rgba(239,68,68,0.1),inset_0_1px_0_rgba(255,255,255,0.5)] p-8">
+          <div className="bg-gradient-to-br from-red-50/80 to-rose-50/80 backdrop-blur-2xl rounded-3xl border-2 border-red-200/60 shadow-[0_8px_32px_rgba(239,68,68,0.12),inset_0_2px_0_rgba(255,255,255,0.8)] p-8">
             <h3 className="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
-                <AlertTriangle className="w-4 h-4 text-red-500" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center shadow-sm border border-red-200/50">
+                <AlertTriangle className="w-5 h-5 text-red-500" />
               </div>
               Zone de Danger
             </h3>
@@ -204,8 +204,8 @@ export default function SettingsPage() {
               </div>
               <motion.button
                 onClick={handleReset}
-                className="px-5 py-2.5 bg-white border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition font-medium shadow-sm flex items-center gap-2"
-                whileHover={{ scale: 1.02 }}
+                className="px-5 py-2.5 bg-white/90 backdrop-blur-sm border-2 border-red-200 text-red-600 rounded-2xl hover:bg-red-50 hover:border-red-300 transition-all font-semibold shadow-[0_4px_12px_rgba(239,68,68,0.15)] flex items-center gap-2"
+                whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Trash2 className="w-4 h-4" />
