@@ -100,8 +100,8 @@ export default function SetupPage() {
   const projectRef = supabaseUrl?.match(/https:\/\/([^.]+)/)?.[1] || 'votre-projet';
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6">
-      <div className="max-w-4xl mx-auto">
+    <div className="fixed inset-0 bg-slate-950 p-6 overflow-y-auto">
+      <div className="max-w-4xl mx-auto pb-12">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
             <Database className="w-6 h-6 text-white" />
