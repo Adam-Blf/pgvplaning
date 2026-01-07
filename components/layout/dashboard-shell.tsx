@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useMemo } from 'react';
+import { ReactNode, useState, useMemo, useEffect } from 'react';
 import {
   Calendar,
   LayoutDashboard,
@@ -13,12 +13,16 @@ import {
   Palmtree,
   BarChart3,
   FileDown,
+  LogOut,
+  User,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -44,11 +48,37 @@ const authRoutes = ['/login', '/auth'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
 
   const { data, isLoaded } = useCalendarData();
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const stats = useCalendarStats(data, currentYear);
+
+  // Récupérer l'utilisateur connecté
+  useEffect(() => {
+    if (!supabase) return;
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const handleLogout = async () => {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
 
   // Si on est sur une route d'authentification, afficher uniquement le contenu
   const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
@@ -172,13 +202,55 @@ export function DashboardShell({ children }: DashboardShellProps) {
               {navigation.find((n) => n.href === pathname)?.name || 'Dashboard'}
             </h1>
           </div>
-          <p className="text-xs text-slate-500">
-            {new Date().toLocaleDateString('fr-FR', {
-              weekday: 'short',
-              day: 'numeric',
-              month: 'short',
-            })}
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs text-slate-500 hidden sm:block">
+              {new Date().toLocaleDateString('fr-FR', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+              })}
+            </p>
+            {/* User Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
+              >
+                <User className="w-4 h-4" />
+                <span className="text-sm hidden sm:block max-w-[150px] truncate">
+                  {user?.email || 'Non connecté'}
+                </span>
+              </button>
+              {showUserMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50">
+                  {user ? (
+                    <>
+                      <div className="px-4 py-3 border-b border-slate-700">
+                        <p className="text-xs text-slate-400">Connecté en tant que</p>
+                        <p className="text-sm text-white truncate">{user.email}</p>
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-rose-400 hover:bg-slate-700/50 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Déconnexion
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-indigo-400 hover:bg-slate-700/50 transition-colors"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      <User className="w-4 h-4" />
+                      Se connecter
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </header>
 
         {/* Content */}
