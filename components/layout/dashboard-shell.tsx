@@ -39,6 +39,9 @@ const statusConfig = {
   leave: { icon: Palmtree, label: 'Congés', color: 'bg-rose-500', text: 'text-rose-400' },
 };
 
+// Routes qui ne doivent pas afficher le shell (authentification)
+const authRoutes = ['/login', '/auth'];
+
 export function DashboardShell({ children }: DashboardShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
@@ -46,6 +49,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const { data, isLoaded } = useCalendarData();
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const stats = useCalendarStats(data, currentYear);
+
+  // Si on est sur une route d'authentification, afficher uniquement le contenu
+  const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
+  if (isAuthRoute) {
+    return <>{children}</>;
+  }
 
   if (!isLoaded) {
     return (
