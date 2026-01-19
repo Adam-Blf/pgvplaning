@@ -1,12 +1,10 @@
 'use client';
 
 import {
-  Briefcase,
   ArrowRight,
   Calendar,
   FileDown,
   Info,
-  CheckCircle2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -71,7 +69,7 @@ export default function DashboardPage() {
       {/* Étapes pour démarrer */}
       <section>
         <h2 className="text-xl font-bold text-[var(--text-title)] mb-4">Comment utiliser ce service ?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StepCard
             number={1}
             title="Remplir le calendrier"
@@ -81,13 +79,6 @@ export default function DashboardPage() {
           />
           <StepCard
             number={2}
-            title="Vérifier les statistiques"
-            description="Consultez le récapitulatif de vos jours par catégorie"
-            href="/analytics"
-            icon={Briefcase}
-          />
-          <StepCard
-            number={3}
             title="Exporter le fichier ICS"
             description="Téléchargez le fichier à importer dans votre calendrier"
             href="/exports"

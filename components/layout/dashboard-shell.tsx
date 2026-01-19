@@ -1,22 +1,15 @@
 'use client';
 
-import { ReactNode, useMemo } from 'react';
+import { ReactNode } from 'react';
 import {
   Calendar,
   LayoutDashboard,
   Settings,
-  Briefcase,
-  Home,
-  GraduationCap,
-  Palmtree,
-  BarChart3,
   FileDown,
   Menu,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCalendarData } from '@/hooks/use-calendar-data';
-import { useCalendarStats } from '@/hooks/use-calendar-stats';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -28,17 +21,9 @@ interface DashboardShellProps {
 const navigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard },
   { name: 'Calendrier', href: '/calendar', icon: Calendar },
-  { name: 'Statistiques', href: '/analytics', icon: BarChart3 },
   { name: 'Exporter', href: '/exports', icon: FileDown },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
-
-const statusConfig = {
-  work: { icon: Briefcase, label: 'Bureau', colorClass: 'fr-tag--blue' },
-  remote: { icon: Home, label: 'Télétravail', colorClass: 'fr-tag--green' },
-  school: { icon: GraduationCap, label: 'Formation', colorClass: 'fr-tag--orange' },
-  leave: { icon: Palmtree, label: 'Congés', colorClass: 'fr-tag--red' },
-};
 
 // Routes qui ne doivent pas afficher le shell
 const authRoutes = ['/login', '/auth', '/setup'];
@@ -47,25 +32,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  const { data, isLoaded } = useCalendarData();
-  const currentYear = useMemo(() => new Date().getFullYear(), []);
-  const stats = useCalendarStats(data, currentYear);
-
   // Si on est sur une route d'authentification, afficher uniquement le contenu
   const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
   if (isAuthRoute) {
     return <>{children}</>;
-  }
-
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-[var(--bleu-france)] border-t-transparent rounded-full animate-spin" />
-          <p className="text-[var(--text-mention)] text-sm">Chargement en cours...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -73,27 +43,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
       {/* Header Service Public */}
       <header className="fr-header">
         <div className="fr-container">
-          {/* Bande supérieure avec logo République */}
+          {/* Bande supérieure */}
           <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
             <div className="flex items-center gap-4">
-              {/* Logo République Française */}
-              <div className="flex flex-col">
-                <div
-                  className="w-12 h-2 mb-1"
-                  style={{
-                    background: 'linear-gradient(to right, var(--bleu-france) 0%, var(--bleu-france) 33%, white 33%, white 66%, var(--rouge-marianne) 66%)'
-                  }}
-                />
-                <span className="text-xs font-bold text-[var(--text-title)] leading-tight">
-                  RÉPUBLIQUE
-                  <br />
-                  FRANÇAISE
-                </span>
-              </div>
-
-              {/* Séparateur vertical */}
-              <div className="h-12 w-px bg-[var(--border-default)] hidden sm:block" />
-
               {/* Nom du service */}
               <Link href="/" className="flex items-center gap-3 no-underline">
                 <div className="w-10 h-10 rounded-lg bg-[var(--bleu-france)] flex items-center justify-center">
@@ -189,35 +141,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
       {/* Contenu principal */}
       <main className="flex-1" id="contenu" role="main">
         <div className="fr-container py-6 md:py-8">
-          {/* Titre de page avec statistiques rapides */}
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-title)]">
-                {navigation.find((n) => n.href === pathname)?.name || 'Tableau de bord'}
-              </h1>
-              <p className="text-[var(--text-mention)] mt-1">
-                Année {currentYear}
-              </p>
-            </div>
-
-            {/* Statistiques rapides */}
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(statusConfig) as Array<keyof typeof statusConfig>).map((key) => {
-                const config = statusConfig[key];
-                const Icon = config.icon;
-                const value = stats[key];
-                return (
-                  <div
-                    key={key}
-                    className={cn('fr-tag', config.colorClass, 'gap-1.5')}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{config.label}</span>
-                    <span className="font-bold">{value}j</span>
-                  </div>
-                );
-              })}
-            </div>
+          {/* Titre de page */}
+          <div className="mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-title)]">
+              {navigation.find((n) => n.href === pathname)?.name || 'Tableau de bord'}
+            </h1>
           </div>
 
           {/* Contenu de la page */}
@@ -225,39 +153,22 @@ export function DashboardShell({ children }: DashboardShellProps) {
         </div>
       </main>
 
-      {/* Footer Service Public */}
+      {/* Footer */}
       <footer className="fr-footer">
         <div className="fr-footer__content">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-1.5"
-                style={{
-                  background: 'linear-gradient(to right, var(--bleu-france) 0%, var(--bleu-france) 33%, white 33%, white 66%, var(--rouge-marianne) 66%)'
-                }}
-              />
-              <span className="text-xs font-bold text-[var(--text-title)]">
-                RÉPUBLIQUE FRANÇAISE
-              </span>
-            </div>
+            <span className="text-sm font-bold text-[var(--text-title)]">
+              Blackout Prod
+            </span>
             <div className="flex flex-wrap gap-4 text-sm">
-              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
-                Accessibilité : partiellement conforme
-              </a>
               <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
                 Mentions légales
               </a>
               <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
-                Données personnelles
+                Contact
               </a>
             </div>
           </div>
-          <p className="fr-footer__text mt-4">
-            Sauf mention contraire, tous les contenus de ce site sont sous{' '}
-            <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
-              licence etalab-2.0
-            </a>
-          </p>
         </div>
       </footer>
     </div>
