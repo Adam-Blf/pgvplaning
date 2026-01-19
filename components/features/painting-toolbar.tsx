@@ -10,7 +10,7 @@ interface ToolConfig {
   id: Tool;
   label: string;
   icon: React.ElementType;
-  colorClass: string;
+  className: string;
   activeClass: string;
 }
 
@@ -19,29 +19,29 @@ const tools: ToolConfig[] = [
     id: 'WORK',
     label: 'Bureau',
     icon: Briefcase,
-    colorClass: 'bg-[var(--info-bg)] text-[var(--bleu-france)] border-[var(--bleu-france)]',
-    activeClass: 'bg-[var(--bleu-france)] text-white border-[var(--bleu-france)]',
+    className: 'tool-btn-work',
+    activeClass: 'active',
   },
   {
     id: 'REMOTE',
     label: 'Télétravail',
     icon: Home,
-    colorClass: 'bg-[var(--success-bg)] text-[var(--success)] border-[var(--success)]',
-    activeClass: 'bg-[var(--success)] text-white border-[var(--success)]',
+    className: 'tool-btn-remote',
+    activeClass: 'active',
   },
   {
     id: 'SCHOOL',
     label: 'Formation',
     icon: GraduationCap,
-    colorClass: 'bg-[var(--warning-bg)] text-[var(--warning)] border-[var(--warning)]',
-    activeClass: 'bg-[var(--warning)] text-white border-[var(--warning)]',
+    className: 'tool-btn-training',
+    activeClass: 'active',
   },
   {
     id: 'LEAVE',
     label: 'Congés',
     icon: Palmtree,
-    colorClass: 'bg-[var(--error-bg)] text-[var(--error)] border-[var(--error)]',
-    activeClass: 'bg-[var(--error)] text-white border-[var(--error)]',
+    className: 'tool-btn-leave',
+    activeClass: 'active',
   },
 ];
 
@@ -52,9 +52,9 @@ interface PaintingToolbarProps {
 
 export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarProps) {
   return (
-    <div className="p-4">
+    <div className="card">
       <fieldset>
-        <legend className="text-sm font-bold text-[var(--text-title)] mb-3">
+        <legend className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
           Sélectionnez un type de journée
         </legend>
 
@@ -68,9 +68,9 @@ export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarPr
                 key={tool.id}
                 onClick={() => onToolChange(tool.id)}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded border-2 text-sm font-medium transition-all',
-                  isActive ? tool.activeClass : tool.colorClass,
-                  !isActive && 'hover:opacity-80'
+                  'tool-btn',
+                  tool.className,
+                  isActive && tool.activeClass
                 )}
                 aria-pressed={isActive}
               >
@@ -80,17 +80,15 @@ export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarPr
             );
           })}
 
-          {/* Séparateur */}
-          <div className="h-8 w-px bg-[var(--border-default)] mx-2 hidden sm:block" />
+          {/* Separator */}
+          <div className="h-8 w-px bg-[var(--border-subtle)] mx-1 hidden sm:block" />
 
-          {/* Gomme */}
+          {/* Eraser */}
           <button
             onClick={() => onToolChange('ERASER')}
             className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded border-2 text-sm font-medium transition-all',
-              currentTool === 'ERASER'
-                ? 'bg-[var(--text-title)] text-white border-[var(--text-title)]'
-                : 'bg-[var(--background-contrast)] text-[var(--text-default)] border-[var(--border-plain)] hover:bg-[var(--background)]'
+              'tool-btn tool-btn-eraser',
+              currentTool === 'ERASER' && 'active'
             )}
             aria-pressed={currentTool === 'ERASER'}
             title="Effacer / Réinitialiser"

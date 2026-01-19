@@ -8,6 +8,7 @@ import {
   FileDown,
   Menu,
   X,
+  Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -25,146 +26,137 @@ const navigation = [
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
 
-// Routes qui ne doivent pas afficher le shell
+// Routes that should not display the shell
 const authRoutes = ['/login', '/auth', '/setup'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Si on est sur une route d'authentification, afficher uniquement le contenu
+  // If on an auth route, render children only
   const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
   if (isAuthRoute) {
     return <>{children}</>;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)]">
-      {/* Header Service Public */}
-      <header className="fr-header">
-        <div className="fr-container">
-          {/* Bande supérieure */}
-          <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
-            <div className="flex items-center gap-4">
-              {/* Nom du service */}
-              <Link href="/" className="flex items-center gap-3 no-underline">
-                <div className="w-10 h-10 rounded-lg bg-[var(--bleu-france)] flex items-center justify-center">
-                  <Calendar className="w-5 h-5 text-white" />
+    <div className="min-h-screen flex flex-col bg-[var(--bg-primary)]">
+      {/* Header */}
+      <header className="sticky top-0 z-50 glass border-b border-[var(--border-subtle)]">
+        <div className="container">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3 no-underline group">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-lg bg-[var(--accent)] flex items-center justify-center transition-transform group-hover:scale-105">
+                  <Zap className="w-5 h-5 text-[var(--bg-primary)]" />
                 </div>
-                <div>
-                  <span className="font-bold text-[var(--text-title)] text-lg block">
-                    PGV Planning
-                  </span>
-                  <span className="text-[var(--text-mention)] text-xs">
-                    Gestion des plannings
-                  </span>
-                </div>
-              </Link>
-            </div>
-
-            {/* Date du jour */}
-            <div className="hidden md:flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-[var(--text-title)]">
-                  {new Date().toLocaleDateString('fr-FR', {
-                    weekday: 'long',
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
+                <div className="absolute -inset-1 bg-[var(--accent)] rounded-xl opacity-20 blur-sm group-hover:opacity-40 transition-opacity" />
               </div>
-            </div>
+              <div>
+                <span className="font-[var(--font-display)] font-bold text-[var(--text-primary)] text-lg tracking-tight">
+                  PGV Planning
+                </span>
+                <span className="hidden sm:block text-xs text-[var(--text-muted)]">
+                  by Blackout Prod
+                </span>
+              </div>
+            </Link>
 
-            {/* Menu mobile toggle */}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={cn(
+                      'nav-link',
+                      isActive && 'nav-link-active'
+                    )}
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded hover:bg-[var(--background-contrast)]"
+              className="md:hidden btn-ghost p-2"
               aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6 text-[var(--text-title)]" />
+                <X className="w-6 h-6" />
               ) : (
-                <Menu className="w-6 h-6 text-[var(--text-title)]" />
+                <Menu className="w-6 h-6" />
               )}
             </button>
           </div>
 
-          {/* Navigation principale */}
-          <nav className={cn(
-            'py-2',
-            mobileMenuOpen ? 'block' : 'hidden md:block'
-          )}>
-            <ul className="fr-nav flex-col md:flex-row">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <li key={item.name}>
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <nav className="md:hidden py-4 border-t border-[var(--border-subtle)] animate-slideUp">
+              <div className="flex flex-col gap-1">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
                     <Link
+                      key={item.name}
                       href={item.href}
-                      className={cn(
-                        'fr-nav__link',
-                        isActive && 'fr-nav__link--active'
-                      )}
                       onClick={() => setMobileMenuOpen(false)}
+                      className={cn(
+                        'nav-link',
+                        isActive && 'nav-link-active'
+                      )}
                     >
-                      <item.icon className="w-5 h-5" />
+                      <item.icon className="w-4 h-4" />
                       <span>{item.name}</span>
                     </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
+                  );
+                })}
+              </div>
+            </nav>
+          )}
         </div>
       </header>
 
-      {/* Fil d'Ariane */}
-      <div className="bg-[var(--background-alt)] border-b border-[var(--border-default)]">
-        <div className="fr-container">
-          <nav className="fr-breadcrumb" aria-label="Fil d'Ariane">
-            <Link href="/" className="fr-breadcrumb__link no-underline hover:underline">
-              Accueil
-            </Link>
-            {pathname !== '/' && (
-              <>
-                <span className="fr-breadcrumb__separator" aria-hidden="true">›</span>
-                <span aria-current="page">
-                  {navigation.find((n) => n.href === pathname)?.name || 'Page'}
-                </span>
-              </>
-            )}
-          </nav>
-        </div>
-      </div>
-
-      {/* Contenu principal */}
+      {/* Main content */}
       <main className="flex-1" id="contenu" role="main">
-        <div className="fr-container py-6 md:py-8">
-          {/* Titre de page */}
-          <div className="mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-title)]">
+        <div className="container py-8">
+          {/* Page header */}
+          <div className="mb-8 animate-fadeIn">
+            <h1 className="text-2xl md:text-3xl text-[var(--text-primary)]">
               {navigation.find((n) => n.href === pathname)?.name || 'Tableau de bord'}
             </h1>
+            <div className="mt-2 h-1 w-12 bg-[var(--accent)] rounded-full" />
           </div>
 
-          {/* Contenu de la page */}
-          {children}
+          {/* Page content */}
+          <div className="animate-slideUp">
+            {children}
+          </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="fr-footer">
-        <div className="fr-footer__content">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <span className="text-sm font-bold text-[var(--text-title)]">
-              Blackout Prod
-            </span>
-            <div className="flex flex-wrap gap-4 text-sm">
-              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
+      <footer className="border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
+        <div className="container py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-[var(--accent)]" />
+              <span className="text-sm font-medium text-[var(--text-secondary)]">
+                Blackout Prod
+              </span>
+            </div>
+            <div className="flex gap-6 text-sm">
+              <a href="#" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
                 Mentions légales
               </a>
-              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
+              <a href="#" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
                 Contact
               </a>
             </div>

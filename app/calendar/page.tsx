@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { CalendarGrid } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
-import { Info } from 'lucide-react';
+import { Info, Briefcase, Home, GraduationCap, Palmtree, Calendar } from 'lucide-react';
 
 type Tool = DayStatus | 'ERASER';
 
@@ -13,59 +13,60 @@ export default function CalendarPage() {
   const { getDayStatus, setDayStatus, formatDateKey } = useCalendarData();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 stagger-children">
       {/* Instructions */}
-      <div className="fr-alert fr-alert--info">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--info)] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-[var(--text-title)]">Mode de saisie</p>
-            <p className="text-sm text-[var(--text-default)] mt-1">
-              Sélectionnez un type de journée ci-dessous, puis cliquez ou glissez sur les jours du calendrier
-              pour les marquer. Les week-ends ne sont pas sélectionnables. Utilisez la gomme pour effacer.
-            </p>
-          </div>
+      <div className="notice notice-info">
+        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
+          <Info className="w-5 h-5 text-[var(--info)]" />
+        </div>
+        <div>
+          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+            Mode de saisie
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Sélectionnez un type de journée ci-dessous, puis cliquez ou glissez sur les jours du calendrier
+            pour les marquer. Les week-ends ne sont pas sélectionnables. Utilisez la gomme pour effacer.
+          </p>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="fr-card">
-        <PaintingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
-      </div>
+      <PaintingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
 
       {/* Calendar */}
-      <div className="fr-card fr-card--shadow">
-        <CalendarGrid
-          currentTool={currentTool}
-          getDayStatus={getDayStatus}
-          setDayStatus={setDayStatus}
-          formatDateKey={formatDateKey}
-        />
-      </div>
+      <CalendarGrid
+        currentTool={currentTool}
+        getDayStatus={getDayStatus}
+        setDayStatus={setDayStatus}
+        formatDateKey={formatDateKey}
+      />
 
       {/* Légende */}
-      <div className="fr-card">
-        <h3 className="font-bold text-[var(--text-title)] mb-3">Légende</h3>
+      <div className="card">
+        <div className="flex items-center gap-3 mb-4">
+          <Calendar className="w-5 h-5 text-[var(--accent)]" />
+          <h3 className="font-bold text-[var(--text-primary)]">Légende</h3>
+        </div>
         <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[var(--info-bg)] border-l-[3px] border-[var(--bleu-france)]" />
-            <span className="text-sm text-[var(--text-default)]">Bureau</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-work-bg)] border border-[var(--status-work)]">
+            <Briefcase className="w-4 h-4 text-[var(--status-work)]" />
+            <span className="text-sm font-medium text-[var(--status-work)]">Bureau</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[var(--success-bg)] border-l-[3px] border-[var(--success)]" />
-            <span className="text-sm text-[var(--text-default)]">Télétravail</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-remote-bg)] border border-[var(--status-remote)]">
+            <Home className="w-4 h-4 text-[var(--status-remote)]" />
+            <span className="text-sm font-medium text-[var(--status-remote)]">Télétravail</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[var(--warning-bg)] border-l-[3px] border-[var(--warning)]" />
-            <span className="text-sm text-[var(--text-default)]">Formation</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-training-bg)] border border-[var(--status-training)]">
+            <GraduationCap className="w-4 h-4 text-[var(--status-training)]" />
+            <span className="text-sm font-medium text-[var(--status-training)]">Formation</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[var(--error-bg)] border-l-[3px] border-[var(--error)]" />
-            <span className="text-sm text-[var(--text-default)]">Congés</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-leave-bg)] border border-[var(--status-leave)]">
+            <Palmtree className="w-4 h-4 text-[var(--status-leave)]" />
+            <span className="text-sm font-medium text-[var(--status-leave)]">Congés</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-[var(--background-contrast)] border border-[var(--border-default)]" />
-            <span className="text-sm text-[var(--text-default)]">Jour férié / Week-end</span>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
+            <div className="w-4 h-4 rounded bg-[var(--bg-tertiary)] border border-[var(--border-default)]" />
+            <span className="text-sm font-medium text-[var(--text-muted)]">Week-end / Férié</span>
           </div>
         </div>
       </div>

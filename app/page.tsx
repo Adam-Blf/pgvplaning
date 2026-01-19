@@ -4,148 +4,150 @@ import {
   ArrowRight,
   Calendar,
   FileDown,
-  Info,
+  Zap,
+  MousePointerClick,
+  Sparkles,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-// Composant étape pour démarrer
-function StepCard({
-  number,
-  title,
-  description,
-  href,
-  icon: Icon,
-}: {
-  number: number;
-  title: string;
-  description: string;
-  href: string;
-  icon: React.ElementType;
-}) {
+export default function HomePage() {
   return (
-    <Link href={href} className="block no-underline group">
-      <div className="fr-card fr-card--shadow hover:border-[var(--bleu-france)] transition-colors">
-        <div className="flex items-start gap-4">
-          <div className={cn(
-            'fr-stepper__number flex-shrink-0',
-            'bg-[var(--bleu-france)] text-white'
-          )}>
-            {number}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Icon className="w-5 h-5 text-[var(--bleu-france)]" />
-              <h3 className="font-bold text-[var(--text-title)] group-hover:text-[var(--bleu-france)] transition-colors">
-                {title}
-              </h3>
+    <div className="space-y-8 stagger-children">
+      {/* Hero Section */}
+      <div className="card card-glass relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-subtle)] via-transparent to-transparent" />
+
+        {/* Grid pattern */}
+        <div className="absolute inset-0 grid-pattern opacity-30" />
+
+        <div className="relative z-10 py-4">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="badge badge-accent">
+              <Sparkles className="w-3 h-3" />
+              <span>Nouveau</span>
             </div>
-            <p className="text-sm text-[var(--text-mention)]">{description}</p>
           </div>
-          <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--bleu-france)] transition-colors flex-shrink-0" />
-        </div>
-      </div>
-    </Link>
-  );
-}
 
-export default function DashboardPage() {
-  return (
-    <div className="space-y-8">
-      {/* Message d'accueil */}
-      <div className="fr-alert fr-alert--info">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--info)] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-[var(--text-title)]">Bienvenue sur PGV Planning</p>
-            <p className="text-sm text-[var(--text-default)] mt-1">
-              Ce service vous permet de planifier vos journées de travail, télétravail, formations et congés,
-              puis d'exporter votre planning au format ICS compatible avec tous les calendriers (Outlook, Google Calendar, Apple Calendar).
-            </p>
-          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-3">
+            Bienvenue sur <span className="text-gradient">PGV Planning</span>
+          </h2>
+
+          <p className="text-[var(--text-secondary)] max-w-2xl leading-relaxed">
+            Planifiez vos journées de travail, télétravail, formations et congés en quelques clics.
+            Exportez votre planning au format ICS compatible avec tous vos calendriers.
+          </p>
         </div>
       </div>
 
-      {/* Étapes pour démarrer */}
+      {/* Quick Start Steps */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4">Comment utiliser ce service ?</h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+            <MousePointerClick className="w-4 h-4 text-[var(--accent)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            Comment utiliser
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <StepCard
-            number={1}
-            title="Remplir le calendrier"
-            description="Sélectionnez vos jours et leur type (bureau, télétravail, formation, congés)"
-            href="/calendar"
-            icon={Calendar}
-          />
-          <StepCard
-            number={2}
-            title="Exporter le fichier ICS"
-            description="Téléchargez le fichier à importer dans votre calendrier"
-            href="/exports"
-            icon={FileDown}
-          />
+          {/* Step 1 */}
+          <Link href="/calendar" className="block no-underline group">
+            <div className="card card-interactive h-full">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--status-work-bg)] border border-[var(--status-work)] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Calendar className="w-6 h-6 text-[var(--status-work)]" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="badge">Étape 1</span>
+                  </div>
+                  <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
+                    Remplir le calendrier
+                  </h3>
+                  <p className="text-sm text-[var(--text-muted)]">
+                    Sélectionnez vos jours et leur type : bureau, télétravail, formation ou congés
+                  </p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
+              </div>
+            </div>
+          </Link>
+
+          {/* Step 2 */}
+          <Link href="/exports" className="block no-underline group">
+            <div className="card card-interactive h-full">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-[var(--status-remote-bg)] border border-[var(--status-remote)] flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FileDown className="w-6 h-6 text-[var(--status-remote)]" />
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="badge">Étape 2</span>
+                  </div>
+                  <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
+                    Exporter en ICS
+                  </h3>
+                  <p className="text-sm text-[var(--text-muted)]">
+                    Téléchargez le fichier à importer dans Outlook, Google Calendar ou Apple Calendar
+                  </p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
+              </div>
+            </div>
+          </Link>
         </div>
       </section>
 
-      {/* Actions rapides */}
+      {/* Quick Actions */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4">
-          Actions rapides
-        </h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+            <Zap className="w-4 h-4 text-[var(--accent)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            Actions rapides
+          </h2>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/calendar" className="no-underline">
-            <div className="fr-card fr-card--shadow hover:border-[var(--bleu-france)] transition-colors group">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-[var(--info-bg)] flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-[var(--bleu-france)]" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-[var(--text-title)] group-hover:text-[var(--bleu-france)] transition-colors">
-                    Modifier le calendrier
-                  </h3>
-                  <p className="text-sm text-[var(--text-mention)]">
-                    Planifiez vos journées
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--bleu-france)] transition-colors" />
-              </div>
+          <Link href="/calendar" className="btn w-full justify-start gap-3 h-auto py-4 px-5">
+            <Calendar className="w-5 h-5" />
+            <div className="text-left">
+              <span className="font-semibold block">Ouvrir le calendrier</span>
+              <span className="text-xs opacity-80">Planifier mes journées</span>
             </div>
           </Link>
-          <Link href="/exports" className="no-underline">
-            <div className="fr-card fr-card--shadow hover:border-[var(--bleu-france)] transition-colors group">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-[var(--success-bg)] flex items-center justify-center">
-                  <FileDown className="w-6 h-6 text-[var(--success)]" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-[var(--text-title)] group-hover:text-[var(--bleu-france)] transition-colors">
-                    Exporter en fichier ICS
-                  </h3>
-                  <p className="text-sm text-[var(--text-mention)]">
-                    Téléchargez votre planning
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--bleu-france)] transition-colors" />
-              </div>
+
+          <Link href="/exports" className="btn btn-secondary w-full justify-start gap-3 h-auto py-4 px-5">
+            <FileDown className="w-5 h-5" />
+            <div className="text-left">
+              <span className="font-semibold block">Exporter mon planning</span>
+              <span className="text-xs opacity-80">Télécharger le fichier ICS</span>
             </div>
           </Link>
         </div>
       </section>
 
-      {/* Information sur les données */}
-      <section className="fr-alert fr-alert--warning">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-[var(--text-title)]">Stockage local</p>
-            <p className="text-sm text-[var(--text-default)] mt-1">
-              Vos données de planning sont stockées localement dans votre navigateur.
-              Elles ne sont pas transmises à un serveur et restent privées.
-              Pensez à exporter régulièrement votre planning pour le sauvegarder.
-            </p>
-          </div>
+      {/* Info Notice */}
+      <div className="notice notice-info">
+        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
+          <Zap className="w-5 h-5 text-[var(--info)]" />
         </div>
-      </section>
+        <div>
+          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+            Stockage local
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Vos données sont stockées localement dans votre navigateur. Elles ne sont pas transmises à un serveur et restent privées.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

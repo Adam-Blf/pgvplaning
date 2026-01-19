@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { DayStatus } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils/cn';
 
@@ -12,14 +12,14 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-// Styles Service Public pour les statuts
-const STATUS_STYLES: Record<DayStatus, string> = {
-  WORK: 'bg-[var(--info-bg)] border-l-[3px] border-l-[var(--bleu-france)] text-[var(--bleu-france)]',
-  REMOTE: 'bg-[var(--success-bg)] border-l-[3px] border-l-[var(--success)] text-[var(--success)]',
-  SCHOOL: 'bg-[var(--warning-bg)] border-l-[3px] border-l-[var(--warning)] text-[var(--warning)]',
-  LEAVE: 'bg-[var(--error-bg)] border-l-[3px] border-l-[var(--error)] text-[var(--error)]',
-  HOLIDAY: 'bg-[var(--background-contrast)] border border-[var(--border-default)] text-[var(--text-mention)]',
-  OFF: 'bg-[var(--background-contrast)] border border-[var(--border-default)] text-[var(--text-disabled)]',
+// Status classes mapped to CSS classes
+const STATUS_CLASSES: Record<DayStatus, string> = {
+  WORK: 'calendar-day-work',
+  REMOTE: 'calendar-day-remote',
+  SCHOOL: 'calendar-day-training',
+  LEAVE: 'calendar-day-leave',
+  HOLIDAY: 'calendar-day-holiday',
+  OFF: 'calendar-day-off',
 };
 
 interface CalendarGridProps {
@@ -105,28 +105,31 @@ export function CalendarGrid({
   return (
     <div
       ref={containerRef}
-      className="flex flex-col"
+      className="card"
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
       {/* Header */}
-      <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
+      <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--border-subtle)]">
         <button
           onClick={() => changeMonth(-1)}
-          className="fr-btn fr-btn--secondary py-2 px-3"
+          className="btn btn-secondary"
           aria-label="Mois précédent"
         >
           <ChevronLeft className="w-4 h-4" />
           <span className="hidden sm:inline">Précédent</span>
         </button>
 
-        <div className="flex items-center gap-3">
-          <span className="font-bold text-[var(--text-title)] text-lg">
-            {MONTH_NAMES[month]} {year}
-          </span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="w-5 h-5 text-[var(--accent)]" />
+            <span className="font-[var(--font-display)] font-bold text-[var(--text-primary)] text-xl tracking-tight">
+              {MONTH_NAMES[month]} {year}
+            </span>
+          </div>
           <button
             onClick={goToToday}
-            className="fr-btn fr-btn--tertiary text-sm py-1 px-2"
+            className="btn-ghost text-sm px-3 py-1"
           >
             Aujourd'hui
           </button>
@@ -134,7 +137,7 @@ export function CalendarGrid({
 
         <button
           onClick={() => changeMonth(1)}
-          className="fr-btn fr-btn--secondary py-2 px-3"
+          className="btn btn-secondary"
           aria-label="Mois suivant"
         >
           <span className="hidden sm:inline">Suivant</span>
@@ -143,13 +146,13 @@ export function CalendarGrid({
       </div>
 
       {/* Days Header */}
-      <div className="grid grid-cols-7 gap-1 py-3 border-b border-[var(--border-default)]">
+      <div className="grid grid-cols-7 gap-2 mb-4">
         {DAY_NAMES.map((day, i) => (
           <div
             key={day}
             className={cn(
-              'text-center text-sm font-bold uppercase',
-              i >= 5 ? 'text-[var(--text-mention)]' : 'text-[var(--text-title)]'
+              'text-center text-xs font-bold uppercase tracking-wider py-2',
+              i >= 5 ? 'text-[var(--text-disabled)]' : 'text-[var(--text-muted)]'
             )}
           >
             {day}
@@ -158,7 +161,7 @@ export function CalendarGrid({
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 p-4">
+      <div className="grid grid-cols-7 gap-2">
         {days.map((date, index) => {
           if (!date) {
             return <div key={`empty-${index}`} className="aspect-square" />;
@@ -172,10 +175,10 @@ export function CalendarGrid({
             <div
               key={formatDateKey(date)}
               className={cn(
-                'aspect-square rounded flex items-center justify-center text-sm font-medium select-none transition-all',
-                STATUS_STYLES[status],
-                isWeekend ? 'cursor-default opacity-60' : 'cursor-pointer hover:opacity-80 active:scale-95',
-                isToday && 'ring-2 ring-[var(--bleu-france)] ring-offset-2 ring-offset-[var(--background-alt)]'
+                'calendar-day',
+                STATUS_CLASSES[status],
+                isWeekend && 'weekend',
+                isToday && 'today'
               )}
               onMouseDown={(e) => !isWeekend && handleMouseDown(date, e)}
               onMouseEnter={() => !isWeekend && handleMouseEnter(date)}

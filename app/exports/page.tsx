@@ -1,7 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, Home as HomeIcon, GraduationCap, Plane, Mail, Copy, Loader2, Sparkles, Info, CheckCircle } from 'lucide-react';
+import {
+  Download,
+  Home as HomeIcon,
+  GraduationCap,
+  Plane,
+  Mail,
+  Copy,
+  Loader2,
+  Sparkles,
+  Info,
+  CheckCircle,
+  FileDown,
+  Zap,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
@@ -12,27 +25,21 @@ const exportCards = [
     title: 'Télétravail',
     description: 'Exporter tous les jours de télétravail',
     icon: HomeIcon,
-    colorClass: 'fr-tag--green',
-    bgClass: 'bg-[var(--success-bg)]',
-    borderClass: 'border-[var(--success)]',
+    statusClass: 'status-remote',
   },
   {
     id: 'SCHOOL',
     title: 'Formation',
     description: 'Exporter les jours de formation (statut absent)',
     icon: GraduationCap,
-    colorClass: 'fr-tag--orange',
-    bgClass: 'bg-[var(--warning-bg)]',
-    borderClass: 'border-[var(--warning)]',
+    statusClass: 'status-training',
   },
   {
     id: 'LEAVE',
     title: 'Congés',
     description: 'Exporter tous les congés posés',
     icon: Plane,
-    colorClass: 'fr-tag--red',
-    bgClass: 'bg-[var(--error-bg)]',
-    borderClass: 'border-[var(--error)]',
+    statusClass: 'status-leave',
   },
 ];
 
@@ -135,53 +142,81 @@ export default function ExportsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 stagger-children">
       {/* Instructions */}
-      <div className="fr-alert fr-alert--info">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--info)] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-[var(--text-title)]">Exportation au format ICS</p>
-            <p className="text-sm text-[var(--text-default)] mt-1">
-              Les fichiers ICS sont compatibles avec tous les calendriers : Outlook, Google Calendar, Apple Calendar, etc.
-              Après téléchargement, importez le fichier dans votre application de calendrier.
-            </p>
-          </div>
+      <div className="notice notice-info">
+        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
+          <Info className="w-5 h-5 text-[var(--info)]" />
+        </div>
+        <div>
+          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+            Exportation au format ICS
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Les fichiers ICS sont compatibles avec tous les calendriers : Outlook, Google Calendar, Apple Calendar, etc.
+            Après téléchargement, importez le fichier dans votre application de calendrier.
+          </p>
         </div>
       </div>
 
       {/* Section Exports ICS */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4 flex items-center gap-2">
-          <Download className="w-5 h-5 text-[var(--bleu-france)]" />
-          Télécharger les fichiers ICS
-        </h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+            <FileDown className="w-4 h-4 text-[var(--accent)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            Télécharger les fichiers ICS
+          </h2>
+        </div>
 
         <div className="grid md:grid-cols-3 gap-4">
           {exportCards.map((card) => {
             const Icon = card.icon;
+            const statusColors: Record<string, { bg: string; border: string; text: string }> = {
+              'status-remote': {
+                bg: 'bg-[var(--status-remote-bg)]',
+                border: 'border-[var(--status-remote)]',
+                text: 'text-[var(--status-remote)]',
+              },
+              'status-training': {
+                bg: 'bg-[var(--status-training-bg)]',
+                border: 'border-[var(--status-training)]',
+                text: 'text-[var(--status-training)]',
+              },
+              'status-leave': {
+                bg: 'bg-[var(--status-leave-bg)]',
+                border: 'border-[var(--status-leave)]',
+                text: 'text-[var(--status-leave)]',
+              },
+            };
+            const colors = statusColors[card.statusClass];
+
             return (
               <button
                 key={card.id}
                 onClick={() => downloadICS(card.id)}
-                className={cn(
-                  'fr-card fr-card--shadow text-left hover:border-[var(--bleu-france)] transition-all group',
-                  'hover:shadow-lg'
-                )}
+                className="card card-interactive text-left group"
               >
                 <div className="flex items-start gap-4">
-                  <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center', card.bgClass, 'border-l-4', card.borderClass)}>
-                    <Icon className="w-6 h-6 text-[var(--text-title)]" />
+                  <div
+                    className={cn(
+                      'w-12 h-12 rounded-xl flex items-center justify-center border group-hover:scale-110 transition-transform',
+                      colors.bg,
+                      colors.border
+                    )}
+                  >
+                    <Icon className={cn('w-6 h-6', colors.text)} />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-[var(--text-title)] group-hover:text-[var(--bleu-france)] transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
                       {card.title}
                     </h3>
-                    <p className="text-sm text-[var(--text-mention)] mt-1">
+                    <p className="text-sm text-[var(--text-muted)]">
                       {card.description}
                     </p>
                   </div>
-                  <Download className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--bleu-france)] transition-colors" />
+                  <Download className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-y-1 transition-all flex-shrink-0" />
                 </div>
               </button>
             );
@@ -191,26 +226,30 @@ export default function ExportsPage() {
 
       {/* Section Assistant Message d'absence */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4 flex items-center gap-2">
-          <Mail className="w-5 h-5 text-[var(--bleu-france)]" />
-          Générateur de message d'absence
-        </h2>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
+            <Mail className="w-4 h-4 text-[var(--accent)]" />
+          </div>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
+            Générateur de message d'absence
+          </h2>
+        </div>
 
-        <div className="fr-card fr-card--shadow">
-          <p className="text-[var(--text-mention)] text-sm mb-6">
+        <div className="card">
+          <p className="text-[var(--text-muted)] text-sm mb-6">
             Générez automatiquement un message de réponse automatique (Out of Office) pour informer vos correspondants de votre absence.
           </p>
 
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label htmlFor="tone" className="fr-label">
+              <label htmlFor="tone" className="label">
                 Ton du message
               </label>
               <select
                 id="tone"
                 value={aiTone}
                 onChange={(e) => setAiTone(e.target.value)}
-                className="fr-select"
+                className="select"
               >
                 <option value="professionnel">Professionnel</option>
                 <option value="amical">Amical</option>
@@ -218,14 +257,14 @@ export default function ExportsPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="reason" className="fr-label">
+              <label htmlFor="reason" className="label">
                 Raison de l'absence
               </label>
               <select
                 id="reason"
                 value={aiReason}
                 onChange={(e) => setAiReason(e.target.value)}
-                className="fr-select"
+                className="select"
               >
                 <option value="formation">Formation</option>
                 <option value="congés">Congés</option>
@@ -238,7 +277,7 @@ export default function ExportsPage() {
           <button
             onClick={generateOOFMessage}
             disabled={isLoading}
-            className="fr-btn w-full md:w-auto"
+            className="btn w-full md:w-auto"
           >
             {isLoading ? (
               <>
@@ -255,15 +294,15 @@ export default function ExportsPage() {
 
           {/* Résultat */}
           {aiResult && (
-            <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
+            <div className="mt-6 pt-6 border-t border-[var(--border-subtle)]">
               <div className="flex items-center justify-between mb-3">
-                <label className="fr-label flex items-center gap-2">
+                <label className="label flex items-center gap-2 mb-0">
                   <CheckCircle className="w-4 h-4 text-[var(--success)]" />
                   Message généré
                 </label>
                 <button
                   onClick={copyToClipboard}
-                  className="fr-btn fr-btn--tertiary text-sm"
+                  className="btn-ghost text-sm flex items-center gap-2"
                 >
                   <Copy className="w-4 h-4" />
                   Copier
@@ -273,9 +312,9 @@ export default function ExportsPage() {
                 value={aiResult}
                 readOnly
                 rows={5}
-                className="fr-input resize-none bg-[var(--background-contrast)]"
+                className="input resize-none bg-[var(--bg-tertiary)]"
               />
-              <p className="fr-hint mt-2">
+              <p className="hint mt-2">
                 Pensez à remplacer [DATE_RETOUR] par votre date de retour effective.
               </p>
             </div>
@@ -284,16 +323,18 @@ export default function ExportsPage() {
       </section>
 
       {/* Note sur le service */}
-      <div className="fr-alert fr-alert--warning">
-        <div className="flex items-start gap-3">
-          <Info className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold text-[var(--text-title)]">Service de génération</p>
-            <p className="text-sm text-[var(--text-default)] mt-1">
-              Le générateur de message utilise un modèle d'intelligence artificielle open source (Mistral 7B).
-              Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
-            </p>
-          </div>
+      <div className="notice notice-warning">
+        <div className="w-10 h-10 rounded-lg bg-[var(--warning-bg)] flex items-center justify-center flex-shrink-0">
+          <Zap className="w-5 h-5 text-[var(--warning)]" />
+        </div>
+        <div>
+          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+            Service de génération
+          </h4>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Le générateur de message utilise un modèle d'intelligence artificielle open source (Mistral 7B).
+            Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
+          </p>
         </div>
       </div>
     </div>
