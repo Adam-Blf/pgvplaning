@@ -1,84 +1,55 @@
 'use client';
 
-import { ReactNode, useState, useMemo, useEffect } from 'react';
+import { ReactNode, useMemo } from 'react';
 import {
   Calendar,
   LayoutDashboard,
   Settings,
-  ChevronLeft,
-  ChevronRight,
   Briefcase,
   Home,
   GraduationCap,
   Palmtree,
   BarChart3,
   FileDown,
-  LogOut,
-  User,
+  Menu,
+  X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 interface DashboardShellProps {
   children: ReactNode;
 }
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Accueil', href: '/', icon: LayoutDashboard },
   { name: 'Calendrier', href: '/calendar', icon: Calendar },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Export', href: '/exports', icon: FileDown },
+  { name: 'Statistiques', href: '/analytics', icon: BarChart3 },
+  { name: 'Exporter', href: '/exports', icon: FileDown },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
 
 const statusConfig = {
-  work: { icon: Briefcase, label: 'Bureau', color: 'bg-indigo-500', text: 'text-indigo-400' },
-  remote: { icon: Home, label: 'Télétravail', color: 'bg-emerald-500', text: 'text-emerald-400' },
-  school: { icon: GraduationCap, label: 'Formation', color: 'bg-amber-500', text: 'text-amber-400' },
-  leave: { icon: Palmtree, label: 'Congés', color: 'bg-rose-500', text: 'text-rose-400' },
+  work: { icon: Briefcase, label: 'Bureau', colorClass: 'fr-tag--blue' },
+  remote: { icon: Home, label: 'Télétravail', colorClass: 'fr-tag--green' },
+  school: { icon: GraduationCap, label: 'Formation', colorClass: 'fr-tag--orange' },
+  leave: { icon: Palmtree, label: 'Congés', colorClass: 'fr-tag--red' },
 };
 
-// Routes qui ne doivent pas afficher le shell (authentification, setup)
+// Routes qui ne doivent pas afficher le shell
 const authRoutes = ['/login', '/auth', '/setup'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   const { data, isLoaded } = useCalendarData();
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const stats = useCalendarStats(data, currentYear);
-
-  // Récupérer l'utilisateur connecté
-  useEffect(() => {
-    if (!supabase) return;
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
-
-  const handleLogout = async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
-    router.push('/login');
-    router.refresh();
-  };
 
   // Si on est sur une route d'authentification, afficher uniquement le contenu
   const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
@@ -88,72 +59,149 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   if (!isLoaded) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-950">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-400 text-sm">Chargement...</p>
+          <div className="w-10 h-10 border-4 border-[var(--bleu-france)] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[var(--text-mention)] text-sm">Chargement en cours...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex bg-slate-950">
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          'h-screen flex flex-col flex-shrink-0',
-          'bg-slate-900/95 backdrop-blur-sm border-r border-slate-800/50',
-          'transition-all duration-300 ease-in-out',
-          sidebarCollapsed ? 'w-20' : 'w-64'
-        )}
-      >
-        {/* Logo */}
-        <div className="h-16 flex items-center px-4 border-b border-slate-800/50">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            {!sidebarCollapsed && (
-              <div>
-                <span className="font-bold text-white text-lg">PGV</span>
-                <span className="text-slate-400 text-xs block -mt-1">Planning</span>
+    <div className="min-h-screen flex flex-col bg-[var(--background)]">
+      {/* Header Service Public */}
+      <header className="fr-header">
+        <div className="fr-container">
+          {/* Bande supérieure avec logo République */}
+          <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
+            <div className="flex items-center gap-4">
+              {/* Logo République Française */}
+              <div className="flex flex-col">
+                <div
+                  className="w-12 h-2 mb-1"
+                  style={{
+                    background: 'linear-gradient(to right, var(--bleu-france) 0%, var(--bleu-france) 33%, white 33%, white 66%, var(--rouge-marianne) 66%)'
+                  }}
+                />
+                <span className="text-xs font-bold text-[var(--text-title)] leading-tight">
+                  RÉPUBLIQUE
+                  <br />
+                  FRANÇAISE
+                </span>
               </div>
-            )}
-          </Link>
-        </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200',
-                  isActive
-                    ? 'bg-indigo-500/10 text-indigo-400 shadow-lg shadow-indigo-500/5'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-                )}
-              >
-                <item.icon className={cn('w-5 h-5 flex-shrink-0', isActive && 'text-indigo-400')} />
-                {!sidebarCollapsed && (
-                  <span className="text-sm font-medium">{item.name}</span>
-                )}
+              {/* Séparateur vertical */}
+              <div className="h-12 w-px bg-[var(--border-default)] hidden sm:block" />
+
+              {/* Nom du service */}
+              <Link href="/" className="flex items-center gap-3 no-underline">
+                <div className="w-10 h-10 rounded-lg bg-[var(--bleu-france)] flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <span className="font-bold text-[var(--text-title)] text-lg block">
+                    PGV Planning
+                  </span>
+                  <span className="text-[var(--text-mention)] text-xs">
+                    Gestion des plannings
+                  </span>
+                </div>
               </Link>
-            );
-          })}
-        </nav>
+            </div>
 
-        {/* Stats */}
-        {!sidebarCollapsed && (
-          <div className="px-3 py-4 border-t border-slate-800/50">
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-3 px-3">
-              {currentYear}
-            </p>
-            <div className="space-y-1">
+            {/* Date du jour */}
+            <div className="hidden md:flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-medium text-[var(--text-title)]">
+                  {new Date().toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Menu mobile toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded hover:bg-[var(--background-contrast)]"
+              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6 text-[var(--text-title)]" />
+              ) : (
+                <Menu className="w-6 h-6 text-[var(--text-title)]" />
+              )}
+            </button>
+          </div>
+
+          {/* Navigation principale */}
+          <nav className={cn(
+            'py-2',
+            mobileMenuOpen ? 'block' : 'hidden md:block'
+          )}>
+            <ul className="fr-nav flex-col md:flex-row">
+              {navigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        'fr-nav__link',
+                        isActive && 'fr-nav__link--active'
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span>{item.name}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      {/* Fil d'Ariane */}
+      <div className="bg-[var(--background-alt)] border-b border-[var(--border-default)]">
+        <div className="fr-container">
+          <nav className="fr-breadcrumb" aria-label="Fil d'Ariane">
+            <Link href="/" className="fr-breadcrumb__link no-underline hover:underline">
+              Accueil
+            </Link>
+            {pathname !== '/' && (
+              <>
+                <span className="fr-breadcrumb__separator" aria-hidden="true">›</span>
+                <span aria-current="page">
+                  {navigation.find((n) => n.href === pathname)?.name || 'Page'}
+                </span>
+              </>
+            )}
+          </nav>
+        </div>
+      </div>
+
+      {/* Contenu principal */}
+      <main className="flex-1" id="contenu" role="main">
+        <div className="fr-container py-6 md:py-8">
+          {/* Titre de page avec statistiques rapides */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--text-title)]">
+                {navigation.find((n) => n.href === pathname)?.name || 'Tableau de bord'}
+              </h1>
+              <p className="text-[var(--text-mention)] mt-1">
+                Année {currentYear}
+              </p>
+            </div>
+
+            {/* Statistiques rapides */}
+            <div className="flex flex-wrap gap-2">
               {(Object.keys(statusConfig) as Array<keyof typeof statusConfig>).map((key) => {
                 const config = statusConfig[key];
                 const Icon = config.icon;
@@ -161,105 +209,57 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800/30 transition-colors"
+                    className={cn('fr-tag', config.colorClass, 'gap-1.5')}
                   >
-                    <div className="flex items-center gap-2">
-                      <Icon className={cn('w-4 h-4', config.text)} />
-                      <span className="text-xs text-slate-400">{config.label}</span>
-                    </div>
-                    <span className="text-xs font-bold text-white">{value}</span>
+                    <Icon className="w-4 h-4" />
+                    <span>{config.label}</span>
+                    <span className="font-bold">{value}j</span>
                   </div>
                 );
               })}
             </div>
           </div>
-        )}
 
-        {/* Toggle */}
-        <div className="p-3 border-t border-slate-800/50">
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-          >
-            {sidebarCollapsed ? (
-              <ChevronRight className="w-4 h-4" />
-            ) : (
-              <>
-                <ChevronLeft className="w-4 h-4" />
-                <span className="text-xs">Réduire</span>
-              </>
-            )}
-          </button>
+          {/* Contenu de la page */}
+          {children}
         </div>
-      </aside>
+      </main>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="h-14 flex items-center justify-between px-6 bg-slate-900/50 backdrop-blur-sm border-b border-slate-800/50 flex-shrink-0">
-          <div>
-            <h1 className="text-base font-semibold text-white">
-              {navigation.find((n) => n.href === pathname)?.name || 'Dashboard'}
-            </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <p className="text-xs text-slate-500 hidden sm:block">
-              {new Date().toLocaleDateString('fr-FR', {
-                weekday: 'short',
-                day: 'numeric',
-                month: 'short',
-              })}
-            </p>
-            {/* User Menu */}
-            <div className="relative">
-              <button
-                onClick={() => setShowUserMenu(!showUserMenu)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
-              >
-                <User className="w-4 h-4" />
-                <span className="text-sm hidden sm:block max-w-[150px] truncate">
-                  {user?.user_metadata?.full_name || user?.email || 'Non connecté'}
-                </span>
-              </button>
-              {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50">
-                  {user ? (
-                    <>
-                      <div className="px-4 py-3 border-b border-slate-700">
-                        <p className="text-sm text-white truncate">
-                          {user.user_metadata?.full_name || 'Utilisateur'}
-                        </p>
-                        <p className="text-xs text-slate-400 truncate">{user.email}</p>
-                      </div>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-rose-400 hover:bg-slate-700/50 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Déconnexion
-                      </button>
-                    </>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-indigo-400 hover:bg-slate-700/50 transition-colors"
-                      onClick={() => setShowUserMenu(false)}
-                    >
-                      <User className="w-4 h-4" />
-                      Se connecter
-                    </Link>
-                  )}
-                </div>
-              )}
+      {/* Footer Service Public */}
+      <footer className="fr-footer">
+        <div className="fr-footer__content">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-1.5"
+                style={{
+                  background: 'linear-gradient(to right, var(--bleu-france) 0%, var(--bleu-france) 33%, white 33%, white 66%, var(--rouge-marianne) 66%)'
+                }}
+              />
+              <span className="text-xs font-bold text-[var(--text-title)]">
+                RÉPUBLIQUE FRANÇAISE
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
+                Accessibilité : partiellement conforme
+              </a>
+              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
+                Mentions légales
+              </a>
+              <a href="#" className="text-[var(--text-mention)] hover:text-[var(--bleu-france)] no-underline hover:underline">
+                Données personnelles
+              </a>
             </div>
           </div>
-        </header>
-
-        {/* Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
-      </div>
+          <p className="fr-footer__text mt-4">
+            Sauf mention contraire, tous les contenus de ce site sont sous{' '}
+            <a href="https://github.com/etalab/licence-ouverte/blob/master/LO.md" target="_blank" rel="noopener noreferrer">
+              licence etalab-2.0
+            </a>
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

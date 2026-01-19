@@ -1,6 +1,6 @@
 'use client';
 
-import { Eraser } from 'lucide-react';
+import { Eraser, Briefcase, Home, GraduationCap, Palmtree } from 'lucide-react';
 import { DayStatus } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils/cn';
 
@@ -9,44 +9,39 @@ type Tool = DayStatus | 'ERASER';
 interface ToolConfig {
   id: Tool;
   label: string;
-  color: string;
-  bgActive: string;
-  textActive: string;
-  borderActive: string;
+  icon: React.ElementType;
+  colorClass: string;
+  activeClass: string;
 }
 
 const tools: ToolConfig[] = [
   {
     id: 'WORK',
     label: 'Bureau',
-    color: 'bg-violet-500',
-    bgActive: 'bg-violet-500/20',
-    textActive: 'text-violet-400',
-    borderActive: 'border-violet-500/50',
+    icon: Briefcase,
+    colorClass: 'bg-[var(--info-bg)] text-[var(--bleu-france)] border-[var(--bleu-france)]',
+    activeClass: 'bg-[var(--bleu-france)] text-white border-[var(--bleu-france)]',
   },
   {
     id: 'REMOTE',
     label: 'Télétravail',
-    color: 'bg-emerald-500',
-    bgActive: 'bg-emerald-500/20',
-    textActive: 'text-emerald-400',
-    borderActive: 'border-emerald-500/50',
+    icon: Home,
+    colorClass: 'bg-[var(--success-bg)] text-[var(--success)] border-[var(--success)]',
+    activeClass: 'bg-[var(--success)] text-white border-[var(--success)]',
   },
   {
     id: 'SCHOOL',
     label: 'Formation',
-    color: 'bg-amber-500',
-    bgActive: 'bg-amber-500/20',
-    textActive: 'text-amber-400',
-    borderActive: 'border-amber-500/50',
+    icon: GraduationCap,
+    colorClass: 'bg-[var(--warning-bg)] text-[var(--warning)] border-[var(--warning)]',
+    activeClass: 'bg-[var(--warning)] text-white border-[var(--warning)]',
   },
   {
     id: 'LEAVE',
     label: 'Congés',
-    color: 'bg-rose-500',
-    bgActive: 'bg-rose-500/20',
-    textActive: 'text-rose-400',
-    borderActive: 'border-rose-500/50',
+    icon: Palmtree,
+    colorClass: 'bg-[var(--error-bg)] text-[var(--error)] border-[var(--error)]',
+    activeClass: 'bg-[var(--error)] text-white border-[var(--error)]',
   },
 ];
 
@@ -58,49 +53,53 @@ interface PaintingToolbarProps {
 export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarProps) {
   return (
     <div className="p-4">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-        <p className="text-xs text-slate-500 font-semibold uppercase hidden md:block">
-          Outils :
-        </p>
+      <fieldset>
+        <legend className="text-sm font-bold text-[var(--text-title)] mb-3">
+          Sélectionnez un type de journée
+        </legend>
 
-        <div className="flex items-center gap-2 flex-wrap justify-center">
+        <div className="flex items-center gap-3 flex-wrap">
           {tools.map((tool) => {
             const isActive = currentTool === tool.id;
+            const Icon = tool.icon;
 
             return (
               <button
                 key={tool.id}
                 onClick={() => onToolChange(tool.id)}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all',
-                  isActive
-                    ? `${tool.bgActive} ${tool.textActive} ${tool.borderActive}`
-                    : 'border-slate-600 text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                  'flex items-center gap-2 px-4 py-2 rounded border-2 text-sm font-medium transition-all',
+                  isActive ? tool.activeClass : tool.colorClass,
+                  !isActive && 'hover:opacity-80'
                 )}
+                aria-pressed={isActive}
               >
-                <div className={cn('w-3 h-3 rounded-full', tool.color)} />
+                <Icon className="w-4 h-4" />
                 {tool.label}
               </button>
             );
           })}
 
-          <div className="h-6 w-px bg-slate-700 mx-1 hidden md:block" />
+          {/* Séparateur */}
+          <div className="h-8 w-px bg-[var(--border-default)] mx-2 hidden sm:block" />
 
+          {/* Gomme */}
           <button
             onClick={() => onToolChange('ERASER')}
             className={cn(
-              'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all',
+              'flex items-center gap-2 px-4 py-2 rounded border-2 text-sm font-medium transition-all',
               currentTool === 'ERASER'
-                ? 'bg-slate-600/50 text-white border-slate-500'
-                : 'border-slate-600 text-slate-400 hover:bg-slate-700/50 hover:text-white'
+                ? 'bg-[var(--text-title)] text-white border-[var(--text-title)]'
+                : 'bg-[var(--background-contrast)] text-[var(--text-default)] border-[var(--border-plain)] hover:bg-[var(--background)]'
             )}
+            aria-pressed={currentTool === 'ERASER'}
             title="Effacer / Réinitialiser"
           >
             <Eraser className="w-4 h-4" />
-            <span className="hidden sm:inline">Gomme</span>
+            <span>Gomme</span>
           </button>
         </div>
-      </div>
+      </fieldset>
     </div>
   );
 }

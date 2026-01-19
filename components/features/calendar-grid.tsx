@@ -12,13 +12,14 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
+// Styles Service Public pour les statuts
 const STATUS_STYLES: Record<DayStatus, string> = {
-  WORK: 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:border-slate-600',
-  REMOTE: 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400',
-  SCHOOL: 'bg-amber-500/20 border-amber-500/40 text-amber-400',
-  LEAVE: 'bg-rose-500/20 border-rose-500/40 text-rose-400',
-  HOLIDAY: 'bg-red-500/10 border-red-500/20 text-red-400/70',
-  OFF: 'bg-slate-900/50 border-slate-800/50 text-slate-600',
+  WORK: 'bg-[var(--info-bg)] border-l-[3px] border-l-[var(--bleu-france)] text-[var(--bleu-france)]',
+  REMOTE: 'bg-[var(--success-bg)] border-l-[3px] border-l-[var(--success)] text-[var(--success)]',
+  SCHOOL: 'bg-[var(--warning-bg)] border-l-[3px] border-l-[var(--warning)] text-[var(--warning)]',
+  LEAVE: 'bg-[var(--error-bg)] border-l-[3px] border-l-[var(--error)] text-[var(--error)]',
+  HOLIDAY: 'bg-[var(--background-contrast)] border border-[var(--border-default)] text-[var(--text-mention)]',
+  OFF: 'bg-[var(--background-contrast)] border border-[var(--border-default)] text-[var(--text-disabled)]',
 };
 
 interface CalendarGridProps {
@@ -49,6 +50,12 @@ export function CalendarGrid({
     setCurrentDate(newDate);
     onMonthChange?.(newDate.getFullYear(), newDate.getMonth());
   }, [currentDate, onMonthChange]);
+
+  const goToToday = useCallback(() => {
+    const today = new Date();
+    setCurrentDate(today);
+    onMonthChange?.(today.getFullYear(), today.getMonth());
+  }, [onMonthChange]);
 
   const applyTool = useCallback((date: Date) => {
     const dayOfWeek = date.getDay();
@@ -98,39 +105,51 @@ export function CalendarGrid({
   return (
     <div
       ref={containerRef}
-      className="h-full flex flex-col"
+      className="flex flex-col"
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
       {/* Header */}
-      <div className="flex items-center justify-center py-4 border-b border-slate-800/50">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => changeMonth(-1)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="px-4 font-semibold text-white min-w-[140px] text-center text-sm">
+      <div className="flex items-center justify-between py-4 border-b border-[var(--border-default)]">
+        <button
+          onClick={() => changeMonth(-1)}
+          className="fr-btn fr-btn--secondary py-2 px-3"
+          aria-label="Mois précédent"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Précédent</span>
+        </button>
+
+        <div className="flex items-center gap-3">
+          <span className="font-bold text-[var(--text-title)] text-lg">
             {MONTH_NAMES[month]} {year}
           </span>
           <button
-            onClick={() => changeMonth(1)}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            onClick={goToToday}
+            className="fr-btn fr-btn--tertiary text-sm py-1 px-2"
           >
-            <ChevronRight className="w-4 h-4" />
+            Aujourd'hui
           </button>
         </div>
+
+        <button
+          onClick={() => changeMonth(1)}
+          className="fr-btn fr-btn--secondary py-2 px-3"
+          aria-label="Mois suivant"
+        >
+          <span className="hidden sm:inline">Suivant</span>
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Days Header */}
-      <div className="grid grid-cols-7 gap-1 px-4 py-3 border-b border-slate-800/50">
+      <div className="grid grid-cols-7 gap-1 py-3 border-b border-[var(--border-default)]">
         {DAY_NAMES.map((day, i) => (
           <div
             key={day}
             className={cn(
-              'text-center text-[10px] font-semibold uppercase tracking-wider',
-              i >= 5 ? 'text-indigo-400' : 'text-slate-500'
+              'text-center text-sm font-bold uppercase',
+              i >= 5 ? 'text-[var(--text-mention)]' : 'text-[var(--text-title)]'
             )}
           >
             {day}
@@ -139,7 +158,7 @@ export function CalendarGrid({
       </div>
 
       {/* Calendar Grid */}
-      <div className="flex-1 grid grid-cols-7 gap-1 p-4 content-start">
+      <div className="grid grid-cols-7 gap-1 p-4">
         {days.map((date, index) => {
           if (!date) {
             return <div key={`empty-${index}`} className="aspect-square" />;
@@ -153,13 +172,17 @@ export function CalendarGrid({
             <div
               key={formatDateKey(date)}
               className={cn(
-                'aspect-square rounded-lg flex items-center justify-center text-xs font-medium border select-none transition-all duration-100',
+                'aspect-square rounded flex items-center justify-center text-sm font-medium select-none transition-all',
                 STATUS_STYLES[status],
-                isWeekend ? 'cursor-default opacity-50' : 'cursor-pointer active:scale-95',
-                isToday && 'ring-2 ring-indigo-500 ring-offset-1 ring-offset-slate-950'
+                isWeekend ? 'cursor-default opacity-60' : 'cursor-pointer hover:opacity-80 active:scale-95',
+                isToday && 'ring-2 ring-[var(--bleu-france)] ring-offset-2 ring-offset-[var(--background-alt)]'
               )}
               onMouseDown={(e) => !isWeekend && handleMouseDown(date, e)}
               onMouseEnter={() => !isWeekend && handleMouseEnter(date)}
+              role="button"
+              tabIndex={isWeekend ? -1 : 0}
+              aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`}
+              aria-disabled={isWeekend}
             >
               {date.getDate()}
             </div>

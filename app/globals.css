@@ -2,168 +2,748 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===========================================
+   DESIGN SYSTEM ÉTAT FRANÇAIS (DSFR)
+   Palette officielle des services publics
+   =========================================== */
+
 :root {
-  /* Couleurs de base - Light mode */
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  /* Couleurs officielles DSFR */
+  --bleu-france: #000091;
+  --bleu-france-hover: #1212ff;
+  --bleu-france-active: #2323ff;
+  --rouge-marianne: #e1000f;
 
-  /* Accent colors */
-  --accent-primary: #8b5cf6;
-  --accent-secondary: #a78bfa;
+  /* Fond et surfaces */
+  --background: #f6f6f6;
+  --background-alt: #ffffff;
+  --background-contrast: #eeeeee;
 
-  /* Glass effect - Light */
-  --glass-background: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.3);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  /* Texte */
+  --text-title: #161616;
+  --text-default: #3a3a3a;
+  --text-mention: #666666;
+  --text-disabled: #929292;
+  --text-inverted: #ffffff;
 
-  /* Transitions */
-  --transition-fast: 150ms;
-  --transition-normal: 300ms;
-  --transition-slow: 500ms;
+  /* Statuts */
+  --success: #18753c;
+  --success-bg: #b8fec9;
+  --error: #ce0500;
+  --error-bg: #ffe9e9;
+  --warning: #b34000;
+  --warning-bg: #ffe9e6;
+  --info: #0063cb;
+  --info-bg: #e8edff;
 
-  /* Spacing */
-  --content-max-width: 1200px;
-  --content-padding: 1.5rem;
-}
+  /* Bordures */
+  --border-default: #dddddd;
+  --border-plain: #929292;
+  --border-action: #000091;
 
-/* Dark mode - Orion Style */
-.dark {
-  --background: #020617;
-  --foreground: #f1f5f9;
-  --accent-primary: #8b5cf6;
-  --accent-secondary: #a78bfa;
-  --glass-background: rgba(15, 23, 42, 0.8);
-  --glass-border: rgba(51, 65, 85, 0.5);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* Focus */
+  --focus: #0a76f6;
+  --focus-outline: 2px solid var(--focus);
+
+  /* Ombres */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Espacements */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Typographie */
+  --font-family: 'Marianne', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+
+  /* Rayons de bordure */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 }
 
 /* Reset et base */
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: var(--font-geist-sans), 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
+  font-family: var(--font-family);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--text-default);
+  background-color: var(--background);
   min-height: 100vh;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark body background */
-.dark body {
-  background: linear-gradient(to bottom, #020617, #0f172a);
+/* Titres */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-title);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+
+/* Liens */
+a {
+  color: var(--bleu-france);
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--bleu-france-hover);
+}
+
+a:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
 }
 
 /* Focus visible pour accessibilité */
 :focus-visible {
-  outline: 2px solid var(--accent-primary);
+  outline: var(--focus-outline);
   outline-offset: 2px;
 }
 
-/* Scrollbar personnalisée - Dark Orion style */
+/* Sélection de texte */
+::selection {
+  background: var(--bleu-france);
+  color: var(--text-inverted);
+}
+
+/* Scrollbar personnalisée */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: var(--background-contrast);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: var(--border-plain);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: var(--text-mention);
 }
 
-/* Sélection de texte */
-::selection {
-  background: var(--accent-primary);
-  color: white;
+/* ===========================================
+   COMPOSANTS DSFR
+   =========================================== */
+
+@layer components {
+  /* Bouton primaire */
+  .fr-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--text-inverted);
+    background-color: var(--bleu-france);
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    min-height: 40px;
+  }
+
+  .fr-btn:hover {
+    background-color: var(--bleu-france-hover);
+  }
+
+  .fr-btn:active {
+    background-color: var(--bleu-france-active);
+  }
+
+  .fr-btn:focus-visible {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
+
+  .fr-btn:disabled {
+    background-color: var(--text-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Bouton secondaire */
+  .fr-btn--secondary {
+    color: var(--bleu-france);
+    background-color: transparent;
+    border: 1px solid var(--bleu-france);
+  }
+
+  .fr-btn--secondary:hover {
+    background-color: var(--info-bg);
+  }
+
+  /* Bouton tertiaire */
+  .fr-btn--tertiary {
+    color: var(--bleu-france);
+    background-color: transparent;
+    border: none;
+    text-decoration: underline;
+  }
+
+  .fr-btn--tertiary:hover {
+    background-color: var(--background-contrast);
+  }
+
+  /* Carte DSFR */
+  .fr-card {
+    background-color: var(--background-alt);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+    padding: var(--spacing-lg);
+  }
+
+  .fr-card--shadow {
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Input DSFR */
+  .fr-input {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-md);
+    color: var(--text-default);
+    background-color: var(--background-alt);
+    border: 1px solid var(--border-plain);
+    border-radius: var(--radius-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-height: 40px;
+  }
+
+  .fr-input:hover {
+    border-color: var(--text-default);
+  }
+
+  .fr-input:focus {
+    border-color: var(--bleu-france);
+    box-shadow: inset 0 -2px 0 0 var(--bleu-france);
+    outline: none;
+  }
+
+  .fr-input::placeholder {
+    color: var(--text-mention);
+  }
+
+  /* Label DSFR */
+  .fr-label {
+    display: block;
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    color: var(--text-title);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .fr-hint {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--text-mention);
+    margin-top: var(--spacing-xs);
+  }
+
+  /* Alert DSFR */
+  .fr-alert {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-left: 4px solid;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .fr-alert--success {
+    background-color: var(--success-bg);
+    border-color: var(--success);
+  }
+
+  .fr-alert--error {
+    background-color: var(--error-bg);
+    border-color: var(--error);
+  }
+
+  .fr-alert--warning {
+    background-color: var(--warning-bg);
+    border-color: var(--warning);
+  }
+
+  .fr-alert--info {
+    background-color: var(--info-bg);
+    border-color: var(--info);
+  }
+
+  /* Tag/Badge DSFR */
+  .fr-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    background-color: var(--background-contrast);
+    color: var(--text-default);
+  }
+
+  .fr-tag--blue {
+    background-color: var(--info-bg);
+    color: var(--bleu-france);
+  }
+
+  .fr-tag--green {
+    background-color: var(--success-bg);
+    color: var(--success);
+  }
+
+  .fr-tag--red {
+    background-color: var(--error-bg);
+    color: var(--error);
+  }
+
+  .fr-tag--orange {
+    background-color: var(--warning-bg);
+    color: var(--warning);
+  }
+
+  /* Header Service Public */
+  .fr-header {
+    background-color: var(--background-alt);
+    border-bottom: 1px solid var(--border-default);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .fr-header__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .fr-header__logo {
+    display: flex;
+    flex-direction: column;
+    font-weight: 700;
+    color: var(--text-title);
+    line-height: 1.2;
+  }
+
+  .fr-header__logo::before {
+    content: '';
+    width: 40px;
+    height: 6px;
+    background: linear-gradient(to right,
+      var(--bleu-france) 0%,
+      var(--bleu-france) 33%,
+      var(--background-alt) 33%,
+      var(--background-alt) 66%,
+      var(--rouge-marianne) 66%
+    );
+    margin-bottom: var(--spacing-xs);
+  }
+
+  /* Navigation DSFR */
+  .fr-nav {
+    display: flex;
+    gap: var(--spacing-xs);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .fr-nav__link {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--text-default);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .fr-nav__link:hover {
+    background-color: var(--background-contrast);
+    color: var(--bleu-france);
+  }
+
+  .fr-nav__link--active {
+    color: var(--bleu-france);
+    border-bottom-color: var(--bleu-france);
+    background-color: var(--info-bg);
+  }
+
+  /* Footer DSFR */
+  .fr-footer {
+    background-color: var(--background-alt);
+    border-top: 1px solid var(--border-default);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    margin-top: auto;
+  }
+
+  .fr-footer__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .fr-footer__text {
+    font-size: var(--font-size-sm);
+    color: var(--text-mention);
+  }
+
+  /* Fil d'Ariane (Breadcrumb) */
+  .fr-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) 0;
+    font-size: var(--font-size-sm);
+    color: var(--text-mention);
+  }
+
+  .fr-breadcrumb__link {
+    color: var(--bleu-france);
+  }
+
+  .fr-breadcrumb__separator {
+    color: var(--text-disabled);
+  }
+
+  /* Stepper/Étapes */
+  .fr-stepper {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .fr-stepper__step {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: var(--text-mention);
+  }
+
+  .fr-stepper__step--active {
+    color: var(--bleu-france);
+    font-weight: 700;
+  }
+
+  .fr-stepper__step--completed {
+    color: var(--success);
+  }
+
+  .fr-stepper__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--background-contrast);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+  }
+
+  .fr-stepper__step--active .fr-stepper__number {
+    background-color: var(--bleu-france);
+    color: var(--text-inverted);
+  }
+
+  .fr-stepper__step--completed .fr-stepper__number {
+    background-color: var(--success);
+    color: var(--text-inverted);
+  }
+
+  /* Table DSFR */
+  .fr-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--background-alt);
+  }
+
+  .fr-table th,
+  .fr-table td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border-default);
+  }
+
+  .fr-table th {
+    font-weight: 700;
+    color: var(--text-title);
+    background-color: var(--background-contrast);
+  }
+
+  .fr-table tr:hover {
+    background-color: var(--background);
+  }
+
+  /* Select DSFR */
+  .fr-select {
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-md);
+    color: var(--text-default);
+    background-color: var(--background-alt);
+    border: 1px solid var(--border-plain);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    min-height: 40px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23666666' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 40px;
+  }
+
+  .fr-select:focus {
+    border-color: var(--bleu-france);
+    box-shadow: inset 0 -2px 0 0 var(--bleu-france);
+    outline: none;
+  }
+
+  /* Checkbox DSFR */
+  .fr-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .fr-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--bleu-france);
+  }
+
+  /* Radio DSFR */
+  .fr-radio {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .fr-radio input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    accent-color: var(--bleu-france);
+  }
+
+  /* Toggle/Switch */
+  .fr-toggle {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+  }
+
+  .fr-toggle__input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .fr-toggle__slider {
+    width: 44px;
+    height: 24px;
+    background-color: var(--border-plain);
+    border-radius: 12px;
+    position: relative;
+    transition: background-color 0.2s ease;
+  }
+
+  .fr-toggle__slider::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: var(--background-alt);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s ease;
+  }
+
+  .fr-toggle__input:checked + .fr-toggle__slider {
+    background-color: var(--bleu-france);
+  }
+
+  .fr-toggle__input:checked + .fr-toggle__slider::before {
+    transform: translateX(20px);
+  }
+
+  .fr-toggle__input:focus-visible + .fr-toggle__slider {
+    outline: var(--focus-outline);
+    outline-offset: 2px;
+  }
 }
 
-/* Classes utilitaires personnalisées */
+/* ===========================================
+   UTILITAIRES
+   =========================================== */
+
 @layer utilities {
-  .glass {
-    background: var(--glass-background);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+  /* Conteneur principal */
+  .fr-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
   }
 
-  .text-gradient {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .fr-container--fluid {
+    max-width: none;
   }
 
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+  /* Grille */
+  .fr-grid {
+    display: grid;
+    gap: var(--spacing-lg);
   }
 
-  .animate-pulse-slow {
-    animation: pulse 4s ease-in-out infinite;
+  .fr-grid--2 {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  /* Orion gradient backgrounds */
-  .bg-orion-gradient {
-    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+  .fr-grid--3 {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  .bg-orion-card {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(51, 65, 85, 0.5);
+  .fr-grid--4 {
+    grid-template-columns: repeat(4, 1fr);
   }
 
-  /* Glow effects */
-  .glow-violet {
-    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  @media (max-width: 768px) {
+    .fr-grid--2,
+    .fr-grid--3,
+    .fr-grid--4 {
+      grid-template-columns: 1fr;
+    }
   }
 
-  .glow-emerald {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+  /* Espacements */
+  .fr-mt-1 { margin-top: var(--spacing-xs); }
+  .fr-mt-2 { margin-top: var(--spacing-sm); }
+  .fr-mt-3 { margin-top: var(--spacing-md); }
+  .fr-mt-4 { margin-top: var(--spacing-lg); }
+  .fr-mt-5 { margin-top: var(--spacing-xl); }
+  .fr-mt-6 { margin-top: var(--spacing-2xl); }
+
+  .fr-mb-1 { margin-bottom: var(--spacing-xs); }
+  .fr-mb-2 { margin-bottom: var(--spacing-sm); }
+  .fr-mb-3 { margin-bottom: var(--spacing-md); }
+  .fr-mb-4 { margin-bottom: var(--spacing-lg); }
+  .fr-mb-5 { margin-bottom: var(--spacing-xl); }
+  .fr-mb-6 { margin-bottom: var(--spacing-2xl); }
+
+  /* Texte */
+  .fr-text--sm { font-size: var(--font-size-sm); }
+  .fr-text--md { font-size: var(--font-size-md); }
+  .fr-text--lg { font-size: var(--font-size-lg); }
+  .fr-text--xl { font-size: var(--font-size-xl); }
+
+  .fr-text--bold { font-weight: 700; }
+  .fr-text--mention { color: var(--text-mention); }
+  .fr-text--error { color: var(--error); }
+  .fr-text--success { color: var(--success); }
+
+  /* Bordures */
+  .fr-border { border: 1px solid var(--border-default); }
+  .fr-border--top { border-top: 1px solid var(--border-default); }
+  .fr-border--bottom { border-bottom: 1px solid var(--border-default); }
+
+  /* Couleurs de fond */
+  .fr-bg-white { background-color: var(--background-alt); }
+  .fr-bg-alt { background-color: var(--background); }
+  .fr-bg-contrast { background-color: var(--background-contrast); }
+
+  /* Visually hidden (accessibilité) */
+  .fr-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 }
 
-/* Animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+/* ===========================================
+   STYLES SPÉCIFIQUES CALENDRIER
+   =========================================== */
+
+/* Statuts de jour - Style Service Public */
+.day-status-work {
+  background-color: var(--info-bg);
+  border-left: 3px solid var(--bleu-france);
+  color: var(--bleu-france);
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+.day-status-remote {
+  background-color: var(--success-bg);
+  border-left: 3px solid var(--success);
+  color: var(--success);
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+.day-status-school {
+  background-color: var(--warning-bg);
+  border-left: 3px solid var(--warning);
+  color: var(--warning);
+}
+
+.day-status-leave {
+  background-color: var(--error-bg);
+  border-left: 3px solid var(--error);
+  color: var(--error);
+}
+
+.day-status-holiday {
+  background-color: var(--background-contrast);
+  border-left: 3px solid var(--text-mention);
+  color: var(--text-mention);
 }
 
 /* Support reduced motion */
@@ -177,12 +757,21 @@ body {
   }
 }
 
-/* Recharts dark mode customization */
-.dark .recharts-cartesian-grid-horizontal line,
-.dark .recharts-cartesian-grid-vertical line {
-  stroke: #334155;
-}
+/* Print styles */
+@media print {
+  .fr-header,
+  .fr-footer,
+  .fr-btn {
+    display: none;
+  }
 
-.dark .recharts-text {
-  fill: #94a3b8;
+  body {
+    background: white;
+    color: black;
+  }
+
+  .fr-card {
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
 }

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
 // Rate limiting simple (en mémoire - pour production utiliser Redis)
 const rateLimit = new Map<string, { count: number; resetTime: number }>();
@@ -42,11 +41,8 @@ if (typeof setInterval !== 'undefined') {
   }, 5 * 60 * 1000);
 }
 
-// Routes publiques qui ne nécessitent pas d'authentification
-const publicRoutes = ['/login', '/auth/callback', '/auth/confirm', '/setup'];
-
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request,
   });
 
@@ -65,7 +61,7 @@ export async function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "connect-src 'self' https://*.huggingface.co https://api-inference.huggingface.co",
     "frame-ancestors 'self'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -98,63 +94,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Authentification Supabase
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  // Si les variables Supabase ne sont pas configurées, continuer sans auth
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return response;
-  }
-
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          response = NextResponse.next({
-            request,
-          });
-          // Réappliquer les headers de sécurité
-          response.headers.set('X-DNS-Prefetch-Control', 'on');
-          response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
-          response.headers.set('X-Frame-Options', 'SAMEORIGIN');
-          response.headers.set('X-Content-Type-Options', 'nosniff');
-          response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-          response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-          response.headers.set('Content-Security-Policy', cspHeader);
-
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Vérifier si c'est une route publique
-  const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
-  );
-
-  if (!user && !isPublicRoute) {
-    // Pas d'utilisateur, rediriger vers login
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
-  }
-
+  // Application publique - pas d'authentification requise
   return response;
 }
 

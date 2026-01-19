@@ -1,39 +1,38 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Download, Home as HomeIcon, GraduationCap, Plane, Mail, Copy, Loader2, Send, Sparkles } from 'lucide-react';
+import { Download, Home as HomeIcon, GraduationCap, Plane, Mail, Copy, Loader2, Sparkles, Info, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCalendarData } from '@/hooks/use-calendar-data';
-import { NotificationSender } from '@/components/features/notification-sender';
+import { cn } from '@/lib/utils';
 
 const exportCards = [
   {
     id: 'REMOTE',
     title: 'Télétravail',
-    description: 'Export des jours "Remote"',
+    description: 'Exporter tous les jours de télétravail',
     icon: HomeIcon,
-    gradient: 'from-emerald-500/20 to-emerald-600/10',
-    iconBg: 'bg-emerald-500',
-    borderHover: 'hover:border-emerald-500/30',
+    colorClass: 'fr-tag--green',
+    bgClass: 'bg-[var(--success-bg)]',
+    borderClass: 'border-[var(--success)]',
   },
   {
     id: 'SCHOOL',
     title: 'Formation',
-    description: 'Statut "Absent du bureau"',
+    description: 'Exporter les jours de formation (statut absent)',
     icon: GraduationCap,
-    gradient: 'from-amber-500/20 to-amber-600/10',
-    iconBg: 'bg-amber-500',
-    borderHover: 'hover:border-amber-500/30',
+    colorClass: 'fr-tag--orange',
+    bgClass: 'bg-[var(--warning-bg)]',
+    borderClass: 'border-[var(--warning)]',
   },
   {
     id: 'LEAVE',
     title: 'Congés',
-    description: 'Jours de repos posés',
+    description: 'Exporter tous les congés posés',
     icon: Plane,
-    gradient: 'from-rose-500/20 to-rose-600/10',
-    iconBg: 'bg-rose-500',
-    borderHover: 'hover:border-rose-500/30',
+    colorClass: 'fr-tag--red',
+    bgClass: 'bg-[var(--error-bg)]',
+    borderClass: 'border-[var(--error)]',
   },
 ];
 
@@ -65,13 +64,13 @@ export default function ExportsPage() {
       return;
     }
 
-    const summary = mode === 'REMOTE' ? '🏠 Télétravail' : mode === 'SCHOOL' ? '🎓 Formation' : '🌴 Congés';
+    const summary = mode === 'REMOTE' ? 'Télétravail' : mode === 'SCHOOL' ? 'Formation' : 'Congés';
     const busy = mode === 'REMOTE' ? '' : 'X-MICROSOFT-CDO-BUSYSTATUS:OOF';
 
     const ics = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//PGV Planning Pro//FR',
+      'PRODID:-//PGV Planning//FR',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
     ];
@@ -97,7 +96,7 @@ export default function ExportsPage() {
     link.click();
     document.body.removeChild(link);
 
-    toast.success(`${events.length} événements exportés`);
+    toast.success(`${events.length} événements exportés avec succès`);
   };
 
   const generateOOFMessage = async () => {
@@ -121,10 +120,10 @@ export default function ExportsPage() {
         toast.error(result.error);
       } else {
         setAiResult(result.text);
-        toast.success('Message généré !');
+        toast.success('Message généré avec succès');
       }
     } catch {
-      toast.error('Erreur de connexion au LLM');
+      toast.error('Erreur de connexion au service de génération');
     } finally {
       setIsLoading(false);
     }
@@ -132,170 +131,171 @@ export default function ExportsPage() {
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(aiResult);
-    toast.success('Texte copié !');
+    toast.success('Texte copié dans le presse-papier');
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Section Exports ICS */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-white flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center">
-                <Download className="w-5 h-5 text-white" />
-              </div>
-              Exports Calendrier
-            </h3>
-            <span className="text-xs font-mono bg-slate-700 text-slate-300 px-2 py-1 rounded-lg">
-              Format .ICS
-            </span>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-4">
-            {exportCards.map((card) => {
-              const Icon = card.icon;
-              return (
-                <motion.button
-                  key={card.id}
-                  onClick={() => downloadICS(card.id)}
-                  className={`group p-5 bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30 ${card.borderHover} hover:bg-slate-700/50 transition-all relative overflow-hidden text-left`}
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${card.gradient} rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500`} />
-                  <div className="relative z-10">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className={`w-10 h-10 rounded-lg ${card.iconBg} flex items-center justify-center`}>
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <Download className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
-                    </div>
-                    <h4 className="font-semibold text-white">{card.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1">{card.description}</p>
-                  </div>
-                </motion.button>
-              );
-            })}
+    <div className="space-y-8">
+      {/* Instructions */}
+      <div className="fr-alert fr-alert--info">
+        <div className="flex items-start gap-3">
+          <Info className="w-5 h-5 text-[var(--info)] flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-[var(--text-title)]">Exportation au format ICS</p>
+            <p className="text-sm text-[var(--text-default)] mt-1">
+              Les fichiers ICS sont compatibles avec tous les calendriers : Outlook, Google Calendar, Apple Calendar, etc.
+              Après téléchargement, importez le fichier dans votre application de calendrier.
+            </p>
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Section Notifications Email */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center">
-              <Send className="w-5 h-5 text-white" />
+      {/* Section Exports ICS */}
+      <section>
+        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4 flex items-center gap-2">
+          <Download className="w-5 h-5 text-[var(--bleu-france)]" />
+          Télécharger les fichiers ICS
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          {exportCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <button
+                key={card.id}
+                onClick={() => downloadICS(card.id)}
+                className={cn(
+                  'fr-card fr-card--shadow text-left hover:border-[var(--bleu-france)] transition-all group',
+                  'hover:shadow-lg'
+                )}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={cn('w-12 h-12 rounded-lg flex items-center justify-center', card.bgClass, 'border-l-4', card.borderClass)}>
+                    <Icon className="w-6 h-6 text-[var(--text-title)]" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-[var(--text-title)] group-hover:text-[var(--bleu-france)] transition-colors">
+                      {card.title}
+                    </h3>
+                    <p className="text-sm text-[var(--text-mention)] mt-1">
+                      {card.description}
+                    </p>
+                  </div>
+                  <Download className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--bleu-france)] transition-colors" />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Section Assistant Message d'absence */}
+      <section>
+        <h2 className="text-xl font-bold text-[var(--text-title)] mb-4 flex items-center gap-2">
+          <Mail className="w-5 h-5 text-[var(--bleu-france)]" />
+          Générateur de message d'absence
+        </h2>
+
+        <div className="fr-card fr-card--shadow">
+          <p className="text-[var(--text-mention)] text-sm mb-6">
+            Générez automatiquement un message de réponse automatique (Out of Office) pour informer vos correspondants de votre absence.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label htmlFor="tone" className="fr-label">
+                Ton du message
+              </label>
+              <select
+                id="tone"
+                value={aiTone}
+                onChange={(e) => setAiTone(e.target.value)}
+                className="fr-select"
+              >
+                <option value="professionnel">Professionnel</option>
+                <option value="amical">Amical</option>
+                <option value="formel">Formel</option>
+              </select>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Notifications d&apos;Absence</h3>
-              <p className="text-sm text-slate-400">Informez vos collègues de vos absences par email</p>
+              <label htmlFor="reason" className="fr-label">
+                Raison de l'absence
+              </label>
+              <select
+                id="reason"
+                value={aiReason}
+                onChange={(e) => setAiReason(e.target.value)}
+                className="fr-select"
+              >
+                <option value="formation">Formation</option>
+                <option value="congés">Congés</option>
+                <option value="déplacement">Déplacement professionnel</option>
+                <option value="maladie">Arrêt maladie</option>
+              </select>
             </div>
           </div>
-          <NotificationSender />
-        </div>
-      </motion.div>
 
-      {/* Section Assistant IA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <div className="bg-gradient-to-br from-violet-600/90 to-purple-700/90 backdrop-blur-sm rounded-2xl border border-violet-500/30 p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
+          <button
+            onClick={generateOOFMessage}
+            disabled={isLoading}
+            className="fr-btn w-full md:w-auto"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Génération en cours...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Générer le message
+              </>
+            )}
+          </button>
 
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-violet-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white">Assistant IA</h3>
-                <p className="text-violet-200 text-sm">Mistral 7B (Open Source)</p>
-              </div>
-            </div>
-
-            {/* OOF Generator */}
-            <div className="bg-slate-800/80 rounded-xl p-5 border border-slate-700/50">
-              <h4 className="font-semibold mb-4 flex items-center gap-2 text-white">
-                <Mail className="w-4 h-4 text-violet-400" /> Générateur de Message d&apos;Absence
-              </h4>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1 block font-medium">Ton du message</label>
-                    <select
-                      value={aiTone}
-                      onChange={(e) => setAiTone(e.target.value)}
-                      className="w-full bg-slate-700/50 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 border border-slate-600"
-                    >
-                      <option value="professionnel">Professionnel</option>
-                      <option value="amical">Amical</option>
-                      <option value="formel">Formel</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1 block font-medium">Raison de l&apos;absence</label>
-                    <select
-                      value={aiReason}
-                      onChange={(e) => setAiReason(e.target.value)}
-                      className="w-full bg-slate-700/50 text-white text-sm rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-violet-500 border border-slate-600"
-                    >
-                      <option value="formation">Formation</option>
-                      <option value="congés">Congés</option>
-                      <option value="déplacement">Déplacement professionnel</option>
-                      <option value="maladie">Arrêt maladie</option>
-                    </select>
-                  </div>
-                </div>
+          {/* Résultat */}
+          {aiResult && (
+            <div className="mt-6 pt-6 border-t border-[var(--border-default)]">
+              <div className="flex items-center justify-between mb-3">
+                <label className="fr-label flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 text-[var(--success)]" />
+                  Message généré
+                </label>
                 <button
-                  onClick={generateOOFMessage}
-                  disabled={isLoading}
-                  className="w-full py-3 bg-violet-500 text-white rounded-lg font-semibold text-sm hover:bg-violet-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+                  onClick={copyToClipboard}
+                  className="fr-btn fr-btn--tertiary text-sm"
                 >
-                  {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                  Générer le message
+                  <Copy className="w-4 h-4" />
+                  Copier
                 </button>
               </div>
-
-              {/* Result Area */}
-              {aiResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-4"
-                >
-                  <label className="text-xs font-medium text-slate-400 uppercase mb-2 block">
-                    Message généré
-                  </label>
-                  <textarea
-                    value={aiResult}
-                    readOnly
-                    rows={4}
-                    className="w-full bg-slate-700/50 text-white text-sm rounded-lg p-4 outline-none border border-slate-600 resize-none"
-                  />
-                  <button
-                    onClick={copyToClipboard}
-                    className="mt-2 text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 cursor-pointer font-medium"
-                  >
-                    <Copy className="w-3 h-3" /> Copier le texte
-                  </button>
-                </motion.div>
-              )}
+              <textarea
+                value={aiResult}
+                readOnly
+                rows={5}
+                className="fr-input resize-none bg-[var(--background-contrast)]"
+              />
+              <p className="fr-hint mt-2">
+                Pensez à remplacer [DATE_RETOUR] par votre date de retour effective.
+              </p>
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* Note sur le service */}
+      <div className="fr-alert fr-alert--warning">
+        <div className="flex items-start gap-3">
+          <Info className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-[var(--text-title)]">Service de génération</p>
+            <p className="text-sm text-[var(--text-default)] mt-1">
+              Le générateur de message utilise un modèle d'intelligence artificielle open source (Mistral 7B).
+              Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
+            </p>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
