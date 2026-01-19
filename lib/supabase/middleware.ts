@@ -37,10 +37,18 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
+
   // Routes publiques qui ne nécessitent pas d'authentification
-  const publicRoutes = ['/login', '/auth/callback', '/auth/confirm'];
+  const publicRoutes = ['/login', '/auth/callback', '/auth/confirm', '/setup'];
   const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
+    pathname.startsWith(route)
+  );
+
+  // Routes accessibles aux utilisateurs connectés sans équipe
+  const noTeamRoutes = ['/team/setup', '/team/create', '/team/join', '/api/teams'];
+  const isNoTeamRoute = noTeamRoutes.some((route) =>
+    pathname.startsWith(route)
   );
 
   if (!user && !isPublicRoute) {
@@ -48,6 +56,23 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
+  }
+
+  // Si utilisateur connecté, vérifier s'il a une équipe
+  if (user && !isPublicRoute && !isNoTeamRoute) {
+    // Vérifier si l'utilisateur a une équipe
+    const { data: membership } = await supabase
+      .from('team_members')
+      .select('team_id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!membership) {
+      // Pas d'équipe, rediriger vers team setup
+      const url = request.nextUrl.clone();
+      url.pathname = '/team/setup';
+      return NextResponse.redirect(url);
+    }
   }
 
   // IMPORTANT: Vous *devez* retourner l'objet supabaseResponse tel quel.

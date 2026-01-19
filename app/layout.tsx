@@ -3,6 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
+import { TeamProvider } from "@/contexts/team-context";
 import "./globals.css";
 
 const inter = Inter({
@@ -55,10 +56,12 @@ export default function RootLayout({
         >
           Aller au contenu principal
         </a>
-        <DashboardShell>
-          {children}
-        </DashboardShell>
-        <OnboardingTutorial />
+        <TeamProvider>
+          <DashboardShell>
+            {children}
+          </DashboardShell>
+          <OnboardingTutorial />
+        </TeamProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{

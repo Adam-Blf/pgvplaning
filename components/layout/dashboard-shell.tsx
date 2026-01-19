@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { TeamIndicator } from '@/components/features/team-indicator';
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -28,8 +29,8 @@ const navigation = [
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
 
-// Routes that should not display the shell
-const authRoutes = ['/login', '/auth', '/setup'];
+// Routes that should not display the shell (auth and team setup pages)
+const authRoutes = ['/login', '/auth', '/setup', '/team/setup', '/team/create', '/team/join'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -84,6 +85,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 );
               })}
             </nav>
+
+            {/* Team Indicator */}
+            <div className="hidden md:block">
+              <TeamIndicator />
+            </div>
 
             {/* Mobile menu button */}
             <button
