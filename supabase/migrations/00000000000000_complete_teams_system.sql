@@ -281,6 +281,7 @@ CREATE TRIGGER trigger_profiles_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Get default leave days by employee type
+DROP FUNCTION IF EXISTS get_default_leave_days(UUID, TEXT);
 CREATE OR REPLACE FUNCTION get_default_leave_days(
   p_team_id UUID,
   p_employee_type TEXT DEFAULT 'employee'
@@ -303,6 +304,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION get_default_leave_days TO authenticated;
 
 -- Get user's current team with role
+DROP FUNCTION IF EXISTS get_user_team(UUID);
 CREATE OR REPLACE FUNCTION get_user_team(p_user_id UUID)
 RETURNS TABLE (
   team_id UUID,
@@ -333,6 +335,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION get_user_team TO authenticated;
 
 -- Check if user has a team
+DROP FUNCTION IF EXISTS user_has_team(UUID);
 CREATE OR REPLACE FUNCTION user_has_team(p_user_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
