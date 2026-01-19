@@ -3,15 +3,15 @@
 ![Status](https://img.shields.io/badge/status-production-green)
 ![Accessibilité](https://img.shields.io/badge/accessibilité-RGAA-blue)
 
-**Service de gestion des plannings et génération de fichiers ICS**
+**Solution professionnelle de gestion des plannings pour le secteur hospitalier**
 
-Application web publique inspirée du Design System de l'État français (DSFR) permettant de gérer son planning professionnel et d'exporter les données au format ICS.
+Application web développée par **Blackout Prod** permettant de gérer son planning professionnel et d'exporter les données au format ICS.
 
 ## Fonctionnalités
 
 - **Calendrier interactif** : Sélectionnez vos jours en glissant sur le calendrier (Bureau, Télétravail, Formation, Congés)
 - **Export ICS** : Générez des fichiers calendrier compatibles avec tous les clients (Google Calendar, Outlook, Apple Calendar)
-- **Statistiques** : Visualisez la répartition de vos jours par catégorie
+- **Compteur intelligent** : Visualisez le nombre de jours par catégorie avant export
 - **Générateur de messages** : Créez des messages d'absence automatiques (Out of Office) grâce à l'IA
 - **Sans inscription** : Utilisation immédiate, données stockées localement
 - **Accessible** : Interface conforme aux standards d'accessibilité
@@ -26,18 +26,7 @@ L'interface utilise un **Design System Medical Healthcare Dark** :
 - Micro-interactions et animations fluides
 - Effets de glow et transitions subtiles
 - Navigation intuitive avec feedback visuel
-- Messages d'information standardisés
-- Accessibilité RGAA
 - Mode reduced-motion supporté
-
-### Micro-Interactions
-
-- Boutons avec effets de ripple et scale au clic
-- Cards avec bordures gradient animées au hover
-- Éléments du calendrier avec effets de glow
-- Inputs avec transitions de focus élaborées
-- Navigation avec animations de slide
-- Badges avec effets de lift
 
 ## Stack Technique
 
@@ -46,11 +35,9 @@ L'interface utilise un **Design System Medical Healthcare Dark** :
 | Framework | Next.js 15 (App Router) |
 | Langage | TypeScript (strict) |
 | Styles | Tailwind CSS + Custom Healthcare Dark |
-| Animations | Framer Motion + CSS Animations |
-| Graphiques | Recharts |
+| Animations | CSS Animations |
 | Validation | Zod |
 | Dates | date-fns, date-holidays |
-| Fichiers ICS | ics |
 | UI | Lucide React, Sonner |
 | IA | HuggingFace (Mistral 7B) |
 
@@ -58,7 +45,7 @@ L'interface utilise un **Design System Medical Healthcare Dark** :
 
 ```bash
 # Cloner le repository
-git clone https://github.com/Adam-Blf/PGVDIM.git
+git clone https://github.com/Adam-Blf/pgvplaning.git
 cd PGVDIM
 
 # Installer les dépendances
@@ -69,9 +56,6 @@ npm run dev
 
 # Build production
 npm run build
-
-# Lancer les tests
-npm test
 ```
 
 ## Utilisation
@@ -83,24 +67,19 @@ npm test
 3. Cliquez ou glissez sur les jours du calendrier pour les marquer
 4. Les données sont sauvegardées automatiquement dans votre navigateur
 
-### 2. Consulter les statistiques
-
-1. Accédez à l'onglet **Statistiques**
-2. Visualisez la répartition de vos jours par catégorie
-3. Consultez les graphiques de synthèse
-
-### 3. Exporter en fichier ICS
+### 2. Exporter en fichier ICS
 
 1. Accédez à l'onglet **Exporter**
-2. Choisissez le type à exporter (Télétravail, Formation, ou Congés)
-3. Téléchargez le fichier ICS
-4. Importez-le dans votre calendrier
+2. Consultez le nombre de jours disponibles pour chaque type
+3. Choisissez le type à exporter (Télétravail, Formation, ou Congés)
+4. Téléchargez le fichier ICS
+5. Importez-le dans votre calendrier
 
 ### Comment importer un fichier ICS
 
 **Google Calendar :**
 1. Ouvrez Google Calendar
-2. ⚙️ Paramètres > Importer et exporter > Importer
+2. Paramètres > Importer et exporter > Importer
 3. Sélectionnez votre fichier .ics
 
 **Outlook :**
@@ -120,10 +99,9 @@ PGVDIM/
 │   │   ├── generate-ics/          # Génération ICS
 │   │   └── llm/                   # Service IA
 │   ├── calendar/                  # Page calendrier
-│   ├── analytics/                 # Page statistiques
 │   ├── exports/                   # Page export
 │   ├── settings/                  # Paramètres
-│   └── globals.css                # Styles DSFR
+│   └── globals.css                # Styles Medical Healthcare Dark
 ├── components/
 │   ├── features/                  # Composants fonctionnels
 │   │   ├── calendar-grid.tsx      # Grille calendrier
@@ -131,8 +109,7 @@ PGVDIM/
 │   └── layout/
 │       └── dashboard-shell.tsx    # Layout principal
 ├── hooks/                         # Hooks React
-│   ├── use-calendar-data.ts       # Données calendrier
-│   └── use-calendar-stats.ts      # Statistiques
+│   └── use-calendar-data.ts       # Données calendrier
 ├── lib/
 │   ├── schemas/                   # Validation Zod
 │   └── utils/                     # Utilitaires
@@ -172,25 +149,18 @@ vercel
 | `npm run build` | Build production |
 | `npm run start` | Démarrer en production |
 | `npm run lint` | Vérification ESLint |
-| `npm test` | Lancer les tests |
 
 ## Changelog
 
 ### 2026-01-19
 
-- Ajout de micro-interactions et "juice" au design system
-  - Effets de ripple sur les boutons
-  - Bordures gradient animées sur les cards
-  - Effets de glow sur les éléments du calendrier
-  - Animations de slide sur la navigation
-  - Transitions élaborées sur les inputs
-  - Nouvelles animations (subtle-pulse, ripple, shimmer)
-  - Utilitaires CSS pour glow et hover lift
-- Refonte complète UX/UI style Medical Healthcare Dark
-- Suppression de l'authentification obligatoire
-- Application accessible sans inscription
-- Amélioration de l'accessibilité
-- Design professionnel avec animations performantes
+- Amélioration exports ICS avec compteur de jours par type
+- Désactivation automatique si aucun jour disponible
+- Adaptation design pour secteur hospitalier
+- Logo et favicon Blackout Prod
+- Suppression des statistiques (simplification UX)
+- Refonte Design System Medical Healthcare Dark
+- Suppression de l'authentification
 
 ## Licence
 
@@ -198,4 +168,4 @@ MIT - Licence ouverte
 
 ---
 
-Fait avec ❤️ en France
+Développé par **Blackout Prod** - Solutions Hospitalières
