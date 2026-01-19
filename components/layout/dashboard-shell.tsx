@@ -23,7 +23,7 @@ interface DashboardShellProps {
 const navigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard },
   { name: 'Calendrier', href: '/calendar', icon: Calendar },
-  { name: 'TeamPlanner', href: '/team-planner', icon: Users },
+  { name: 'DIM Planner', href: '/dim-planner', icon: Users },
   { name: 'Exporter', href: '/exports', icon: FileDown },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
