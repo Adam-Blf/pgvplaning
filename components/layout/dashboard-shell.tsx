@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Activity,
+  Users,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ interface DashboardShellProps {
 const navigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard },
   { name: 'Calendrier', href: '/calendar', icon: Calendar },
+  { name: 'TeamPlanner', href: '/team-planner', icon: Users },
   { name: 'Exporter', href: '/exports', icon: FileDown },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];

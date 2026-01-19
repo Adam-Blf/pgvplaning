@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   Download,
   Home as HomeIcon,
@@ -14,6 +14,8 @@ import {
   CheckCircle,
   FileDown,
   AlertTriangle,
+  Users,
+  User,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCalendarData, DayStatus, isDayData } from '@/hooks/use-calendar-data';
@@ -51,11 +53,18 @@ const exportCards = [
 ];
 
 export default function ExportsPage() {
-  const { data, formatDateKey } = useCalendarData();
+  const { data } = useCalendarData();
+  const [userName, setUserName] = useState('');
   const [aiTone, setAiTone] = useState('professionnel');
   const [aiReason, setAiReason] = useState('formation');
   const [aiResult, setAiResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Charger le nom utilisateur depuis localStorage
+  useEffect(() => {
+    const savedName = localStorage.getItem('user_name');
+    if (savedName) setUserName(savedName);
+  }, []);
 
   // Count days per status (handling both legacy and half-day formats)
   const dayCounts = useMemo(() => {
@@ -88,34 +97,34 @@ export default function ExportsPage() {
     return counts;
   }, [data]);
 
-  const downloadICS = (mode: DayStatus) => {
-    const events: { date: string; halfDay?: 'AM' | 'PM' }[] = [];
-    const currentYear = new Date().getFullYear();
+  // Collecter les événements une seule fois (optimisation performance)
+  const eventsByStatus = useMemo(() => {
+    const result: Record<DayStatus, { date: string; halfDay?: 'AM' | 'PM' }[]> = {
+      WORK: [],
+      REMOTE: [],
+      SCHOOL: [],
+      TRAINER: [],
+      LEAVE: [],
+      HOLIDAY: [],
+      OFF: [],
+    };
 
-    const start = new Date(currentYear - 1, 0, 1);
-    const end = new Date(currentYear + 1, 11, 31);
-    const current = new Date(start);
-
-    while (current <= end) {
-      const key = formatDateKey(current);
-      const value = data[key];
-
-      if (value) {
-        if (isDayData(value)) {
-          // Half-day format
-          if (value.am === mode) {
-            events.push({ date: key.replace(/-/g, ''), halfDay: 'AM' });
-          }
-          if (value.pm === mode) {
-            events.push({ date: key.replace(/-/g, ''), halfDay: 'PM' });
-          }
-        } else if (value === mode) {
-          // Legacy format
-          events.push({ date: key.replace(/-/g, '') });
-        }
+    // Parcourir uniquement les données existantes (pas toutes les dates)
+    Object.entries(data).forEach(([key, value]) => {
+      const dateStr = key.replace(/-/g, '');
+      if (isDayData(value)) {
+        if (value.am) result[value.am].push({ date: dateStr, halfDay: 'AM' });
+        if (value.pm) result[value.pm].push({ date: dateStr, halfDay: 'PM' });
+      } else {
+        result[value].push({ date: dateStr });
       }
-      current.setDate(current.getDate() + 1);
-    }
+    });
+
+    return result;
+  }, [data]);
+
+  const downloadICS = (mode: DayStatus, forTeam: boolean = false) => {
+    const events = eventsByStatus[mode];
 
     if (events.length === 0) {
       toast.error('Aucune date trouvée pour ce type');
@@ -131,7 +140,13 @@ export default function ExportsPage() {
       HOLIDAY: 'Jour férié',
       OFF: 'Week-end',
     };
-    const summary = statusLabels[mode];
+
+    const baseLabel = statusLabels[mode];
+    // Pour l'équipe, on ajoute le nom de l'utilisateur
+    const summary = forTeam && userName
+      ? `${userName} - ${baseLabel}`
+      : baseLabel;
+
     const busy = mode === 'REMOTE' ? '' : 'X-MICROSOFT-CDO-BUSYSTATUS:OOF';
 
     const ics = [
@@ -146,7 +161,6 @@ export default function ExportsPage() {
       ics.push('BEGIN:VEVENT');
 
       if (event.halfDay) {
-        // Half-day event with specific times
         const startHour = event.halfDay === 'AM' ? '080000' : '140000';
         const endHour = event.halfDay === 'AM' ? '120000' : '180000';
         const halfLabel = event.halfDay === 'AM' ? ' (Matin)' : ' (Après-midi)';
@@ -155,7 +169,6 @@ export default function ExportsPage() {
         ics.push(`DTEND:${event.date}T${endHour}`);
         ics.push(`SUMMARY:${summary}${halfLabel}`);
       } else {
-        // Full day event
         ics.push(`DTSTART;VALUE=DATE:${event.date}`);
         ics.push(`DTEND;VALUE=DATE:${event.date}`);
         ics.push(`SUMMARY:${summary}`);
@@ -163,7 +176,7 @@ export default function ExportsPage() {
 
       ics.push('TRANSP:OPAQUE');
       if (busy) ics.push(busy);
-      ics.push(`UID:${event.date}-${event.halfDay || 'FULL'}-${mode}@pgvplanning`);
+      ics.push(`UID:${event.date}-${event.halfDay || 'FULL'}-${mode}-${forTeam ? 'team' : 'personal'}@pgvplanning`);
       ics.push('END:VEVENT');
     });
 
@@ -172,12 +185,13 @@ export default function ExportsPage() {
     const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `planning_${mode.toLowerCase()}.ics`;
+    const suffix = forTeam ? '_equipe' : '_perso';
+    link.download = `planning_${mode.toLowerCase()}${suffix}.ics`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    toast.success(`${events.length} événements exportés avec succès`);
+    toast.success(`${events.length} événements exportés (${forTeam ? 'équipe' : 'personnel'})`);
   };
 
   const generateOOFMessage = async () => {
@@ -244,7 +258,24 @@ export default function ExportsPage() {
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        {/* Alerte si nom non configuré */}
+        {!userName && (
+          <div className="notice notice-warning mb-4">
+            <div className="w-10 h-10 rounded-lg bg-[var(--warning-bg)] flex items-center justify-center flex-shrink-0">
+              <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+                Nom non configuré
+              </h4>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Configurez votre nom dans les <a href="/settings" className="text-[var(--accent)] underline">paramètres</a> pour que les exports équipe affichent votre nom.
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-4">
           {exportCards.map((card) => {
             const Icon = card.icon;
             const count = dayCounts[card.id];
@@ -273,19 +304,17 @@ export default function ExportsPage() {
             const colors = statusColors[card.statusClass];
 
             return (
-              <button
+              <div
                 key={card.id}
-                onClick={() => downloadICS(card.id)}
-                disabled={count === 0}
                 className={cn(
-                  'card card-interactive text-left group',
-                  count === 0 && 'opacity-50 cursor-not-allowed hover:border-[var(--border-default)]'
+                  'card',
+                  count === 0 && 'opacity-50'
                 )}
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 mb-4">
                   <div
                     className={cn(
-                      'w-12 h-12 rounded-xl flex items-center justify-center border group-hover:scale-110 transition-transform',
+                      'w-12 h-12 rounded-xl flex items-center justify-center border',
                       colors.bg,
                       colors.border
                     )}
@@ -294,7 +323,7 @@ export default function ExportsPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                      <h3 className="font-bold text-[var(--text-primary)]">
                         {card.title}
                       </h3>
                       <span className={cn(
@@ -308,14 +337,40 @@ export default function ExportsPage() {
                       {card.description}
                     </p>
                   </div>
-                  <Download className={cn(
-                    'w-5 h-5 flex-shrink-0 transition-all',
-                    count > 0
-                      ? 'text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-y-1'
-                      : 'text-[var(--text-disabled)]'
-                  )} />
                 </div>
-              </button>
+
+                {/* Boutons de téléchargement */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => downloadICS(card.id, false)}
+                    disabled={count === 0}
+                    className={cn(
+                      'flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                      count > 0
+                        ? 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]'
+                        : 'bg-[var(--bg-tertiary)] text-[var(--text-disabled)] cursor-not-allowed'
+                    )}
+                  >
+                    <User className="w-4 h-4" />
+                    Personnel
+                    <Download className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => downloadICS(card.id, true)}
+                    disabled={count === 0}
+                    className={cn(
+                      'flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                      count > 0
+                        ? `${colors.bg} hover:opacity-80 ${colors.text}`
+                        : 'bg-[var(--bg-tertiary)] text-[var(--text-disabled)] cursor-not-allowed'
+                    )}
+                  >
+                    <Users className="w-4 h-4" />
+                    Équipe
+                    <Download className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
             );
           })}
         </div>

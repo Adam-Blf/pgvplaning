@@ -1328,10 +1328,48 @@ a:hover {
   body {
     background: white;
     color: black;
+    font-size: 12px;
   }
 
   .card {
     border: 1px solid #ccc;
     box-shadow: none;
   }
+
+  /* Hide navigation and buttons */
+  header,
+  footer,
+  nav,
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  /* TeamPlanner print styles */
+  main {
+    padding: 0 !important;
+  }
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+  }
+
+  th,
+  td {
+    border: 1px solid #ccc !important;
+    padding: 4px !important;
+  }
+
+  /* Force colors in print */
+  .bg-emerald-100 { background-color: #d1fae5 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bg-purple-100 { background-color: #ede9fe !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bg-rose-100 { background-color: #ffe4e6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bg-red-100 { background-color: #fee2e2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .bg-amber-100 { background-color: #fef3c7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
