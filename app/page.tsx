@@ -6,7 +6,8 @@ import {
   FileDown,
   Zap,
   MousePointerClick,
-  Sparkles,
+  Heart,
+  ShieldCheck,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -24,8 +25,8 @@ export default function HomePage() {
         <div className="relative z-10 py-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="badge badge-accent">
-              <Sparkles className="w-3 h-3" />
-              <span>Nouveau</span>
+              <Heart className="w-3 h-3" />
+              <span>Secteur Hospitalier</span>
             </div>
           </div>
 
@@ -34,8 +35,9 @@ export default function HomePage() {
           </h2>
 
           <p className="text-[var(--text-secondary)] max-w-2xl leading-relaxed">
-            Planifiez vos journées de travail, télétravail, formations et congés en quelques clics.
-            Exportez votre planning au format ICS compatible avec tous vos calendriers.
+            Solution professionnelle de gestion des plannings hospitaliers.
+            Organisez vos gardes, astreintes, formations et congés en quelques clics.
+            Exportez au format ICS compatible avec tous vos calendriers.
           </p>
         </div>
       </div>
@@ -69,7 +71,7 @@ export default function HomePage() {
                     Remplir le calendrier
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Sélectionnez vos jours et leur type : bureau, télétravail, formation ou congés
+                    Sélectionnez vos jours et leur type : présence, télétravail, formation ou congés
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
@@ -137,14 +139,15 @@ export default function HomePage() {
       {/* Info Notice */}
       <div className="notice notice-info">
         <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
-          <Zap className="w-5 h-5 text-[var(--info)]" />
+          <ShieldCheck className="w-5 h-5 text-[var(--info)]" />
         </div>
         <div>
           <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-            Stockage local
+            Confidentialité des données
           </h4>
           <p className="text-sm text-[var(--text-secondary)]">
-            Vos données sont stockées localement dans votre navigateur. Elles ne sont pas transmises à un serveur et restent privées.
+            Vos données sont stockées localement dans votre navigateur conformément aux normes de confidentialité.
+            Aucune information n'est transmise à des serveurs externes.
           </p>
         </div>
       </div>

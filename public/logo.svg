@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c1222"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGrad)" stroke="url(#accentGrad)" stroke-width="4"/>
+
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(6,182,212,0.2)" stroke-width="2"/>
+
+  <!-- Lightning bolt / Medical cross hybrid -->
+  <g filter="url(#glow)">
+    <!-- Main bolt shape -->
+    <path d="M280 100 L200 240 L250 240 L220 400 L320 220 L260 220 L300 100 Z"
+          fill="url(#accentGrad)"
+          stroke="#f8fafc"
+          stroke-width="3"
+          stroke-linejoin="round"/>
+  </g>
+
+  <!-- Small decorative circles -->
+  <circle cx="150" cy="180" r="8" fill="url(#accentGrad)" opacity="0.6"/>
+  <circle cx="362" cy="332" r="8" fill="url(#accentGrad)" opacity="0.6"/>
+  <circle cx="380" cy="160" r="5" fill="url(#accentGrad)" opacity="0.4"/>
+  <circle cx="130" cy="340" r="5" fill="url(#accentGrad)" opacity="0.4"/>
+</svg>

@@ -8,7 +8,7 @@ import {
   FileDown,
   Menu,
   X,
-  Zap,
+  Activity,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -48,8 +48,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 no-underline group">
               <div className="relative">
-                <div className="w-10 h-10 rounded-lg bg-[var(--accent)] flex items-center justify-center transition-transform group-hover:scale-105">
-                  <Zap className="w-5 h-5 text-[var(--bg-primary)]" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-muted)] flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg">
+                  <Activity className="w-5 h-5 text-white" />
                 </div>
                 <div className="absolute -inset-1 bg-[var(--accent)] rounded-xl opacity-20 blur-sm group-hover:opacity-40 transition-opacity" />
               </div>
@@ -58,7 +58,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   PGV Planning
                 </span>
                 <span className="hidden sm:block text-xs text-[var(--text-muted)]">
-                  by Blackout Prod
+                  Gestion Hospitalière
                 </span>
               </div>
             </Link>
@@ -147,9 +147,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div className="container py-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[var(--accent)]" />
+              <Activity className="w-4 h-4 text-[var(--accent)]" />
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                Blackout Prod
+                Blackout Prod - Solutions Hospitalières
               </span>
             </div>
             <div className="flex gap-6 text-sm">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import "./globals.css";
@@ -9,16 +9,27 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "PGV Planning - Service de gestion des plannings",
-  description: "Service public de génération de fichiers ICS pour vos plannings de congés et absences",
-  keywords: ["planning", "congés", "ICS", "calendrier", "service public", "absences"],
-  authors: [{ name: "PGV Planning" }],
+  title: "PGV Planning - Gestion Planning Hospitalier",
+  description: "Solution professionnelle de gestion des plannings pour le secteur hospitalier. Générez vos fichiers ICS pour plannings de garde, congés et absences.",
+  keywords: ["planning", "hopital", "ICS", "calendrier", "medical", "garde", "congés", "absences", "healthcare"],
+  authors: [{ name: "Blackout Prod" }],
   openGraph: {
-    title: "PGV Planning - Service de gestion des plannings",
-    description: "Service public de génération de fichiers ICS pour vos plannings de congés et absences",
+    title: "PGV Planning - Gestion Planning Hospitalier",
+    description: "Solution professionnelle de gestion des plannings pour le secteur hospitalier",
     locale: "fr_FR",
     type: "website",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/logo.svg",
   },
 };
 
@@ -30,16 +41,16 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <meta name="theme-color" content="#000091" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta name="theme-color" content="#0c1222" />
       </head>
       <body
-        className={`${inter.variable} antialiased`}
+        className={`${inter.variable} ${jakarta.variable} antialiased`}
         suppressHydrationWarning
       >
         <a
           href="#contenu"
-          className="fr-sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 fr-btn"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 btn"
         >
           Aller au contenu principal
         </a>
@@ -50,9 +61,9 @@ export default function RootLayout({
           position="bottom-right"
           toastOptions={{
             style: {
-              background: "var(--background-alt)",
+              background: "var(--bg-secondary)",
               border: "1px solid var(--border-default)",
-              color: "var(--text-default)",
+              color: "var(--text-primary)",
               boxShadow: "var(--shadow-md)",
             },
           }}
