@@ -6,7 +6,7 @@ import {
   FileDown,
   Zap,
   MousePointerClick,
-  Heart,
+  Users,
   ShieldCheck,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -25,8 +25,8 @@ export default function HomePage() {
         <div className="relative z-10 py-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="badge badge-accent">
-              <Heart className="w-3 h-3" />
-              <span>Secteur Hospitalier</span>
+              <Users className="w-3 h-3" />
+              <span>Gestion d&apos;Équipe</span>
             </div>
           </div>
 
@@ -35,8 +35,8 @@ export default function HomePage() {
           </h2>
 
           <p className="text-[var(--text-secondary)] max-w-2xl leading-relaxed">
-            Solution professionnelle de gestion des plannings hospitaliers.
-            Organisez vos gardes, astreintes, formations et congés en quelques clics.
+            Solution professionnelle de gestion des plannings d&apos;équipe.
+            Organisez vos présences, télétravail, formations et congés en quelques clics.
             Exportez au format ICS compatible avec tous vos calendriers.
           </p>
         </div>

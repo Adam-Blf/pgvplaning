@@ -233,7 +233,7 @@ export default function TeamCreatePage() {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="ex: Équipe du département d'information médicale"
+                placeholder="ex: Équipe Marketing ou Service Commercial"
                 className="w-full px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-amber-500/50 transition-colors resize-none"
                 rows={2}
                 maxLength={200}
@@ -267,7 +267,7 @@ export default function TeamCreatePage() {
                       <p className={`font-medium ${
                         sector === 'public' ? 'text-blue-400' : 'text-zinc-300'
                       }`}>Public</p>
-                      <p className="text-xs text-zinc-600">Hôpitaux, services</p>
+                      <p className="text-xs text-zinc-600">Administrations, services</p>
                     </div>
                   </div>
                 </button>

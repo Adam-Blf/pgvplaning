@@ -72,7 +72,7 @@ export default function ContactPage() {
             </div>
             <p className="text-[var(--text-secondary)] text-sm">
               Service Informatique<br />
-              Secteur Hospitalier<br />
+              Solutions Planning<br />
               France
             </p>
           </div>

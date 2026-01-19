@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'PGV Planning - Gestion Hospitalière',
+    name: 'PGV Planning - Gestion d\'Équipe',
     short_name: 'PGV Planning',
-    description: 'Solution professionnelle de gestion des plannings pour le secteur hospitalier',
+    description: 'Solution professionnelle de gestion des plannings pour équipes et organisations',
     start_url: '/',
     display: 'standalone',
     background_color: '#0c1222',
@@ -12,7 +12,7 @@ export default function manifest(): MetadataRoute.Manifest {
     orientation: 'portrait-primary',
     scope: '/',
     lang: 'fr',
-    categories: ['productivity', 'utilities', 'medical'],
+    categories: ['productivity', 'utilities', 'business'],
     icons: [
       {
         src: '/favicon.svg',

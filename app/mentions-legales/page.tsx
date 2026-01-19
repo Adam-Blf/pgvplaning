@@ -32,7 +32,7 @@ export default function MentionsLegalesPage() {
         </div>
         <div className="space-y-3 text-[var(--text-secondary)]">
           <p><strong className="text-[var(--text-primary)]">Raison sociale :</strong> Blackout Prod</p>
-          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Application interne hospitalière</p>
+          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Application de gestion d&apos;équipe</p>
           <p><strong className="text-[var(--text-primary)]">Directeur de la publication :</strong> Adam Beloucif</p>
           <p><strong className="text-[var(--text-primary)]">Email :</strong> contact@blackoutprod.fr</p>
         </div>

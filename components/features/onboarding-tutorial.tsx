@@ -30,7 +30,7 @@ interface TutorialStep {
 const tutorialSteps: TutorialStep[] = [
   {
     title: 'Bienvenue sur PGV Planning !',
-    description: 'Découvrez comment gérer votre planning hospitalier en quelques étapes simples.',
+    description: 'Découvrez comment gérer votre planning d\'équipe en quelques étapes simples.',
     icon: Sparkles,
     content: (
       <div className="text-center py-4">

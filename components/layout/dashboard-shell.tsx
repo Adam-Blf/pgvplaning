@@ -70,7 +70,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   PGV Planning
                 </span>
                 <span className="hidden sm:block text-xs text-[var(--text-muted)]">
-                  Gestion Hospitalière
+                  Gestion d&apos;Équipe
                 </span>
               </div>
             </Link>
@@ -190,7 +190,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             <div className="flex items-center gap-2">
               <Activity className="w-4 h-4 text-[var(--accent)]" />
               <span className="text-sm font-medium text-[var(--text-secondary)]">
-                Blackout Prod - Solutions Hospitalières
+                Blackout Prod - Solutions Planning
               </span>
             </div>
             <div className="flex gap-6 text-sm">

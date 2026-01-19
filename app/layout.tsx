@@ -17,13 +17,13 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PGV Planning - Gestion Planning Hospitalier",
-  description: "Solution professionnelle de gestion des plannings pour le secteur hospitalier. Générez vos fichiers ICS pour plannings de garde, congés et absences.",
-  keywords: ["planning", "hopital", "ICS", "calendrier", "medical", "garde", "congés", "absences", "healthcare"],
+  title: "PGV Planning - Gestion des Plannings d'Équipe",
+  description: "Solution professionnelle de gestion des plannings pour équipes et organisations. Gérez congés, présences, télétravail et formations. Export ICS compatible tous calendriers.",
+  keywords: ["planning", "équipe", "ICS", "calendrier", "congés", "absences", "télétravail", "organisation", "RH", "gestion"],
   authors: [{ name: "Blackout Prod" }],
   openGraph: {
-    title: "PGV Planning - Gestion Planning Hospitalier",
-    description: "Solution professionnelle de gestion des plannings pour le secteur hospitalier",
+    title: "PGV Planning - Gestion des Plannings d'Équipe",
+    description: "Solution professionnelle de gestion des plannings pour équipes et organisations",
     locale: "fr_FR",
     type: "website",
   },
