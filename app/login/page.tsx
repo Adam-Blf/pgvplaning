@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Mail, Lock, Loader2, AlertTriangle, UserIcon, Phone } from 'lucide-react';
+import { Calendar, Mail, Lock, Loader2, AlertTriangle, UserIcon, Phone, Cake } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
 // Mapping des erreurs Supabase vers des messages en français
@@ -62,6 +62,7 @@ export default function LoginPage() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
+  const [birthDate, setBirthDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -100,6 +101,7 @@ export default function LoginPage() {
               last_name: lastName,
               full_name: `${firstName} ${lastName}`.trim(),
               phone: phone,
+              birth_date: birthDate || null,
             },
           },
         });
@@ -191,20 +193,38 @@ export default function LoginPage() {
                 )}
 
                 {mode === 'signup' && (
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-slate-400 mb-2">
-                      Téléphone
-                    </label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                      <input
-                        id="phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                        placeholder="06 12 34 56 78"
-                      />
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-slate-400 mb-2">
+                        Téléphone
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input
+                          id="phone"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                          placeholder="06 12 34 56 78"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="birthDate" className="block text-sm font-medium text-slate-400 mb-2">
+                        Date de naissance
+                      </label>
+                      <div className="relative">
+                        <Cake className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                        <input
+                          id="birthDate"
+                          type="date"
+                          value={birthDate}
+                          onChange={(e) => setBirthDate(e.target.value)}
+                          className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all [color-scheme:dark]"
+                          max={new Date().toISOString().split('T')[0]}
+                        />
+                      </div>
                     </div>
                   </div>
                 )}

@@ -1,17 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-import { CalendarGrid } from '@/components/features/calendar-grid';
+import { useState, useEffect } from 'react';
+import { CalendarGrid, Birthday } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
-import { Info, Briefcase, Home, GraduationCap, Presentation, Palmtree, Calendar } from 'lucide-react';
+import { Info, Briefcase, Home, GraduationCap, Presentation, Palmtree, Calendar, Cake } from 'lucide-react';
 
 type Tool = DayStatus | 'ERASER';
 
 export default function CalendarPage() {
   const [currentTool, setCurrentTool] = useState<Tool>('WORK');
   const [currentHalfDay, setCurrentHalfDay] = useState<HalfDay>('FULL');
+  const [birthdays, setBirthdays] = useState<Birthday[]>([]);
   const { getDayStatus, getHalfDayStatus, hasSplitDay, setDayStatus, formatDateKey } = useCalendarData();
+
+  // Fetch team birthdays
+  useEffect(() => {
+    const fetchBirthdays = async () => {
+      try {
+        const response = await fetch('/api/teams/birthdays');
+        if (response.ok) {
+          const data = await response.json();
+          setBirthdays(data.birthdays || []);
+        }
+      } catch (error) {
+        console.error('Error fetching birthdays:', error);
+      }
+    };
+    fetchBirthdays();
+  }, []);
 
   return (
     <div className="space-y-6 stagger-children">
@@ -48,6 +65,7 @@ export default function CalendarPage() {
         hasSplitDay={hasSplitDay}
         setDayStatus={setDayStatus}
         formatDateKey={formatDateKey}
+        birthdays={birthdays}
       />
 
       {/* Légende */}
@@ -80,6 +98,10 @@ export default function CalendarPage() {
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
             <div className="w-4 h-4 rounded bg-[var(--bg-tertiary)] border border-[var(--border-default)]" />
             <span className="text-sm font-medium text-[var(--text-muted)]">Week-end / Férié</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30">
+            <Cake className="w-4 h-4 text-pink-500" />
+            <span className="text-sm font-medium text-pink-500">Anniversaire</span>
           </div>
         </div>
       </div>

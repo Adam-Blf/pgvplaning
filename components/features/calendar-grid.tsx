@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays, Cake } from 'lucide-react';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +23,13 @@ const STATUS_CLASSES: Record<DayStatus, string> = {
   OFF: 'calendar-day-off',
 };
 
+export interface Birthday {
+  userId: string;
+  name: string;
+  birthMonth: number;
+  birthDay: number;
+}
+
 interface CalendarGridProps {
   currentTool: DayStatus | 'ERASER';
   currentHalfDay: HalfDay;
@@ -32,6 +39,7 @@ interface CalendarGridProps {
   setDayStatus: (date: string, status: DayStatus | null, halfDay?: HalfDay) => void;
   formatDateKey: (date: Date) => string;
   onMonthChange?: (year: number, month: number) => void;
+  birthdays?: Birthday[];
 }
 
 export function CalendarGrid({
@@ -43,6 +51,7 @@ export function CalendarGrid({
   setDayStatus,
   formatDateKey,
   onMonthChange,
+  birthdays = [],
 }: CalendarGridProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -92,6 +101,13 @@ export function CalendarGrid({
   const handleMouseUp = useCallback(() => {
     setIsMouseDown(false);
   }, []);
+
+  // Helper to check if a date has a birthday
+  const getBirthdaysForDate = useCallback((date: Date): Birthday[] => {
+    const dayOfMonth = date.getDate();
+    const monthOfYear = date.getMonth() + 1; // 1-indexed
+    return birthdays.filter(b => b.birthDay === dayOfMonth && b.birthMonth === monthOfYear);
+  }, [birthdays]);
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
@@ -177,6 +193,8 @@ export function CalendarGrid({
           const isWeekend = date.getDay() === 0 || date.getDay() === 6;
           const isToday = new Date().toDateString() === date.toDateString();
           const isSplit = hasSplitDay(date);
+          const dateBirthdays = getBirthdaysForDate(date);
+          const hasBirthday = dateBirthdays.length > 0;
 
           // For split days, get individual half-day statuses
           const amStatus = getHalfDayStatus(date, 'AM');
@@ -189,14 +207,14 @@ export function CalendarGrid({
               <div
                 key={formatDateKey(date)}
                 className={cn(
-                  'calendar-day calendar-day-split',
+                  'calendar-day calendar-day-split relative',
                   isToday && 'today'
                 )}
                 onMouseDown={(e) => handleMouseDown(date, e)}
                 onMouseEnter={() => handleMouseEnter(date)}
                 role="button"
                 tabIndex={0}
-                aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()} - Matin: ${amStatus || 'Travail'}, Après-midi: ${pmStatus || 'Travail'}`}
+                aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()} - Matin: ${amStatus || 'Travail'}, Après-midi: ${pmStatus || 'Travail'}${hasBirthday ? ` - Anniversaire: ${dateBirthdays.map(b => b.name).join(', ')}` : ''}`}
               >
                 <div className="calendar-day-split-container">
                   <div
@@ -215,6 +233,14 @@ export function CalendarGrid({
                   />
                 </div>
                 <span className="calendar-day-number">{date.getDate()}</span>
+                {hasBirthday && (
+                  <div
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center shadow-lg z-10"
+                    title={`🎂 ${dateBirthdays.map(b => b.name).join(', ')}`}
+                  >
+                    <Cake className="w-3 h-3 text-white" />
+                  </div>
+                )}
               </div>
             );
           }
@@ -223,7 +249,7 @@ export function CalendarGrid({
             <div
               key={formatDateKey(date)}
               className={cn(
-                'calendar-day',
+                'calendar-day relative',
                 STATUS_CLASSES[fullStatus],
                 isWeekend && 'weekend',
                 isToday && 'today'
@@ -232,10 +258,18 @@ export function CalendarGrid({
               onMouseEnter={() => !isWeekend && handleMouseEnter(date)}
               role="button"
               tabIndex={isWeekend ? -1 : 0}
-              aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`}
+              aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}${hasBirthday ? ` - Anniversaire: ${dateBirthdays.map(b => b.name).join(', ')}` : ''}`}
               aria-disabled={isWeekend}
             >
               {date.getDate()}
+              {hasBirthday && (
+                <div
+                  className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 rounded-full flex items-center justify-center shadow-lg z-10"
+                  title={`🎂 ${dateBirthdays.map(b => b.name).join(', ')}`}
+                >
+                  <Cake className="w-3 h-3 text-white" />
+                </div>
+              )}
             </div>
           );
         })}

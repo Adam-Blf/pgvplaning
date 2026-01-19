@@ -3,14 +3,105 @@ import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
-// Schema for joining a team
+// Schema for joining a team - simplified, uses team's default leave days
 const joinTeamSchema = z.object({
   code: z.string()
     .length(8, 'Le code doit contenir 8 caractères')
     .regex(/^[A-Z0-9]+$/, 'Le code ne doit contenir que des lettres majuscules et chiffres'),
-  employeeType: z.enum(['employee', 'executive']).default('employee'),
-  customLeaveDays: z.number().min(0).max(60).optional(),
 });
+
+// Schema for checking a team code (step 1)
+const checkCodeSchema = z.object({
+  code: z.string()
+    .length(8, 'Le code doit contenir 8 caractères')
+    .regex(/^[A-Z0-9]+$/, 'Le code ne doit contenir que des lettres majuscules et chiffres'),
+});
+
+// GET /api/teams/join?code=XXXXXXXX - Check team code and get sector
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const code = searchParams.get('code');
+
+  if (!code) {
+    return NextResponse.json(
+      { error: 'Code requis' },
+      { status: 400 }
+    );
+  }
+
+  // Validate code format
+  const validationResult = checkCodeSchema.safeParse({ code: code.toUpperCase() });
+  if (!validationResult.success) {
+    return NextResponse.json(
+      { error: validationResult.error.errors[0].message },
+      { status: 400 }
+    );
+  }
+
+  // Rate limiting
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`check:${clientId}`, RATE_LIMITS.teamJoin);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de tentatives. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
+  try {
+    const supabase = await createClient();
+
+    // Get current user (optional check)
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Non authentifié' },
+        { status: 401 }
+      );
+    }
+
+    // Use admin client for database operations
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return NextResponse.json(
+        { error: 'Configuration serveur manquante' },
+        { status: 500 }
+      );
+    }
+
+    // Find team by code
+    const { data: team, error: teamError } = await adminClient
+      .from('teams')
+      .select('id, name, sector')
+      .eq('code', code.toUpperCase())
+      .single();
+
+    if (teamError || !team) {
+      return NextResponse.json(
+        { error: 'Code équipe invalide' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      team: {
+        id: team.id,
+        name: team.name,
+        sector: team.sector || 'public',
+      },
+    });
+
+  } catch (error) {
+    console.error('Error in GET /api/teams/join:', error);
+    return NextResponse.json(
+      { error: 'Erreur serveur' },
+      { status: 500 }
+    );
+  }
+}
 
 // POST /api/teams/join - Join a team with code
 export async function POST(request: NextRequest) {
@@ -101,13 +192,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { code, employeeType, customLeaveDays } = validationResult.data;
+    const { code } = validationResult.data;
 
-    // Calculate leave days based on employee type
-    const defaultLeaveDays = employeeType === 'executive' ? 30 : 25;
-    const annualLeaveDays = customLeaveDays ?? defaultLeaveDays;
-
-    // Find team by code
+    // Find team by code (includes default_leave_days)
     const { data: team, error: teamError } = await adminClient
       .from('teams')
       .select('*')
@@ -121,14 +208,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add user as member with employee type and leave days
+    // Use team's default leave days (set by team creator)
+    const annualLeaveDays = team.default_leave_days || 25;
+
+    // Add user as member with team's default leave days
     const { data: membership, error: memberError } = await adminClient
       .from('team_members')
       .insert({
         user_id: user.id,
         team_id: team.id,
         role: 'member',
-        employee_type: employeeType,
+        employee_type: 'employee',
         annual_leave_days: annualLeaveDays,
         leave_balance: annualLeaveDays,
         leave_balance_year: new Date().getFullYear(),
@@ -165,6 +255,7 @@ export async function POST(request: NextRequest) {
         id: team.id,
         name: team.name,
         code: team.code,
+        sector: team.sector || 'public',
       },
       membership,
       message: 'Vous avez rejoint l\'équipe avec succès',
