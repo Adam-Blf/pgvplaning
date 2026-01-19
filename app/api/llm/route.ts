@@ -1,5 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Liste blanche des hosts autorisés pour les appels API externes (SSRF protection)
+const ALLOWED_HOSTS = [
+  'localhost',
+  '127.0.0.1',
+  'api-inference.huggingface.co',
+  'api.openai.com',
+  'api.anthropic.com',
+  'generativelanguage.googleapis.com',
+];
+
+function isAllowedEndpoint(endpoint: string): boolean {
+  try {
+    const url = new URL(endpoint);
+    return ALLOWED_HOSTS.some(host =>
+      url.hostname === host || url.hostname.endsWith(`.${host}`)
+    );
+  } catch {
+    return false;
+  }
+}
+
 // System prompt optimisé pour les messages d'absence
 const SYSTEM_PROMPT = `Tu es un assistant RH spécialisé dans la rédaction de messages d'absence professionnels pour une entreprise française.
 
@@ -124,6 +145,13 @@ export async function POST(request: NextRequest) {
       // Utiliser l'API Hugging Face gratuite
       text = await callHuggingFace(prompt, apiKey);
     } else {
+      // Valider l'endpoint contre SSRF
+      if (!isAllowedEndpoint(apiEndpoint)) {
+        return NextResponse.json(
+          { error: 'Endpoint non autorisé. Utilisez un service API connu (OpenAI, HuggingFace, localhost).' },
+          { status: 403 }
+        );
+      }
       // Utiliser l'endpoint configuré (local, OpenAI, etc.)
       text = await callOpenAICompatible(prompt, apiEndpoint, apiKey, modelName);
     }

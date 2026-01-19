@@ -28,6 +28,18 @@ const securityHeaders = [
   {
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=()'
+  },
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "font-src 'self'",
+      "connect-src 'self' https://api-inference.huggingface.co https://generativelanguage.googleapis.com https://ttchixfuljckqtyzopqz.supabase.co wss://ttchixfuljckqtyzopqz.supabase.co",
+      "frame-ancestors 'none'",
+    ].join('; ')
   }
 ];
 
