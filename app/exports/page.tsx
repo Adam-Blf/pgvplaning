@@ -267,7 +267,7 @@ export default function ExportsPage() {
             <Mail className="w-4 h-4 text-[var(--accent)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
-            Générateur de message d'absence
+            Générateur de message d&apos;absence
           </h2>
         </div>
 
@@ -294,7 +294,7 @@ export default function ExportsPage() {
             </div>
             <div>
               <label htmlFor="reason" className="label">
-                Raison de l'absence
+                Raison de l&apos;absence
               </label>
               <select
                 id="reason"
@@ -368,7 +368,7 @@ export default function ExportsPage() {
             Service de génération
           </h4>
           <p className="text-sm text-[var(--text-secondary)]">
-            Le générateur de message utilise un modèle d'intelligence artificielle open source (Mistral 7B).
+            Le générateur de message utilise un modèle d&apos;intelligence artificielle open source (Mistral 7B).
             Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
           </p>
         </div>

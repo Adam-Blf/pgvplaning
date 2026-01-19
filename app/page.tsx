@@ -147,7 +147,7 @@ export default function HomePage() {
           </h4>
           <p className="text-sm text-[var(--text-secondary)]">
             Vos données sont stockées localement dans votre navigateur conformément aux normes de confidentialité.
-            Aucune information n'est transmise à des serveurs externes.
+            Aucune information n&apos;est transmise à des serveurs externes.
           </p>
         </div>
       </div>

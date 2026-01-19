@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Copy, Check, Database, ExternalLink, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
@@ -220,9 +221,9 @@ export default function SetupPage() {
 
         {/* Back Link */}
         <div className="mt-6 text-center">
-          <a href="/" className="text-slate-400 hover:text-white transition-colors">
+          <Link href="/" className="text-slate-400 hover:text-white transition-colors">
             ← Retour à l&apos;application
-          </a>
+          </Link>
         </div>
       </div>
     </div>

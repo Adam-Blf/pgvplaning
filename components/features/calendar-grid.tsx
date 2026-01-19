@@ -131,7 +131,7 @@ export function CalendarGrid({
             onClick={goToToday}
             className="btn-ghost text-sm px-3 py-1"
           >
-            Aujourd'hui
+            Aujourd&apos;hui
           </button>
         </div>
 
