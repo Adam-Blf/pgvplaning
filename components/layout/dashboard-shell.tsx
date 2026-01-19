@@ -153,12 +153,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </span>
             </div>
             <div className="flex gap-6 text-sm">
-              <a href="#" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
+              <Link href="/mentions-legales" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
                 Mentions légales
-              </a>
-              <a href="#" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
+              </Link>
+              <Link href="/contact" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -42,6 +42,8 @@
   --status-remote-bg: rgba(16, 185, 129, 0.15);
   --status-training: #f59e0b;
   --status-training-bg: rgba(245, 158, 11, 0.15);
+  --status-trainer: #8b5cf6;
+  --status-trainer-bg: rgba(139, 92, 246, 0.15);
   --status-leave: #f43f5e;
   --status-leave-bg: rgba(244, 63, 94, 0.15);
 
@@ -798,6 +800,27 @@ a:hover {
   opacity: 1;
 }
 
+.calendar-day-trainer {
+  background: var(--status-trainer-bg);
+  border-color: var(--status-trainer);
+  color: var(--status-trainer);
+}
+
+.calendar-day-trainer::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, transparent, rgba(139, 92, 246, 0.3));
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+}
+
+.calendar-day-trainer:hover::after {
+  opacity: 1;
+}
+
 .calendar-day-leave {
   background: var(--status-leave-bg);
   border-color: var(--status-leave);
@@ -937,6 +960,17 @@ a:hover {
 .tool-btn-training.active,
 .tool-btn-training:hover {
   background: var(--status-training);
+  color: var(--bg-primary);
+}
+
+.tool-btn-trainer {
+  color: var(--status-trainer);
+  border-color: var(--status-trainer);
+}
+
+.tool-btn-trainer.active,
+.tool-btn-trainer:hover {
+  background: var(--status-trainer);
   color: var(--bg-primary);
 }
 

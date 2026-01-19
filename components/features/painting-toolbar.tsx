@@ -1,6 +1,6 @@
 'use client';
 
-import { Eraser, Briefcase, Home, GraduationCap, Palmtree } from 'lucide-react';
+import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree } from 'lucide-react';
 import { DayStatus } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils/cn';
 
@@ -31,9 +31,16 @@ const tools: ToolConfig[] = [
   },
   {
     id: 'SCHOOL',
-    label: 'Formation',
+    label: 'Formation reçue',
     icon: GraduationCap,
     className: 'tool-btn-training',
+    activeClass: 'active',
+  },
+  {
+    id: 'TRAINER',
+    label: 'Formateur/Réunion',
+    icon: Presentation,
+    className: 'tool-btn-trainer',
     activeClass: 'active',
   },
   {

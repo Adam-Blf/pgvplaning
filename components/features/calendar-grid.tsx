@@ -17,6 +17,7 @@ const STATUS_CLASSES: Record<DayStatus, string> = {
   WORK: 'calendar-day-work',
   REMOTE: 'calendar-day-remote',
   SCHOOL: 'calendar-day-training',
+  TRAINER: 'calendar-day-trainer',
   LEAVE: 'calendar-day-leave',
   HOLIDAY: 'calendar-day-holiday',
   OFF: 'calendar-day-off',

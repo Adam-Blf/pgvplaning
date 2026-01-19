@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { CalendarGrid } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
-import { Info, Briefcase, Home, GraduationCap, Palmtree, Calendar } from 'lucide-react';
+import { Info, Briefcase, Home, GraduationCap, Presentation, Palmtree, Calendar } from 'lucide-react';
 
 type Tool = DayStatus | 'ERASER';
 
@@ -58,7 +58,11 @@ export default function CalendarPage() {
           </div>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-training-bg)] border border-[var(--status-training)]">
             <GraduationCap className="w-4 h-4 text-[var(--status-training)]" />
-            <span className="text-sm font-medium text-[var(--status-training)]">Formation</span>
+            <span className="text-sm font-medium text-[var(--status-training)]">Formation reçue</span>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-trainer-bg)] border border-[var(--status-trainer)]">
+            <Presentation className="w-4 h-4 text-[var(--status-trainer)]" />
+            <span className="text-sm font-medium text-[var(--status-trainer)]">Formateur/Réunion</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-leave-bg)] border border-[var(--status-leave)]">
             <Palmtree className="w-4 h-4 text-[var(--status-leave)]" />

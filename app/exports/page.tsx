@@ -29,10 +29,17 @@ const exportCards = [
   },
   {
     id: 'SCHOOL' as DayStatus,
-    title: 'Formation',
-    description: 'Exporter les jours de formation (statut absent)',
+    title: 'Formation reçue',
+    description: 'Exporter les jours où vous suivez une formation',
     icon: GraduationCap,
     statusClass: 'status-training',
+  },
+  {
+    id: 'TRAINER' as DayStatus,
+    title: 'Formateur/Réunion',
+    description: 'Exporter les jours de formation donnée ou réunion',
+    icon: GraduationCap,
+    statusClass: 'status-trainer',
   },
   {
     id: 'LEAVE' as DayStatus,
@@ -56,6 +63,7 @@ export default function ExportsPage() {
       WORK: 0,
       REMOTE: 0,
       SCHOOL: 0,
+      TRAINER: 0,
       LEAVE: 0,
       HOLIDAY: 0,
       OFF: 0,
@@ -202,6 +210,11 @@ export default function ExportsPage() {
                 bg: 'bg-[var(--status-training-bg)]',
                 border: 'border-[var(--status-training)]',
                 text: 'text-[var(--status-training)]',
+              },
+              'status-trainer': {
+                bg: 'bg-[var(--status-trainer-bg)]',
+                border: 'border-[var(--status-trainer)]',
+                text: 'text-[var(--status-trainer)]',
               },
               'status-leave': {
                 bg: 'bg-[var(--status-leave-bg)]',

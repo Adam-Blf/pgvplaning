@@ -17,7 +17,8 @@ interface AbsencePeriod {
 const STATUS_LABELS: Record<DayStatus, string> = {
   WORK: 'Bureau',
   REMOTE: 'Télétravail',
-  SCHOOL: 'Formation',
+  SCHOOL: 'Formation reçue',
+  TRAINER: 'Formateur/Réunion',
   LEAVE: 'Congés',
   HOLIDAY: 'Jour férié',
   OFF: 'Week-end',
@@ -27,6 +28,7 @@ const STATUS_COLORS: Record<DayStatus, string> = {
   WORK: 'bg-emerald-100 text-emerald-700',
   REMOTE: 'bg-purple-100 text-purple-700',
   SCHOOL: 'bg-orange-100 text-orange-700',
+  TRAINER: 'bg-violet-100 text-violet-700',
   LEAVE: 'bg-pink-100 text-pink-700',
   HOLIDAY: 'bg-red-100 text-red-700',
   OFF: 'bg-slate-100 text-slate-500',

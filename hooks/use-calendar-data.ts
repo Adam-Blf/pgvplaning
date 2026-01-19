@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-export type DayStatus = 'WORK' | 'REMOTE' | 'SCHOOL' | 'LEAVE' | 'HOLIDAY' | 'OFF';
+export type DayStatus = 'WORK' | 'REMOTE' | 'SCHOOL' | 'TRAINER' | 'LEAVE' | 'HOLIDAY' | 'OFF';
 
 export interface CalendarData {
   [date: string]: DayStatus;
