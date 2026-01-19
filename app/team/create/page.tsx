@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Users, ArrowLeft, Copy, Check, Loader2, Calendar, Building2, Briefcase, LogOut } from 'lucide-react';
+import { Users, ArrowLeft, Copy, Check, Loader2, Calendar, Building2, Briefcase, LogOut, UserCog, User } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { createClient } from '@/lib/supabase/client';
@@ -13,7 +13,8 @@ export default function TeamCreatePage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [sector, setSector] = useState<'public' | 'private'>('public');
-  const [defaultLeaveDays, setDefaultLeaveDays] = useState(25);
+  const [leaveDaysEmployee, setLeaveDaysEmployee] = useState(25);
+  const [leaveDaysExecutive, setLeaveDaysExecutive] = useState(25);
   const [loading, setLoading] = useState(false);
   const [createdTeam, setCreatedTeam] = useState<{ name: string; code: string; sector: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -44,7 +45,8 @@ export default function TeamCreatePage() {
           name: name.trim(),
           description: description.trim(),
           sector,
-          defaultLeaveDays,
+          leaveDaysEmployee,
+          leaveDaysExecutive,
         }),
       });
 
@@ -300,33 +302,79 @@ export default function TeamCreatePage() {
               </div>
             </div>
 
-            {/* Leave Days */}
-            <div>
-              <label htmlFor="leaveDays" className="block text-xs font-mono text-zinc-500 mb-2 flex items-center gap-1.5">
+            {/* Leave Days by Status */}
+            <div className="pt-4 border-t border-zinc-800/50">
+              <label className="block text-xs font-mono text-zinc-500 mb-3 flex items-center gap-1.5">
                 <Calendar className="w-3 h-3" />
-                JOURS DE CONGÉS / AN *
+                JOURS DE CONGÉS / AN PAR STATUT *
               </label>
-              <input
-                id="leaveDays"
-                type="number"
-                min={0}
-                max={60}
-                value={defaultLeaveDays}
-                onChange={(e) => setDefaultLeaveDays(parseInt(e.target.value) || 0)}
-                className="w-full px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 text-zinc-100 focus:outline-none focus:border-amber-500/50 transition-colors font-mono"
-                required
-              />
-              <p className="text-xs text-zinc-600 mt-1.5">
-                Ce nombre sera appliqué à tous les membres de l&apos;équipe
-              </p>
+
+              <div className="grid grid-cols-2 gap-3">
+                {/* Non-cadre */}
+                <div className="p-4 rounded-xl border border-zinc-700/50 bg-zinc-800/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <User className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-200">Non-cadre</p>
+                      <p className="text-xs text-zinc-600">Employé standard</p>
+                    </div>
+                  </div>
+                  <input
+                    id="leaveDaysEmployee"
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={leaveDaysEmployee}
+                    onChange={(e) => setLeaveDaysEmployee(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900/50 border border-zinc-700/50 text-zinc-100 focus:outline-none focus:border-blue-500/50 transition-colors font-mono text-center text-lg"
+                    required
+                  />
+                  <p className="text-xs text-zinc-600 mt-1.5 text-center">jours/an</p>
+                </div>
+
+                {/* Cadre */}
+                <div className="p-4 rounded-xl border border-zinc-700/50 bg-zinc-800/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                      <UserCog className="w-4 h-4 text-violet-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-200">Cadre</p>
+                      <p className="text-xs text-zinc-600">Executive</p>
+                    </div>
+                  </div>
+                  <input
+                    id="leaveDaysExecutive"
+                    type="number"
+                    min={0}
+                    max={60}
+                    value={leaveDaysExecutive}
+                    onChange={(e) => setLeaveDaysExecutive(parseInt(e.target.value) || 0)}
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900/50 border border-zinc-700/50 text-zinc-100 focus:outline-none focus:border-violet-500/50 transition-colors font-mono text-center text-lg"
+                    required
+                  />
+                  <p className="text-xs text-zinc-600 mt-1.5 text-center">jours/an</p>
+                </div>
+              </div>
             </div>
 
             {/* Summary */}
             <div className="bg-zinc-800/30 rounded-xl p-4 border border-zinc-700/30">
-              <p className="text-sm text-zinc-400">
-                <span className="text-zinc-600 font-mono text-xs">RÉCAPITULATIF:</span><br />
-                <span className="text-zinc-200">{defaultLeaveDays} jours</span> de congés par an pour tous les membres
-              </p>
+              <p className="text-xs text-zinc-600 font-mono mb-2">RÉCAPITULATIF:</p>
+              <div className="flex gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                  <span className="text-zinc-400">Non-cadres:</span>
+                  <span className="text-zinc-200 font-medium">{leaveDaysEmployee}j</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-violet-400"></div>
+                  <span className="text-zinc-400">Cadres:</span>
+                  <span className="text-zinc-200 font-medium">{leaveDaysExecutive}j</span>
+                </div>
+              </div>
             </div>
 
             <button
