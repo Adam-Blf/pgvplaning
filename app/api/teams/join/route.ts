@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
 // Schema for joining a team
 const joinTeamSchema = z.object({
@@ -13,6 +14,17 @@ const joinTeamSchema = z.object({
 
 // POST /api/teams/join - Join a team with code
 export async function POST(request: NextRequest) {
+  // Rate limiting to prevent brute force on team codes
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`join:${clientId}`, RATE_LIMITS.teamJoin);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de tentatives. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
   try {
     const supabase = await createClient();
 
@@ -133,10 +145,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's profile with current team
-    await adminClient
+    const { error: profileUpdateError } = await adminClient
       .from('profiles')
       .update({ current_team_id: team.id })
       .eq('id', user.id);
+
+    if (profileUpdateError) {
+      // Rollback membership if profile update fails
+      console.error('Error updating profile:', profileUpdateError);
+      await adminClient.from('team_members').delete().eq('id', membership.id);
+      return NextResponse.json(
+        { error: 'Erreur lors de la configuration du profil' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       team: {

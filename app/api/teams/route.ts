@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { z } from 'zod';
+import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
 // Schema for team creation
 const createTeamSchema = z.object({
@@ -12,6 +13,17 @@ const createTeamSchema = z.object({
 
 // POST /api/teams - Create a new team
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`teams:${clientId}`, RATE_LIMITS.teams);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
   try {
     const supabase = await createClient();
 
@@ -121,7 +133,18 @@ export async function POST(request: NextRequest) {
         );
       }
       return NextResponse.json(
-        { error: `Erreur lors de la création de l'équipe: ${teamError.message}` },
+        { error: 'Erreur lors de la création de l\'équipe' },
+        { status: 500 }
+      );
+    }
+
+    // Validate that code was generated correctly (defensive programming)
+    if (!team?.code || !/^[A-Z0-9]{8}$/.test(team.code)) {
+      console.error('Invalid team code generated:', team?.code);
+      // Rollback: delete the team
+      await adminClient.from('teams').delete().eq('id', team.id);
+      return NextResponse.json(
+        { error: 'Erreur lors de la génération du code équipe. Veuillez réessayer.' },
         { status: 500 }
       );
     }
@@ -143,7 +166,10 @@ export async function POST(request: NextRequest) {
 
     if (memberError) {
       // Rollback: delete the team
-      await adminClient.from('teams').delete().eq('id', team.id);
+      const { error: deleteError } = await adminClient.from('teams').delete().eq('id', team.id);
+      if (deleteError) {
+        console.error('Failed to rollback team creation:', deleteError);
+      }
       console.error('Error adding leader:', memberError);
       return NextResponse.json(
         { error: 'Erreur lors de l\'ajout du leader' },
@@ -152,10 +178,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's profile with current team
-    await adminClient
+    const { error: profileUpdateError } = await adminClient
       .from('profiles')
       .update({ current_team_id: team.id })
       .eq('id', user.id);
+
+    if (profileUpdateError) {
+      // Rollback everything if profile update fails
+      console.error('Error updating profile:', profileUpdateError);
+      await adminClient.from('team_members').delete().eq('id', membership.id);
+      await adminClient.from('teams').delete().eq('id', team.id);
+      return NextResponse.json(
+        { error: 'Erreur lors de la configuration du profil' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       team,

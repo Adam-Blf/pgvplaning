@@ -39,22 +39,8 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Routes publiques accessibles sans connexion
   // L'application fonctionne en mode "guest" par défaut avec localStorage
-  const publicRoutes = [
-    '/',
-    '/login',
-    '/auth/callback',
-    '/auth/confirm',
-    '/setup',
-    '/calendar',
-    '/exports',
-    '/settings',
-    '/api',
-  ];
-  const isPublicRoute = publicRoutes.some((route) =>
-    pathname === route || pathname.startsWith(route + '/')
-  );
+  // Seules certaines routes nécessitent une authentification
 
   // Routes qui nécessitent une connexion (fonctionnalités équipe)
   const protectedRoutes = ['/team-planner', '/team/members', '/team/settings'];

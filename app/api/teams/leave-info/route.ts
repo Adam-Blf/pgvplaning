@@ -49,19 +49,38 @@ export async function GET() {
     let leaveBalance = membership.leave_balance;
     let needsReset = false;
 
-    // Check if reset is needed (new year)
+    // Check if reset is needed (new year) - use atomic conditional update to prevent race condition
     if (membership.leave_balance_year < currentYear) {
-      leaveBalance = membership.annual_leave_days;
-      needsReset = true;
-
-      // Update the balance in DB
-      await adminClient
+      // Atomic update: only update if year is still old (prevents race condition)
+      const { data: updated, error: updateError } = await adminClient
         .from('team_members')
         .update({
           leave_balance: membership.annual_leave_days,
           leave_balance_year: currentYear,
         })
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .lt('leave_balance_year', currentYear) // Only update if year is still old
+        .select('leave_balance, leave_balance_year')
+        .single();
+
+      if (!updateError && updated) {
+        // Update was successful (we were first)
+        leaveBalance = updated.leave_balance;
+        needsReset = true;
+      } else {
+        // Another request already updated, fetch fresh data
+        const { data: freshData } = await adminClient
+          .from('team_members')
+          .select('leave_balance, leave_balance_year')
+          .eq('user_id', user.id)
+          .single();
+
+        if (freshData) {
+          leaveBalance = freshData.leave_balance;
+          needsReset = freshData.leave_balance_year === currentYear &&
+                       membership.leave_balance_year < currentYear;
+        }
+      }
     }
 
     // Calculate used days
