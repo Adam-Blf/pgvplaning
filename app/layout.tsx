@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import "./globals.css";
 
 const inter = Inter({
@@ -57,6 +58,7 @@ export default function RootLayout({
         <DashboardShell>
           {children}
         </DashboardShell>
+        <OnboardingTutorial />
         <Toaster
           position="bottom-right"
           toastOptions={{
