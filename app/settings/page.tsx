@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Database,
   AlertTriangle,
   Save,
   Trash2,
   Check,
   Mail,
   User,
-  Sparkles,
   Zap,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,7 +17,7 @@ export default function SettingsPage() {
   const [notificationEmail, setNotificationEmail] = useState('');
   const [userName, setUserName] = useState('');
   const [isEmailSaved, setIsEmailSaved] = useState(false);
-  const { resetData, loadDemoData } = useCalendarData();
+  const { resetData } = useCalendarData();
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('notification_email');
@@ -51,52 +49,8 @@ export default function SettingsPage() {
     }
   };
 
-  const handleLoadDemo = () => {
-    loadDemoData();
-    toast.success('Données de démonstration chargées');
-  };
-
   return (
     <div className="max-w-2xl mx-auto space-y-6 stagger-children">
-      {/* Assistant IA */}
-      <div className="card">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[var(--accent-subtle)] flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-[var(--accent)]" />
-          </div>
-          <h3 className="text-lg font-bold text-[var(--text-primary)]">
-            Assistant IA
-          </h3>
-        </div>
-
-        {/* Status IA */}
-        <div className="p-4 rounded-xl bg-[var(--success-bg)] border border-[rgba(34,197,94,0.3)] mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 bg-[var(--success)] rounded-full animate-pulse" />
-            <div>
-              <p className="font-medium text-[var(--success)]">IA Active</p>
-              <p className="text-xs text-[var(--text-muted)]">
-                Propulsé par Mistral 7B (Open Source, Gratuit)
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-[var(--border-subtle)] pt-6">
-          <h4 className="font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
-            <Database className="w-4 h-4 text-[var(--text-muted)]" />
-            Données de Démonstration
-          </h4>
-          <p className="text-sm text-[var(--text-muted)] mb-4">
-            Chargez un exemple de planning avec alternance, télétravail et congés.
-          </p>
-          <button onClick={handleLoadDemo} className="btn btn-secondary">
-            <Database className="w-4 h-4" />
-            Charger un exemple (Alternance)
-          </button>
-        </div>
-      </div>
-
       {/* Notifications Email */}
       <div className="card">
         <div className="flex items-center gap-3 mb-6">
