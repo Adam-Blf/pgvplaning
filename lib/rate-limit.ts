@@ -1,6 +1,36 @@
 /**
  * Simple in-memory rate limiting utility
- * For production, consider using Redis with @upstash/ratelimit
+ *
+ * PRODUCTION RECOMMENDATION:
+ * For production deployments with multiple server instances,
+ * replace this with Redis-based rate limiting using @upstash/ratelimit:
+ *
+ * ```bash
+ * npm install @upstash/ratelimit @upstash/redis
+ * ```
+ *
+ * ```typescript
+ * import { Ratelimit } from '@upstash/ratelimit';
+ * import { Redis } from '@upstash/redis';
+ *
+ * const redis = Redis.fromEnv();
+ * const ratelimit = new Ratelimit({
+ *   redis,
+ *   limiter: Ratelimit.slidingWindow(10, '1 m'),
+ *   analytics: true,
+ * });
+ *
+ * const { success, limit, remaining, reset } = await ratelimit.limit(identifier);
+ * ```
+ *
+ * Environment variables needed:
+ * - UPSTASH_REDIS_REST_URL
+ * - UPSTASH_REDIS_REST_TOKEN
+ *
+ * Current implementation uses in-memory Map which:
+ * - Resets on server restart
+ * - Does not share state between server instances
+ * - Is suitable for development and single-instance deployments
  */
 
 interface RateLimitEntry {
