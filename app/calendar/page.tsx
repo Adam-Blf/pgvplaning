@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import { CalendarGrid } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
-import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
+import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { Info, Briefcase, Home, GraduationCap, Presentation, Palmtree, Calendar } from 'lucide-react';
 
 type Tool = DayStatus | 'ERASER';
 
 export default function CalendarPage() {
   const [currentTool, setCurrentTool] = useState<Tool>('WORK');
-  const { getDayStatus, setDayStatus, formatDateKey } = useCalendarData();
+  const [currentHalfDay, setCurrentHalfDay] = useState<HalfDay>('FULL');
+  const { getDayStatus, getHalfDayStatus, hasSplitDay, setDayStatus, formatDateKey } = useCalendarData();
 
   return (
     <div className="space-y-6 stagger-children">
@@ -31,12 +32,20 @@ export default function CalendarPage() {
       </div>
 
       {/* Toolbar */}
-      <PaintingToolbar currentTool={currentTool} onToolChange={setCurrentTool} />
+      <PaintingToolbar
+        currentTool={currentTool}
+        onToolChange={setCurrentTool}
+        currentHalfDay={currentHalfDay}
+        onHalfDayChange={setCurrentHalfDay}
+      />
 
       {/* Calendar */}
       <CalendarGrid
         currentTool={currentTool}
+        currentHalfDay={currentHalfDay}
         getDayStatus={getDayStatus}
+        getHalfDayStatus={getHalfDayStatus}
+        hasSplitDay={hasSplitDay}
         setDayStatus={setDayStatus}
         formatDateKey={formatDateKey}
       />

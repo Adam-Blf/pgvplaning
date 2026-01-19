@@ -884,6 +884,85 @@ a:hover {
   border-radius: 50%;
 }
 
+/* Split day (half-day) styles */
+.calendar-day-split {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+}
+
+.calendar-day-split-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-day-am,
+.calendar-day-pm {
+  flex: 1;
+  width: 100%;
+  transition: all var(--transition-fast);
+}
+
+.calendar-day-am {
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.calendar-day-pm {
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.calendar-day-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Half-day status colors */
+.calendar-day-am.calendar-day-work,
+.calendar-day-pm.calendar-day-work {
+  background: var(--status-work-bg);
+}
+
+.calendar-day-am.calendar-day-remote,
+.calendar-day-pm.calendar-day-remote {
+  background: var(--status-remote-bg);
+}
+
+.calendar-day-am.calendar-day-training,
+.calendar-day-pm.calendar-day-training {
+  background: var(--status-training-bg);
+}
+
+.calendar-day-am.calendar-day-trainer,
+.calendar-day-pm.calendar-day-trainer {
+  background: var(--status-trainer-bg);
+}
+
+.calendar-day-am.calendar-day-leave,
+.calendar-day-pm.calendar-day-leave {
+  background: var(--status-leave-bg);
+}
+
+.calendar-day-am.calendar-day-holiday,
+.calendar-day-pm.calendar-day-holiday {
+  background: var(--bg-elevated);
+}
+
+.calendar-day-am.calendar-day-off,
+.calendar-day-pm.calendar-day-off {
+  background: var(--bg-tertiary);
+}
+
 /* Tool button */
 .tool-btn {
   display: flex;

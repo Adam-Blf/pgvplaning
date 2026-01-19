@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Mail, Send, Calendar, AlertCircle, Check, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
+import { useCalendarData, DayStatus, isDayData, DayData } from '@/hooks/use-calendar-data';
 
 interface AbsencePeriod {
   start: string;
@@ -52,13 +52,29 @@ export function NotificationSender() {
   useEffect(() => {
     // Calculer les périodes d'absence (LEAVE et SCHOOL uniquement)
     const periods: AbsencePeriod[] = [];
+
+    // Helper to get status from value (handling DayData and DayStatus)
+    const getEffectiveStatus = (value: DayStatus | DayData): DayStatus | null => {
+      if (isDayData(value)) {
+        // For half-day, prioritize LEAVE or SCHOOL
+        if (value.am === 'LEAVE' || value.am === 'SCHOOL') return value.am;
+        if (value.pm === 'LEAVE' || value.pm === 'SCHOOL') return value.pm;
+        return null;
+      }
+      if (value === 'LEAVE' || value === 'SCHOOL') return value;
+      return null;
+    };
+
     const sortedDates = Object.entries(calendarData)
-      .filter(([, status]) => status === 'LEAVE' || status === 'SCHOOL')
+      .filter(([, value]) => getEffectiveStatus(value) !== null)
       .sort(([a], [b]) => a.localeCompare(b));
 
     let currentPeriod: AbsencePeriod | null = null;
 
-    for (const [date, status] of sortedDates) {
+    for (const [date, value] of sortedDates) {
+      const status = getEffectiveStatus(value);
+      if (!status) continue;
+
       if (!currentPeriod || currentPeriod.type !== status || !isConsecutive(currentPeriod.end, date)) {
         if (currentPeriod) {
           periods.push(currentPeriod);
@@ -66,8 +82,8 @@ export function NotificationSender() {
         currentPeriod = {
           start: date,
           end: date,
-          type: status as DayStatus,
-          label: STATUS_LABELS[status as DayStatus],
+          type: status,
+          label: STATUS_LABELS[status],
         };
       } else {
         currentPeriod.end = date;

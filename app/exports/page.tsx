@@ -16,7 +16,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
+import { useCalendarData, DayStatus, isDayData } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
 const exportCards = [
@@ -57,7 +57,7 @@ export default function ExportsPage() {
   const [aiResult, setAiResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Count days per status
+  // Count days per status (handling both legacy and half-day formats)
   const dayCounts = useMemo(() => {
     const counts: Record<DayStatus, number> = {
       WORK: 0,
@@ -69,15 +69,27 @@ export default function ExportsPage() {
       OFF: 0,
     };
 
-    Object.values(data).forEach((status) => {
-      counts[status]++;
+    Object.values(data).forEach((value) => {
+      if (isDayData(value)) {
+        // Half-day format: count each half-day separately (0.5 each)
+        if (value.am) counts[value.am] += 0.5;
+        if (value.pm) counts[value.pm] += 0.5;
+      } else {
+        // Legacy format: full day
+        counts[value]++;
+      }
+    });
+
+    // Round to handle floating point
+    Object.keys(counts).forEach((key) => {
+      counts[key as DayStatus] = Math.round(counts[key as DayStatus] * 10) / 10;
     });
 
     return counts;
   }, [data]);
 
   const downloadICS = (mode: DayStatus) => {
-    const events: string[] = [];
+    const events: { date: string; halfDay?: 'AM' | 'PM' }[] = [];
     const currentYear = new Date().getFullYear();
 
     const start = new Date(currentYear - 1, 0, 1);
@@ -86,8 +98,21 @@ export default function ExportsPage() {
 
     while (current <= end) {
       const key = formatDateKey(current);
-      if (data[key] === mode) {
-        events.push(key.replace(/-/g, ''));
+      const value = data[key];
+
+      if (value) {
+        if (isDayData(value)) {
+          // Half-day format
+          if (value.am === mode) {
+            events.push({ date: key.replace(/-/g, ''), halfDay: 'AM' });
+          }
+          if (value.pm === mode) {
+            events.push({ date: key.replace(/-/g, ''), halfDay: 'PM' });
+          }
+        } else if (value === mode) {
+          // Legacy format
+          events.push({ date: key.replace(/-/g, '') });
+        }
       }
       current.setDate(current.getDate() + 1);
     }
@@ -97,7 +122,16 @@ export default function ExportsPage() {
       return;
     }
 
-    const summary = mode === 'REMOTE' ? 'Télétravail' : mode === 'SCHOOL' ? 'Formation' : 'Congés';
+    const statusLabels: Record<DayStatus, string> = {
+      WORK: 'Bureau',
+      REMOTE: 'Télétravail',
+      SCHOOL: 'Formation reçue',
+      TRAINER: 'Formateur/Réunion',
+      LEAVE: 'Congés',
+      HOLIDAY: 'Jour férié',
+      OFF: 'Week-end',
+    };
+    const summary = statusLabels[mode];
     const busy = mode === 'REMOTE' ? '' : 'X-MICROSOFT-CDO-BUSYSTATUS:OOF';
 
     const ics = [
@@ -108,14 +142,28 @@ export default function ExportsPage() {
       'METHOD:PUBLISH',
     ];
 
-    events.forEach((date) => {
+    events.forEach((event) => {
       ics.push('BEGIN:VEVENT');
-      ics.push(`DTSTART;VALUE=DATE:${date}`);
-      ics.push(`DTEND;VALUE=DATE:${date}`);
-      ics.push(`SUMMARY:${summary}`);
+
+      if (event.halfDay) {
+        // Half-day event with specific times
+        const startHour = event.halfDay === 'AM' ? '080000' : '140000';
+        const endHour = event.halfDay === 'AM' ? '120000' : '180000';
+        const halfLabel = event.halfDay === 'AM' ? ' (Matin)' : ' (Après-midi)';
+
+        ics.push(`DTSTART:${event.date}T${startHour}`);
+        ics.push(`DTEND:${event.date}T${endHour}`);
+        ics.push(`SUMMARY:${summary}${halfLabel}`);
+      } else {
+        // Full day event
+        ics.push(`DTSTART;VALUE=DATE:${event.date}`);
+        ics.push(`DTEND;VALUE=DATE:${event.date}`);
+        ics.push(`SUMMARY:${summary}`);
+      }
+
       ics.push('TRANSP:OPAQUE');
       if (busy) ics.push(busy);
-      ics.push(`UID:${date}-${mode}@pgvplanning`);
+      ics.push(`UID:${event.date}-${event.halfDay || 'FULL'}-${mode}@pgvplanning`);
       ics.push('END:VEVENT');
     });
 

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
-import { DayStatus } from '@/hooks/use-calendar-data';
+import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils/cn';
 
 const MONTH_NAMES = [
@@ -25,15 +25,21 @@ const STATUS_CLASSES: Record<DayStatus, string> = {
 
 interface CalendarGridProps {
   currentTool: DayStatus | 'ERASER';
-  getDayStatus: (date: Date) => DayStatus;
-  setDayStatus: (date: string, status: DayStatus | null) => void;
+  currentHalfDay: HalfDay;
+  getDayStatus: (date: Date, halfDay?: HalfDay) => DayStatus;
+  getHalfDayStatus: (date: Date, halfDay: 'AM' | 'PM') => DayStatus | null;
+  hasSplitDay: (date: Date) => boolean;
+  setDayStatus: (date: string, status: DayStatus | null, halfDay?: HalfDay) => void;
   formatDateKey: (date: Date) => string;
   onMonthChange?: (year: number, month: number) => void;
 }
 
 export function CalendarGrid({
   currentTool,
+  currentHalfDay,
   getDayStatus,
+  getHalfDayStatus,
+  hasSplitDay,
   setDayStatus,
   formatDateKey,
   onMonthChange,
@@ -65,11 +71,11 @@ export function CalendarGrid({
     const dateKey = formatDateKey(date);
 
     if (currentTool === 'ERASER') {
-      setDayStatus(dateKey, null);
+      setDayStatus(dateKey, null, currentHalfDay);
     } else {
-      setDayStatus(dateKey, currentTool);
+      setDayStatus(dateKey, currentTool, currentHalfDay);
     }
-  }, [currentTool, setDayStatus, formatDateKey]);
+  }, [currentTool, currentHalfDay, setDayStatus, formatDateKey]);
 
   const handleMouseDown = useCallback((date: Date, e: React.MouseEvent) => {
     e.preventDefault();
@@ -168,16 +174,57 @@ export function CalendarGrid({
             return <div key={`empty-${index}`} className="aspect-square" />;
           }
 
-          const status = getDayStatus(date);
           const isWeekend = date.getDay() === 0 || date.getDay() === 6;
           const isToday = new Date().toDateString() === date.toDateString();
+          const isSplit = hasSplitDay(date);
+
+          // For split days, get individual half-day statuses
+          const amStatus = getHalfDayStatus(date, 'AM');
+          const pmStatus = getHalfDayStatus(date, 'PM');
+          const fullStatus = getDayStatus(date);
+
+          if (isSplit && !isWeekend) {
+            // Render split cell with AM/PM sections
+            return (
+              <div
+                key={formatDateKey(date)}
+                className={cn(
+                  'calendar-day calendar-day-split',
+                  isToday && 'today'
+                )}
+                onMouseDown={(e) => handleMouseDown(date, e)}
+                onMouseEnter={() => handleMouseEnter(date)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()} - Matin: ${amStatus || 'Travail'}, Après-midi: ${pmStatus || 'Travail'}`}
+              >
+                <div className="calendar-day-split-container">
+                  <div
+                    className={cn(
+                      'calendar-day-am',
+                      amStatus && STATUS_CLASSES[amStatus]
+                    )}
+                    title={`Matin: ${amStatus || 'Travail'}`}
+                  />
+                  <div
+                    className={cn(
+                      'calendar-day-pm',
+                      pmStatus && STATUS_CLASSES[pmStatus]
+                    )}
+                    title={`Après-midi: ${pmStatus || 'Travail'}`}
+                  />
+                </div>
+                <span className="calendar-day-number">{date.getDate()}</span>
+              </div>
+            );
+          }
 
           return (
             <div
               key={formatDateKey(date)}
               className={cn(
                 'calendar-day',
-                STATUS_CLASSES[status],
+                STATUS_CLASSES[fullStatus],
                 isWeekend && 'weekend',
                 isToday && 'today'
               )}

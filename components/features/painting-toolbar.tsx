@@ -1,7 +1,7 @@
 'use client';
 
-import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree } from 'lucide-react';
-import { DayStatus } from '@/hooks/use-calendar-data';
+import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree, Sun, Moon, Clock } from 'lucide-react';
+import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils/cn';
 
 type Tool = DayStatus | 'ERASER';
@@ -13,6 +13,19 @@ interface ToolConfig {
   className: string;
   activeClass: string;
 }
+
+interface HalfDayConfig {
+  id: HalfDay;
+  label: string;
+  shortLabel: string;
+  icon: React.ElementType;
+}
+
+const halfDayOptions: HalfDayConfig[] = [
+  { id: 'FULL', label: 'Journée complète', shortLabel: 'Journée', icon: Clock },
+  { id: 'AM', label: 'Matin', shortLabel: 'Matin', icon: Sun },
+  { id: 'PM', label: 'Après-midi', shortLabel: 'Après-midi', icon: Moon },
+];
 
 const tools: ToolConfig[] = [
   {
@@ -55,11 +68,19 @@ const tools: ToolConfig[] = [
 interface PaintingToolbarProps {
   currentTool: Tool;
   onToolChange: (tool: Tool) => void;
+  currentHalfDay: HalfDay;
+  onHalfDayChange: (halfDay: HalfDay) => void;
 }
 
-export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarProps) {
+export function PaintingToolbar({
+  currentTool,
+  onToolChange,
+  currentHalfDay,
+  onHalfDayChange
+}: PaintingToolbarProps) {
   return (
-    <div className="card">
+    <div className="card space-y-4">
+      {/* Tool Selection */}
       <fieldset>
         <legend className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
           Sélectionnez un type de journée
@@ -103,6 +124,39 @@ export function PaintingToolbar({ currentTool, onToolChange }: PaintingToolbarPr
             <Eraser className="w-4 h-4" />
             <span>Gomme</span>
           </button>
+        </div>
+      </fieldset>
+
+      {/* Half-day Selection */}
+      <fieldset className="pt-4 border-t border-[var(--border-subtle)]">
+        <legend className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
+          Granularité
+        </legend>
+
+        <div className="flex items-center gap-2">
+          {halfDayOptions.map((option) => {
+            const isActive = currentHalfDay === option.id;
+            const Icon = option.icon;
+
+            return (
+              <button
+                key={option.id}
+                onClick={() => onHalfDayChange(option.id)}
+                className={cn(
+                  'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                  'border border-[var(--border-default)]',
+                  isActive
+                    ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md'
+                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--border-hover)]'
+                )}
+                aria-pressed={isActive}
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden sm:inline">{option.label}</span>
+                <span className="sm:hidden">{option.shortLabel}</span>
+              </button>
+            );
+          })}
         </div>
       </fieldset>
     </div>

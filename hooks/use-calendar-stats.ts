@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { CalendarData, DayStatus } from './use-calendar-data';
+import { CalendarData, DayStatus, isDayData } from './use-calendar-data';
 
 export interface CalendarStats {
   work: number;
@@ -100,21 +100,39 @@ export function useCalendarStats(data: CalendarData, year: number): CalendarStat
         continue;
       }
 
-      const status: DayStatus = data[key] || 'WORK';
+      const value = data[key];
 
-      switch (status) {
-        case 'WORK':
-          counts.work++;
-          break;
-        case 'REMOTE':
-          counts.remote++;
-          break;
-        case 'SCHOOL':
-          counts.school++;
-          break;
-        case 'LEAVE':
-          counts.leave++;
-          break;
+      // Helper to count a status (can be 0.5 for half-day or 1 for full day)
+      const countStatus = (status: DayStatus | undefined, weight: number) => {
+        if (!status) return;
+        switch (status) {
+          case 'WORK':
+            counts.work += weight;
+            break;
+          case 'REMOTE':
+            counts.remote += weight;
+            break;
+          case 'SCHOOL':
+            counts.school += weight;
+            break;
+          case 'LEAVE':
+            counts.leave += weight;
+            break;
+        }
+      };
+
+      if (value) {
+        if (isDayData(value)) {
+          // Half-day format
+          countStatus(value.am || 'WORK', 0.5);
+          countStatus(value.pm || 'WORK', 0.5);
+        } else {
+          // Legacy full-day format
+          countStatus(value, 1);
+        }
+      } else {
+        // Default to work
+        counts.work++;
       }
 
       current.setDate(current.getDate() + 1);

@@ -4,8 +4,20 @@ import { useState, useEffect, useCallback } from 'react';
 
 export type DayStatus = 'WORK' | 'REMOTE' | 'SCHOOL' | 'TRAINER' | 'LEAVE' | 'HOLIDAY' | 'OFF';
 
+export type HalfDay = 'AM' | 'PM' | 'FULL';
+
+export interface DayData {
+  am?: DayStatus;
+  pm?: DayStatus;
+}
+
 export interface CalendarData {
-  [date: string]: DayStatus;
+  [date: string]: DayStatus | DayData;
+}
+
+// Helper to check if a value is DayData (half-day format) or DayStatus (legacy)
+export function isDayData(value: DayStatus | DayData): value is DayData {
+  return typeof value === 'object' && value !== null && ('am' in value || 'pm' in value);
 }
 
 const STORAGE_KEY = 'pgv-calendar-data';
@@ -116,26 +128,59 @@ export function useCalendarData() {
     }
   }, [data, isLoaded]);
 
-  const setDayStatus = useCallback((date: string, status: DayStatus | null) => {
+  const setDayStatus = useCallback((date: string, status: DayStatus | null, halfDay: HalfDay = 'FULL') => {
     setData((prev) => {
       const newData = { ...prev };
+      const existing = newData[date];
+
       if (status === null) {
-        delete newData[date];
+        // Eraser mode
+        if (halfDay === 'FULL') {
+          delete newData[date];
+        } else if (isDayData(existing)) {
+          const updated = { ...existing };
+          if (halfDay === 'AM') delete updated.am;
+          if (halfDay === 'PM') delete updated.pm;
+          if (!updated.am && !updated.pm) {
+            delete newData[date];
+          } else {
+            newData[date] = updated;
+          }
+        }
       } else {
-        newData[date] = status;
+        // Set status
+        if (halfDay === 'FULL') {
+          newData[date] = status;
+        } else {
+          // Half-day mode
+          const currentData: DayData = isDayData(existing) ? { ...existing } : {};
+          if (halfDay === 'AM') {
+            currentData.am = status;
+          } else {
+            currentData.pm = status;
+          }
+          newData[date] = currentData;
+        }
       }
       return newData;
     });
   }, []);
 
-  const getDayStatus = useCallback((date: Date): DayStatus => {
+  const getDayStatus = useCallback((date: Date, halfDay: HalfDay = 'FULL'): DayStatus => {
     const key = formatDateKey(date);
     const dayOfWeek = date.getDay();
 
     // Vérifier si c'est un jour férié
     const holidays = getFrenchHolidays(date.getFullYear());
     if (holidays.includes(key)) {
-      return data[key] || 'HOLIDAY';
+      const stored = data[key];
+      if (!stored) return 'HOLIDAY';
+      if (isDayData(stored)) {
+        if (halfDay === 'AM') return stored.am || 'HOLIDAY';
+        if (halfDay === 'PM') return stored.pm || 'HOLIDAY';
+        return stored.am || stored.pm || 'HOLIDAY';
+      }
+      return stored as DayStatus;
     }
 
     // Week-end
@@ -144,7 +189,35 @@ export function useCalendarData() {
     }
 
     // Retourner le statut enregistré ou WORK par défaut
-    return data[key] || 'WORK';
+    const stored = data[key];
+    if (!stored) return 'WORK';
+    if (isDayData(stored)) {
+      if (halfDay === 'AM') return stored.am || 'WORK';
+      if (halfDay === 'PM') return stored.pm || 'WORK';
+      // For FULL, return dominant status or first available
+      if (stored.am === stored.pm) return stored.am || 'WORK';
+      return stored.am || stored.pm || 'WORK';
+    }
+    return stored as DayStatus;
+  }, [data]);
+
+  // Get status for a specific half-day
+  const getHalfDayStatus = useCallback((date: Date, halfDay: 'AM' | 'PM'): DayStatus | null => {
+    const key = formatDateKey(date);
+    const stored = data[key];
+    if (!stored) return null;
+    if (isDayData(stored)) {
+      return halfDay === 'AM' ? stored.am || null : stored.pm || null;
+    }
+    return stored as DayStatus;
+  }, [data]);
+
+  // Check if a day has split status (different AM/PM)
+  const hasSplitDay = useCallback((date: Date): boolean => {
+    const key = formatDateKey(date);
+    const stored = data[key];
+    if (!stored || !isDayData(stored)) return false;
+    return stored.am !== stored.pm && stored.am !== undefined && stored.pm !== undefined;
   }, [data]);
 
   const resetData = useCallback(() => {
@@ -205,6 +278,8 @@ export function useCalendarData() {
     isLoaded,
     setDayStatus,
     getDayStatus,
+    getHalfDayStatus,
+    hasSplitDay,
     resetData,
     loadDemoData,
     isHoliday,
