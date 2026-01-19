@@ -29,19 +29,22 @@ function checkRateLimit(key: string): { allowed: boolean; remaining: number } {
   return { allowed: true, remaining: RATE_LIMIT_MAX - record.count };
 }
 
-// Nettoyer les anciennes entrées toutes les 5 minutes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now();
+// Nettoyage des anciennes entrées lors de chaque requête (lazy cleanup)
+function cleanupRateLimit() {
+  const now = Date.now();
+  if (rateLimit.size > 100) {
     for (const [key, value] of rateLimit.entries()) {
       if (now > value.resetTime) {
         rateLimit.delete(key);
       }
     }
-  }, 5 * 60 * 1000);
+  }
 }
 
 export async function middleware(request: NextRequest) {
+  // Nettoyage lazy des entrées expirées
+  cleanupRateLimit();
+
   const response = NextResponse.next({
     request,
   });
