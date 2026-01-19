@@ -83,7 +83,7 @@ const STATUS_CONFIG: Record<Status, { label: string; icon: React.ElementType; bg
 };
 
 // ============ MAIN COMPONENT ============
-export default function DimPlannerPage() {
+export default function TeamPlannerPage() {
   const [activeTab, setActiveTab] = useState<'weekly' | 'semester'>('weekly');
   const [schedule, setSchedule] = useState<WeeklySchedule>(INITIAL_SCHEDULE);
   const [semesterStart, setSemesterStart] = useState(() => {
@@ -115,7 +115,7 @@ export default function DimPlannerPage() {
         <div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-3">
             <Users className="w-7 h-7 text-[var(--accent)]" />
-            DIM Planner
+            Team Planner
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
             Gestion de la présence et permanence téléphonique
