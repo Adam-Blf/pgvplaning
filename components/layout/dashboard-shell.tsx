@@ -10,23 +10,26 @@ import {
   X,
   Activity,
   Users,
+  LogIn,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { TeamIndicator } from '@/components/features/team-indicator';
+import { useAuth } from '@/hooks/use-auth';
 
 interface DashboardShellProps {
   children: ReactNode;
 }
 
-const navigation = [
-  { name: 'Accueil', href: '/', icon: LayoutDashboard },
-  { name: 'Calendrier', href: '/calendar', icon: Calendar },
-  { name: 'Team Planner', href: '/team-planner', icon: Users },
-  { name: 'Exporter', href: '/exports', icon: FileDown },
-  { name: 'Paramètres', href: '/settings', icon: Settings },
+// Navigation items - some require authentication
+const baseNavigation = [
+  { name: 'Accueil', href: '/', icon: LayoutDashboard, requiresAuth: false },
+  { name: 'Calendrier', href: '/calendar', icon: Calendar, requiresAuth: false },
+  { name: 'Team Planner', href: '/team-planner', icon: Users, requiresAuth: true },
+  { name: 'Exporter', href: '/exports', icon: FileDown, requiresAuth: false },
+  { name: 'Paramètres', href: '/settings', icon: Settings, requiresAuth: false },
 ];
 
 // Routes that should not display the shell (auth and team setup pages)
@@ -35,6 +38,12 @@ const authRoutes = ['/login', '/auth', '/setup', '/team/setup', '/team/create', 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { isAuthenticated, loading } = useAuth();
+
+  // Filter navigation based on auth state
+  const navigation = useMemo(() => {
+    return baseNavigation.filter(item => !item.requiresAuth || isAuthenticated);
+  }, [isAuthenticated]);
 
   // If on an auth route, render children only
   const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
@@ -86,9 +95,21 @@ export function DashboardShell({ children }: DashboardShellProps) {
               })}
             </nav>
 
-            {/* Team Indicator */}
+            {/* Team Indicator or Login Button */}
             <div className="hidden md:block">
-              <TeamIndicator />
+              {loading ? (
+                <div className="h-9 w-24 rounded-lg bg-[var(--bg-tertiary)] animate-pulse" />
+              ) : isAuthenticated ? (
+                <TeamIndicator />
+              ) : (
+                <Link
+                  href="/login"
+                  className="btn btn-primary flex items-center gap-2"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Se connecter
+                </Link>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -126,6 +147,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     </Link>
                   );
                 })}
+
+                {/* Login link for mobile if not authenticated */}
+                {!isAuthenticated && !loading && (
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="nav-link mt-2 pt-2 border-t border-[var(--border-subtle)] text-[var(--accent)]"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Se connecter</span>
+                  </Link>
+                )}
               </div>
             </nav>
           )}

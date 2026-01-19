@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Users, ArrowLeft, Copy, Check, Loader2 } from 'lucide-react';
+import { Users, ArrowLeft, Copy, Check, Loader2, Briefcase, GraduationCap, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -11,9 +11,14 @@ export default function TeamCreatePage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [employeeType, setEmployeeType] = useState<'employee' | 'executive'>('employee');
+  const [customLeaveDays, setCustomLeaveDays] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [createdTeam, setCreatedTeam] = useState<{ name: string; code: string } | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Default leave days based on employee type
+  const defaultLeaveDays = employeeType === 'executive' ? 30 : 25;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +34,12 @@ export default function TeamCreatePage() {
       const response = await fetch('/api/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim(),
+          employeeType,
+          customLeaveDays,
+        }),
       });
 
       const data = await response.json();
@@ -186,6 +196,92 @@ export default function TeamCreatePage() {
                 rows={3}
                 maxLength={200}
               />
+            </div>
+
+            {/* Employee Type Selection */}
+            <div className="pt-4 border-t border-[var(--border-subtle)]">
+              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-3">
+                Votre statut *
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmployeeType('employee');
+                    setCustomLeaveDays(undefined);
+                  }}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    employeeType === 'employee'
+                      ? 'border-[var(--accent)] bg-[var(--accent)]/5'
+                      : 'border-[var(--border-default)] hover:border-[var(--border-hover)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      employeeType === 'employee' ? 'bg-[var(--accent)]/10' : 'bg-[var(--bg-secondary)]'
+                    }`}>
+                      <Briefcase className={`w-5 h-5 ${
+                        employeeType === 'employee' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className={`font-semibold ${
+                        employeeType === 'employee' ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'
+                      }`}>Employé</p>
+                      <p className="text-xs text-[var(--text-muted)]">25 jours/an</p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmployeeType('executive');
+                    setCustomLeaveDays(undefined);
+                  }}
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${
+                    employeeType === 'executive'
+                      ? 'border-[var(--accent)] bg-[var(--accent)]/5'
+                      : 'border-[var(--border-default)] hover:border-[var(--border-hover)]'
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      employeeType === 'executive' ? 'bg-[var(--accent)]/10' : 'bg-[var(--bg-secondary)]'
+                    }`}>
+                      <GraduationCap className={`w-5 h-5 ${
+                        employeeType === 'executive' ? 'text-[var(--accent)]' : 'text-[var(--text-muted)]'
+                      }`} />
+                    </div>
+                    <div>
+                      <p className={`font-semibold ${
+                        employeeType === 'executive' ? 'text-[var(--accent)]' : 'text-[var(--text-primary)]'
+                      }`}>Cadre</p>
+                      <p className="text-xs text-[var(--text-muted)]">30 jours/an</p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Custom leave days option */}
+              <div className="mt-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
+                  <label htmlFor="customDays" className="text-sm text-[var(--text-secondary)]">
+                    Personnaliser le nombre de jours (optionnel)
+                  </label>
+                </div>
+                <input
+                  id="customDays"
+                  type="number"
+                  min={0}
+                  max={60}
+                  value={customLeaveDays ?? ''}
+                  onChange={(e) => setCustomLeaveDays(e.target.value ? parseInt(e.target.value) : undefined)}
+                  placeholder={`Par défaut: ${defaultLeaveDays} jours`}
+                  className="input w-full"
+                />
+              </div>
             </div>
 
             <button

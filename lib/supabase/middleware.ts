@@ -39,9 +39,26 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Routes publiques qui ne nécessitent pas d'authentification
-  const publicRoutes = ['/login', '/auth/callback', '/auth/confirm', '/setup'];
+  // Routes publiques accessibles sans connexion
+  // L'application fonctionne en mode "guest" par défaut avec localStorage
+  const publicRoutes = [
+    '/',
+    '/login',
+    '/auth/callback',
+    '/auth/confirm',
+    '/setup',
+    '/calendar',
+    '/exports',
+    '/settings',
+    '/api',
+  ];
   const isPublicRoute = publicRoutes.some((route) =>
+    pathname === route || pathname.startsWith(route + '/')
+  );
+
+  // Routes qui nécessitent une connexion (fonctionnalités équipe)
+  const protectedRoutes = ['/team-planner', '/team/members', '/team/settings'];
+  const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
 
@@ -51,15 +68,16 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  if (!user && !isPublicRoute) {
-    // Pas d'utilisateur, rediriger vers login
+  // Si route protégée et pas connecté, rediriger vers login
+  if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
 
-  // Si utilisateur connecté, vérifier s'il a une équipe
-  if (user && !isPublicRoute && !isNoTeamRoute) {
+  // Si utilisateur connecté et accède à une route team (pas noTeamRoute), vérifier équipe
+  if (user && (isProtectedRoute || isNoTeamRoute) && !pathname.startsWith('/team/setup') && !pathname.startsWith('/team/create') && !pathname.startsWith('/team/join')) {
     // Vérifier si l'utilisateur a une équipe
     const { data: membership } = await supabase
       .from('team_members')
@@ -67,7 +85,7 @@ export async function updateSession(request: NextRequest) {
       .eq('user_id', user.id)
       .single();
 
-    if (!membership) {
+    if (!membership && isProtectedRoute) {
       // Pas d'équipe, rediriger vers team setup
       const url = request.nextUrl.clone();
       url.pathname = '/team/setup';

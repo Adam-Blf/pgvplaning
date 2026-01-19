@@ -7,6 +7,8 @@ const joinTeamSchema = z.object({
   code: z.string()
     .length(8, 'Le code doit contenir 8 caractères')
     .regex(/^[A-Z0-9]+$/, 'Le code ne doit contenir que des lettres majuscules et chiffres'),
+  employeeType: z.enum(['employee', 'executive']).default('employee'),
+  customLeaveDays: z.number().min(0).max(60).optional(),
 });
 
 // POST /api/teams/join - Join a team with code
@@ -87,7 +89,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { code } = validationResult.data;
+    const { code, employeeType, customLeaveDays } = validationResult.data;
+
+    // Calculate leave days based on employee type
+    const defaultLeaveDays = employeeType === 'executive' ? 30 : 25;
+    const annualLeaveDays = customLeaveDays ?? defaultLeaveDays;
 
     // Find team by code
     const { data: team, error: teamError } = await adminClient
@@ -103,13 +109,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add user as member
+    // Add user as member with employee type and leave days
     const { data: membership, error: memberError } = await adminClient
       .from('team_members')
       .insert({
         user_id: user.id,
         team_id: team.id,
         role: 'member',
+        employee_type: employeeType,
+        annual_leave_days: annualLeaveDays,
+        leave_balance: annualLeaveDays,
+        leave_balance_year: new Date().getFullYear(),
       })
       .select()
       .single();
