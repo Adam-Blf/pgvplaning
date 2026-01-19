@@ -19,12 +19,25 @@ Application web publique inspirée du Design System de l'État français (DSFR) 
 
 ## Design System
 
-L'interface est inspirée du **Design System de l'État français (DSFR)** :
-- Couleurs officielles (Bleu France, Rouge Marianne)
-- Typographie claire et lisible
-- Navigation intuitive avec fil d'Ariane
+L'interface utilise un **Design System Medical Healthcare Dark** :
+
+- Palette professionnelle (Dark Blue #0c1222, Accent Teal #06b6d4)
+- Typographie médicale (Plus Jakarta Sans + Inter)
+- Micro-interactions et animations fluides
+- Effets de glow et transitions subtiles
+- Navigation intuitive avec feedback visuel
 - Messages d'information standardisés
 - Accessibilité RGAA
+- Mode reduced-motion supporté
+
+### Micro-Interactions
+
+- Boutons avec effets de ripple et scale au clic
+- Cards avec bordures gradient animées au hover
+- Éléments du calendrier avec effets de glow
+- Inputs avec transitions de focus élaborées
+- Navigation avec animations de slide
+- Badges avec effets de lift
 
 ## Stack Technique
 
@@ -32,7 +45,8 @@ L'interface est inspirée du **Design System de l'État français (DSFR)** :
 |-----------|-------------|
 | Framework | Next.js 15 (App Router) |
 | Langage | TypeScript (strict) |
-| Styles | Tailwind CSS + DSFR Custom |
+| Styles | Tailwind CSS + Custom Healthcare Dark |
+| Animations | Framer Motion + CSS Animations |
 | Graphiques | Recharts |
 | Validation | Zod |
 | Dates | date-fns, date-holidays |
@@ -163,11 +177,20 @@ vercel
 ## Changelog
 
 ### 2026-01-19
-- Refonte complète UX/UI style Service Public (DSFR)
+
+- Ajout de micro-interactions et "juice" au design system
+  - Effets de ripple sur les boutons
+  - Bordures gradient animées sur les cards
+  - Effets de glow sur les éléments du calendrier
+  - Animations de slide sur la navigation
+  - Transitions élaborées sur les inputs
+  - Nouvelles animations (subtle-pulse, ripple, shimmer)
+  - Utilitaires CSS pour glow et hover lift
+- Refonte complète UX/UI style Medical Healthcare Dark
 - Suppression de l'authentification obligatoire
 - Application accessible sans inscription
 - Amélioration de l'accessibilité
-- Nouveau design sobre et professionnel
+- Design professionnel avec animations performantes
 
 ## Licence
 
