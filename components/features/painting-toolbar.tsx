@@ -2,7 +2,7 @@
 
 import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree, Sun, Moon, Clock } from 'lucide-react';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 type Tool = DayStatus | 'ERASER';
 

@@ -38,9 +38,6 @@ import {
 } from 'lucide-react';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
-import { useHistory } from '@/hooks/use-history';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
 
 // Configuration des couleurs par statut (style Data Viz)
 const STATUS_COLORS = {
@@ -98,7 +95,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
   const { data: calendarData } = useCalendarData();
   const stats = useCalendarStats(calendarData, currentYear);
-  const { history, regenerateIcs } = useHistory();
 
   // Appliquer le thème
   useEffect(() => {
@@ -147,18 +143,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
     { id: 'settings', icon: Settings, label: 'Paramètres' },
   ];
 
-  // Formater l'historique pour la table
-  const recentExports = useMemo(() => {
-    return history.slice(0, 5).map((item) => ({
-      id: item.id,
-      date: format(new Date(item.createdAt), 'dd MMM yyyy', { locale: fr }),
-      time: format(new Date(item.createdAt), 'HH:mm', { locale: fr }),
-      type: item.periods.length > 1 ? 'Multi-périodes' : 'Simple',
-      filename: `vacances-${item.employeeName.toLowerCase().replace(/\s+/g, '-')}.ics`,
-      employeeName: item.employeeName,
-      original: item,
-    }));
-  }, [history]);
+  // Exports récents (vide - fonctionnalité simplifiée)
+  const recentExports: Array<{
+    id: string;
+    date: string;
+    time: string;
+    type: string;
+    filename: string;
+    employeeName: string;
+  }> = [];
 
   return (
     <div className={`min-h-screen flex ${isDark ? 'bg-slate-900' : 'bg-gray-50'} transition-colors duration-300 ${className}`}>
@@ -575,7 +568,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <button
-                            onClick={() => regenerateIcs(item.original)}
                             className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
                               isDark
                                 ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'

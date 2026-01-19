@@ -1,23 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateIcsRequestSchema } from '@/lib/schemas/planning';
-import { generateIcsContent, generateFileName } from '@/lib/services/ics-generator';
-import { logger } from '@/lib/logger';
+import { generateIcsRequestSchema, parseFrenchDate, GenerateIcsRequest } from '@/lib/schemas/planning';
 
-const apiLogger = logger.withContext('API:generate-ics');
+function formatIcsDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
+function generateIcsContent(data: GenerateIcsRequest): string {
+  const lines: string[] = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//PGV Planning//FR',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    `X-WR-CALNAME:Congés ${data.employeeName}`,
+    `X-WR-TIMEZONE:${data.timezone}`,
+  ];
+
+  data.periods.forEach((period, index) => {
+    const startDate = parseFrenchDate(period.startDate);
+    const endDate = parseFrenchDate(period.endDate);
+    // ICS end date is exclusive, so add 1 day
+    endDate.setDate(endDate.getDate() + 1);
+
+    const uid = `${Date.now()}-${index}@pgvplanning`;
+
+    lines.push('BEGIN:VEVENT');
+    lines.push(`UID:${uid}`);
+    lines.push(`DTSTART;VALUE=DATE:${formatIcsDate(startDate)}`);
+    lines.push(`DTEND;VALUE=DATE:${formatIcsDate(endDate)}`);
+    lines.push(`SUMMARY:${period.title} - ${data.employeeName}`);
+    if (period.description) {
+      lines.push(`DESCRIPTION:${period.description.replace(/\n/g, '\\n')}`);
+    }
+    lines.push('TRANSP:OPAQUE');
+    lines.push('X-MICROSOFT-CDO-BUSYSTATUS:OOF');
+    lines.push(`DTSTAMP:${formatIcsDate(new Date())}T000000Z`);
+    lines.push('END:VEVENT');
+  });
+
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function generateFileName(employeeName: string): string {
+  const sanitized = employeeName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '_');
+  const date = new Date().toISOString().split('T')[0];
+  return `conges_${sanitized}_${date}.ics`;
+}
 
 export async function POST(request: NextRequest) {
   try {
-    // Parser le body JSON
     const body = await request.json();
-
-    // Valider avec Zod
     const validationResult = generateIcsRequestSchema.safeParse(body);
 
     if (!validationResult.success) {
-      apiLogger.warn('Validation échouée', {
-        errors: validationResult.error.flatten(),
-      });
-
       return NextResponse.json(
         {
           success: false,
@@ -29,17 +72,9 @@ export async function POST(request: NextRequest) {
     }
 
     const data = validationResult.data;
-
-    apiLogger.info('Requête valide reçue', {
-      employeeName: data.employeeName,
-      periodsCount: data.periods.length,
-    });
-
-    // Générer le contenu ICS
-    const icsContent = await generateIcsContent(data);
+    const icsContent = generateIcsContent(data);
     const fileName = generateFileName(data.employeeName);
 
-    // Retourner le fichier ICS
     return new NextResponse(icsContent, {
       status: 200,
       headers: {
@@ -49,10 +84,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    apiLogger.error('Erreur serveur', {
-      error: error instanceof Error ? error.message : 'Erreur inconnue',
-    });
-
+    console.error('Erreur génération ICS:', error);
     return NextResponse.json(
       {
         success: false,
@@ -63,7 +95,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Désactiver les autres méthodes HTTP
 export async function GET() {
   return NextResponse.json(
     { error: 'Méthode non autorisée. Utilisez POST.' },

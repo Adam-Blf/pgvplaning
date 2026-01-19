@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/lib/utils';
 
 const MONTH_NAMES = [
   'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
