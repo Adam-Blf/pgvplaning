@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { z } from 'zod';
 
 // Schema for joining a team
@@ -23,8 +23,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Use admin client for database operations (bypasses RLS)
+    let adminClient;
+    try {
+      adminClient = createAdminClient();
+    } catch {
+      return NextResponse.json(
+        { error: 'Configuration serveur manquante. Contactez l\'administrateur.' },
+        { status: 500 }
+      );
+    }
+
     // Ensure user profile exists (create if not)
-    const { data: existingProfile } = await supabase
+    const { data: existingProfile } = await adminClient
       .from('profiles')
       .select('id')
       .eq('id', user.id)
@@ -32,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     if (!existingProfile) {
       // Create profile if it doesn't exist (for users created before migration)
-      const { error: profileError } = await supabase
+      const { error: profileError } = await adminClient
         .from('profiles')
         .insert({
           id: user.id,
@@ -52,7 +63,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has a team
-    const { data: existingMembership } = await supabase
+    const { data: existingMembership } = await adminClient
       .from('team_members')
       .select('id')
       .eq('user_id', user.id)
@@ -79,7 +90,7 @@ export async function POST(request: NextRequest) {
     const { code } = validationResult.data;
 
     // Find team by code
-    const { data: team, error: teamError } = await supabase
+    const { data: team, error: teamError } = await adminClient
       .from('teams')
       .select('*')
       .eq('code', code.toUpperCase())
@@ -93,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add user as member
-    const { data: membership, error: memberError } = await supabase
+    const { data: membership, error: memberError } = await adminClient
       .from('team_members')
       .insert({
         user_id: user.id,
@@ -112,7 +123,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user's profile with current team
-    await supabase
+    await adminClient
       .from('profiles')
       .update({ current_team_id: team.id })
       .eq('id', user.id);
