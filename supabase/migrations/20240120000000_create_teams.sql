@@ -33,16 +33,7 @@ CREATE POLICY "Users can insert their own profile"
   ON public.profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
--- Team members can view profiles of their teammates
-CREATE POLICY "Team members can view teammate profiles"
-  ON public.profiles FOR SELECT
-  USING (
-    id IN (
-      SELECT tm2.user_id FROM public.team_members tm1
-      JOIN public.team_members tm2 ON tm1.team_id = tm2.team_id
-      WHERE tm1.user_id = auth.uid()
-    )
-  );
+-- NOTE: Policy for viewing teammate profiles is added after team_members table is created (see below)
 
 -- Function to handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -234,6 +225,19 @@ CREATE POLICY "Leaders can delete their team"
 CREATE POLICY "Authenticated users can create teams"
   ON public.teams FOR INSERT
   WITH CHECK (auth.uid() IS NOT NULL);
+
+-- ----- PROFILES POLICY (now that team_members exists) -----
+
+-- Team members can view profiles of their teammates
+CREATE POLICY "Team members can view teammate profiles"
+  ON public.profiles FOR SELECT
+  USING (
+    id IN (
+      SELECT tm2.user_id FROM public.team_members tm1
+      JOIN public.team_members tm2 ON tm1.team_id = tm2.team_id
+      WHERE tm1.user_id = auth.uid()
+    )
+  );
 
 -- ----- TEAM MEMBERS POLICIES -----
 
