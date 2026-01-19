@@ -1,10 +1,7 @@
 -- ============================================
 -- MIGRATION ULTIME: Système Complet d'Équipes
 -- ============================================
--- Description: Tables, fonctions, triggers et RLS pour le système d'équipes
--- avec gestion des jours de congés par statut (cadre/non-cadre)
---
--- À exécuter sur une base de données fraîche ou via Supabase Dashboard
+-- Compatible avec base fraîche ET base existante
 -- ============================================
 
 -- ============================================
@@ -22,6 +19,20 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add missing columns to profiles if they don't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'first_name') THEN
+    ALTER TABLE public.profiles ADD COLUMN first_name TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'last_name') THEN
+    ALTER TABLE public.profiles ADD COLUMN last_name TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'current_team_id') THEN
+    ALTER TABLE public.profiles ADD COLUMN current_team_id UUID;
+  END IF;
+END $$;
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
@@ -58,7 +69,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to create profile on signup
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
@@ -71,17 +81,55 @@ CREATE TRIGGER on_auth_user_created
 CREATE TABLE IF NOT EXISTS public.teams (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
-  code TEXT UNIQUE NOT NULL,
+  code TEXT UNIQUE,
   description TEXT,
-  sector TEXT CHECK (sector IN ('public', 'private')) DEFAULT 'public' NOT NULL,
-  default_leave_days_employee INTEGER DEFAULT 25 NOT NULL,
-  default_leave_days_executive INTEGER DEFAULT 25 NOT NULL,
   created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT teams_leave_days_employee_check CHECK (default_leave_days_employee >= 0 AND default_leave_days_employee <= 60),
-  CONSTRAINT teams_leave_days_executive_check CHECK (default_leave_days_executive >= 0 AND default_leave_days_executive <= 60)
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add missing columns to teams
+DO $$
+BEGIN
+  -- Add sector column
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teams' AND column_name = 'sector') THEN
+    ALTER TABLE public.teams ADD COLUMN sector TEXT DEFAULT 'public' NOT NULL;
+    ALTER TABLE public.teams ADD CONSTRAINT teams_sector_check CHECK (sector IN ('public', 'private'));
+  END IF;
+
+  -- Handle default_leave_days migration to separate columns
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teams' AND column_name = 'default_leave_days') THEN
+    -- Rename old column
+    ALTER TABLE public.teams RENAME COLUMN default_leave_days TO default_leave_days_employee;
+  END IF;
+
+  -- Add default_leave_days_employee if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teams' AND column_name = 'default_leave_days_employee') THEN
+    ALTER TABLE public.teams ADD COLUMN default_leave_days_employee INTEGER DEFAULT 25 NOT NULL;
+  END IF;
+
+  -- Add default_leave_days_executive if not exists
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teams' AND column_name = 'default_leave_days_executive') THEN
+    ALTER TABLE public.teams ADD COLUMN default_leave_days_executive INTEGER DEFAULT 25 NOT NULL;
+  END IF;
+END $$;
+
+-- Add constraints (drop first to avoid duplicates)
+DO $$
+BEGIN
+  ALTER TABLE public.teams DROP CONSTRAINT IF EXISTS teams_leave_days_employee_check;
+  ALTER TABLE public.teams ADD CONSTRAINT teams_leave_days_employee_check
+    CHECK (default_leave_days_employee >= 0 AND default_leave_days_employee <= 60);
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  ALTER TABLE public.teams DROP CONSTRAINT IF EXISTS teams_leave_days_executive_check;
+  ALTER TABLE public.teams ADD CONSTRAINT teams_leave_days_executive_check
+    CHECK (default_leave_days_executive >= 0 AND default_leave_days_executive <= 60);
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_teams_code ON public.teams(code);
 
@@ -98,13 +146,38 @@ CREATE TABLE IF NOT EXISTS public.team_members (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   team_id UUID REFERENCES public.teams(id) ON DELETE CASCADE NOT NULL,
   role TEXT CHECK (role IN ('leader', 'member')) DEFAULT 'member' NOT NULL,
-  employee_type TEXT CHECK (employee_type IN ('employee', 'executive')) DEFAULT 'employee' NOT NULL,
-  annual_leave_days INTEGER DEFAULT 25 NOT NULL,
-  leave_balance INTEGER DEFAULT 25 NOT NULL,
-  leave_balance_year INTEGER DEFAULT EXTRACT(YEAR FROM NOW())::INTEGER,
   joined_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, team_id)
 );
+
+-- Add missing columns to team_members
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'team_members' AND column_name = 'employee_type') THEN
+    ALTER TABLE public.team_members ADD COLUMN employee_type TEXT DEFAULT 'employee' NOT NULL;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'team_members' AND column_name = 'annual_leave_days') THEN
+    ALTER TABLE public.team_members ADD COLUMN annual_leave_days INTEGER DEFAULT 25 NOT NULL;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'team_members' AND column_name = 'leave_balance') THEN
+    ALTER TABLE public.team_members ADD COLUMN leave_balance INTEGER DEFAULT 25 NOT NULL;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'team_members' AND column_name = 'leave_balance_year') THEN
+    ALTER TABLE public.team_members ADD COLUMN leave_balance_year INTEGER DEFAULT EXTRACT(YEAR FROM NOW())::INTEGER;
+  END IF;
+END $$;
+
+-- Add employee_type constraint
+DO $$
+BEGIN
+  ALTER TABLE public.team_members DROP CONSTRAINT IF EXISTS team_members_employee_type_check;
+  ALTER TABLE public.team_members ADD CONSTRAINT team_members_employee_type_check
+    CHECK (employee_type IN ('employee', 'executive'));
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_team_members_user ON public.team_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_team_members_team ON public.team_members(team_id);
@@ -114,11 +187,13 @@ COMMENT ON COLUMN public.team_members.annual_leave_days IS 'Jours de congés ann
 COMMENT ON COLUMN public.team_members.leave_balance IS 'Solde de congés restant';
 
 -- Add foreign key for current_team_id in profiles
-ALTER TABLE public.profiles
-  DROP CONSTRAINT IF EXISTS profiles_current_team_id_fkey;
-ALTER TABLE public.profiles
-  ADD CONSTRAINT profiles_current_team_id_fkey
-  FOREIGN KEY (current_team_id) REFERENCES public.teams(id) ON DELETE SET NULL;
+DO $$
+BEGIN
+  ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_current_team_id_fkey;
+  ALTER TABLE public.profiles ADD CONSTRAINT profiles_current_team_id_fkey
+    FOREIGN KEY (current_team_id) REFERENCES public.teams(id) ON DELETE SET NULL;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
 
 -- ============================================
 -- 3. CALENDAR ENTRIES TABLE
@@ -285,6 +360,7 @@ CREATE POLICY "Anyone can view team by code"
   ON public.teams FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Team members can view their team" ON public.teams;
 DROP POLICY IF EXISTS "Leaders can update their team" ON public.teams;
 CREATE POLICY "Leaders can update their team"
   ON public.teams FOR UPDATE
