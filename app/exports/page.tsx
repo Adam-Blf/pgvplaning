@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Download,
   Home as HomeIcon,
@@ -13,29 +13,29 @@ import {
   Info,
   CheckCircle,
   FileDown,
-  Zap,
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useCalendarData } from '@/hooks/use-calendar-data';
+import { useCalendarData, DayStatus } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
 const exportCards = [
   {
-    id: 'REMOTE',
+    id: 'REMOTE' as DayStatus,
     title: 'Télétravail',
     description: 'Exporter tous les jours de télétravail',
     icon: HomeIcon,
     statusClass: 'status-remote',
   },
   {
-    id: 'SCHOOL',
+    id: 'SCHOOL' as DayStatus,
     title: 'Formation',
     description: 'Exporter les jours de formation (statut absent)',
     icon: GraduationCap,
     statusClass: 'status-training',
   },
   {
-    id: 'LEAVE',
+    id: 'LEAVE' as DayStatus,
     title: 'Congés',
     description: 'Exporter tous les congés posés',
     icon: Plane,
@@ -50,7 +50,25 @@ export default function ExportsPage() {
   const [aiResult, setAiResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const downloadICS = (mode: string) => {
+  // Count days per status
+  const dayCounts = useMemo(() => {
+    const counts: Record<DayStatus, number> = {
+      WORK: 0,
+      REMOTE: 0,
+      SCHOOL: 0,
+      LEAVE: 0,
+      HOLIDAY: 0,
+      OFF: 0,
+    };
+
+    Object.values(data).forEach((status) => {
+      counts[status]++;
+    });
+
+    return counts;
+  }, [data]);
+
+  const downloadICS = (mode: DayStatus) => {
     const events: string[] = [];
     const currentYear = new Date().getFullYear();
 
@@ -173,6 +191,7 @@ export default function ExportsPage() {
         <div className="grid md:grid-cols-3 gap-4">
           {exportCards.map((card) => {
             const Icon = card.icon;
+            const count = dayCounts[card.id];
             const statusColors: Record<string, { bg: string; border: string; text: string }> = {
               'status-remote': {
                 bg: 'bg-[var(--status-remote-bg)]',
@@ -196,7 +215,11 @@ export default function ExportsPage() {
               <button
                 key={card.id}
                 onClick={() => downloadICS(card.id)}
-                className="card card-interactive text-left group"
+                disabled={count === 0}
+                className={cn(
+                  'card card-interactive text-left group',
+                  count === 0 && 'opacity-50 cursor-not-allowed hover:border-[var(--border-default)]'
+                )}
               >
                 <div className="flex items-start gap-4">
                   <div
@@ -209,14 +232,27 @@ export default function ExportsPage() {
                     <Icon className={cn('w-6 h-6', colors.text)} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
-                      {card.title}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">
+                        {card.title}
+                      </h3>
+                      <span className={cn(
+                        'px-2 py-0.5 rounded-full text-xs font-semibold',
+                        count > 0 ? `${colors.bg} ${colors.text}` : 'bg-[var(--bg-tertiary)] text-[var(--text-muted)]'
+                      )}>
+                        {count} jour{count !== 1 ? 's' : ''}
+                      </span>
+                    </div>
                     <p className="text-sm text-[var(--text-muted)]">
                       {card.description}
                     </p>
                   </div>
-                  <Download className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-y-1 transition-all flex-shrink-0" />
+                  <Download className={cn(
+                    'w-5 h-5 flex-shrink-0 transition-all',
+                    count > 0
+                      ? 'text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-y-1'
+                      : 'text-[var(--text-disabled)]'
+                  )} />
                 </div>
               </button>
             );
@@ -325,7 +361,7 @@ export default function ExportsPage() {
       {/* Note sur le service */}
       <div className="notice notice-warning">
         <div className="w-10 h-10 rounded-lg bg-[var(--warning-bg)] flex items-center justify-center flex-shrink-0">
-          <Zap className="w-5 h-5 text-[var(--warning)]" />
+          <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
         </div>
         <div>
           <h4 className="font-semibold text-[var(--text-primary)] mb-1">
