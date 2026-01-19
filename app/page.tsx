@@ -1,156 +1,190 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Calendar,
   FileDown,
-  Zap,
-  MousePointerClick,
   Users,
-  ShieldCheck,
+  Sparkles,
+  Clock,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import Link from 'next/link';
 
+const features = [
+  {
+    icon: Calendar,
+    title: 'Calendrier Intelligent',
+    description: 'Visualisez et planifiez en un coup d\'oeil',
+    color: 'from-blue-500 to-blue-600',
+    href: '/calendar',
+  },
+  {
+    icon: Users,
+    title: 'Gestion d\'Equipe',
+    description: 'Coordonnez votre equipe efficacement',
+    color: 'from-emerald-500 to-emerald-600',
+    href: '/team-planner',
+  },
+  {
+    icon: FileDown,
+    title: 'Export ICS',
+    description: 'Compatible tous calendriers',
+    color: 'from-violet-500 to-violet-600',
+    href: '/exports',
+  },
+];
+
 export default function HomePage() {
   return (
-    <div className="space-y-8 stagger-children">
+    <div className="min-h-[calc(100vh-8rem)] flex flex-col">
       {/* Hero Section */}
-      <div className="card card-glass relative overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent-subtle)] via-transparent to-transparent" />
+      <section className="relative py-12 md:py-20">
+        {/* Decorative Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/3 rounded-full blur-2xl translate-y-1/2" />
 
-        {/* Grid pattern */}
-        <div className="absolute inset-0 grid-pattern opacity-30" />
-
-        <div className="relative z-10 py-4">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="badge badge-accent">
-              <Users className="w-3 h-3" />
-              <span>Gestion d&apos;Équipe</span>
+        <div className="relative">
+          {/* Eyebrow */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3 mb-6"
+          >
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span className="text-xs font-medium text-amber-500 tracking-wide uppercase">
+                Planning Pro
+              </span>
             </div>
-          </div>
+            <div className="h-px flex-1 bg-gradient-to-r from-amber-500/20 to-transparent max-w-32" />
+          </motion.div>
 
-          <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-3">
-            Bienvenue sur <span className="text-gradient">PGV Planning</span>
-          </h2>
+          {/* Main Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+              <span className="text-[var(--text-primary)]">Gerez votre </span>
+              <span className="text-gradient">planning</span>
+              <br />
+              <span className="text-[var(--text-primary)]">comme un </span>
+              <span className="text-gradient">pro</span>
+            </h1>
+          </motion.div>
 
-          <p className="text-[var(--text-secondary)] max-w-2xl leading-relaxed">
-            Solution professionnelle de gestion des plannings d&apos;équipe.
-            Organisez vos présences, télétravail, formations et congés en quelques clics.
-            Exportez au format ICS compatible avec tous vos calendriers.
-          </p>
-        </div>
-      </div>
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg md:text-xl text-[var(--text-secondary)] max-w-xl mb-8 leading-relaxed"
+          >
+            Organisez conges, presences et teletravail.
+            <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
+          </motion.p>
 
-      {/* Quick Start Steps */}
-      <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <MousePointerClick className="w-4 h-4 text-[var(--accent)]" />
-          </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
-            Comment utiliser
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Step 1 */}
-          <Link href="/calendar" className="block no-underline group">
-            <div className="card card-interactive h-full">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--status-work-bg)] border border-[var(--status-work)] flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Calendar className="w-6 h-6 text-[var(--status-work)]" />
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="badge">Étape 1</span>
-                  </div>
-                  <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
-                    Remplir le calendrier
-                  </h3>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    Sélectionnez vos jours et leur type : présence, télétravail, formation ou congés
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
-              </div>
-            </div>
-          </Link>
-
-          {/* Step 2 */}
-          <Link href="/exports" className="block no-underline group">
-            <div className="card card-interactive h-full">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--status-remote-bg)] border border-[var(--status-remote)] flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <FileDown className="w-6 h-6 text-[var(--status-remote)]" />
-                  </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="badge">Étape 2</span>
-                  </div>
-                  <h3 className="font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent)] transition-colors">
-                    Exporter en ICS
-                  </h3>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    Téléchargez le fichier à importer dans Outlook, Google Calendar ou Apple Calendar
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
-              </div>
-            </div>
-          </Link>
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-wrap gap-4"
+          >
+            <Link href="/calendar" className="group">
+              <button className="flex items-center gap-3 px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:-translate-y-0.5">
+                <Calendar className="w-5 h-5" />
+                <span>Ouvrir le calendrier</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </Link>
+            <Link href="/exports" className="group">
+              <button className="flex items-center gap-3 px-6 py-3.5 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] font-medium rounded-xl border border-[var(--border-default)] transition-all hover:-translate-y-0.5">
+                <FileDown className="w-5 h-5" />
+                <span>Exporter planning</span>
+              </button>
+            </Link>
+          </motion.div>
         </div>
       </section>
 
-      {/* Quick Actions */}
-      <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[var(--accent)]" />
-          </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">
-            Actions rapides
-          </h2>
-        </div>
+      {/* Features Grid */}
+      <section className="py-12">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="grid md:grid-cols-3 gap-4"
+        >
+          {features.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
+            >
+              <Link href={feature.href} className="block group">
+                <div className="relative p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-1">
+                  {/* Icon */}
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg`}>
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/calendar" className="btn w-full justify-start gap-3 h-auto py-4 px-5">
-            <Calendar className="w-5 h-5" />
-            <div className="text-left">
-              <span className="font-semibold block">Ouvrir le calendrier</span>
-              <span className="text-xs opacity-80">Planifier mes journées</span>
-            </div>
-          </Link>
+                  {/* Content */}
+                  <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1 group-hover:text-amber-500 transition-colors">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-[var(--text-muted)]">
+                    {feature.description}
+                  </p>
 
-          <Link href="/exports" className="btn btn-secondary w-full justify-start gap-3 h-auto py-4 px-5">
-            <FileDown className="w-5 h-5" />
-            <div className="text-left">
-              <span className="font-semibold block">Exporter mon planning</span>
-              <span className="text-xs opacity-80">Télécharger le fichier ICS</span>
-            </div>
-          </Link>
-        </div>
+                  {/* Arrow */}
+                  <div className="absolute top-6 right-6 w-8 h-8 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                    <ArrowRight className="w-4 h-4 text-amber-500" />
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
-      {/* Info Notice */}
-      <div className="notice notice-info">
-        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
-          <ShieldCheck className="w-5 h-5 text-[var(--info)]" />
-        </div>
-        <div>
-          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-            Confidentialité des données
-          </h4>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Vos données sont stockées localement dans votre navigateur conformément aux normes de confidentialité.
-            Aucune information n&apos;est transmise à des serveurs externes.
-          </p>
-        </div>
-      </div>
+      {/* Stats Section */}
+      <section className="py-12 mt-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+          className="grid grid-cols-3 gap-6"
+        >
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Clock className="w-5 h-5 text-amber-500" />
+              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">2min</span>
+            </div>
+            <p className="text-sm text-[var(--text-muted)]">Temps de setup</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Shield className="w-5 h-5 text-emerald-500" />
+              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">100%</span>
+            </div>
+            <p className="text-sm text-[var(--text-muted)]">Donnees securisees</p>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Zap className="w-5 h-5 text-violet-500" />
+              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">ICS</span>
+            </div>
+            <p className="text-sm text-[var(--text-muted)]">Export universel</p>
+          </div>
+        </motion.div>
+      </section>
     </div>
   );
 }

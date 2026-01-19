@@ -1,12 +1,22 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { CalendarGrid, Birthday } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
-import { Info, Briefcase, Home, GraduationCap, Presentation, Palmtree, Calendar, Cake } from 'lucide-react';
+import { Calendar, Briefcase, Home, GraduationCap, Presentation, Palmtree, Cake, Sparkles } from 'lucide-react';
 
 type Tool = DayStatus | 'ERASER';
+
+const legendItems = [
+  { icon: Briefcase, label: 'Bureau', colorClass: 'bg-blue-500/10 border-blue-500/30 text-blue-500' },
+  { icon: Home, label: 'Teletravail', colorClass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500' },
+  { icon: GraduationCap, label: 'Formation', colorClass: 'bg-amber-500/10 border-amber-500/30 text-amber-500' },
+  { icon: Presentation, label: 'Reunion', colorClass: 'bg-violet-500/10 border-violet-500/30 text-violet-500' },
+  { icon: Palmtree, label: 'Conges', colorClass: 'bg-rose-500/10 border-rose-500/30 text-rose-500' },
+  { icon: Cake, label: 'Anniversaire', colorClass: 'bg-pink-500/10 border-pink-500/30 text-pink-500' },
+];
 
 export default function CalendarPage() {
   const [currentTool, setCurrentTool] = useState<Tool>('WORK');
@@ -31,80 +41,77 @@ export default function CalendarPage() {
   }, []);
 
   return (
-    <div className="space-y-6 stagger-children">
-      {/* Instructions */}
-      <div className="notice notice-info">
-        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
-          <Info className="w-5 h-5 text-[var(--info)]" />
+    <div className="space-y-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <Calendar className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Calendrier</h1>
+            <p className="text-sm text-[var(--text-muted)]">Cliquez ou glissez pour marquer vos journees</p>
+          </div>
         </div>
-        <div>
-          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-            Mode de saisie
-          </h4>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Sélectionnez un type de journée ci-dessous, puis cliquez ou glissez sur les jours du calendrier
-            pour les marquer. Les week-ends ne sont pas sélectionnables. Utilisez la gomme pour effacer.
-          </p>
+        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <span className="text-xs font-medium text-amber-500">Mode peinture</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* Toolbar */}
-      <PaintingToolbar
-        currentTool={currentTool}
-        onToolChange={setCurrentTool}
-        currentHalfDay={currentHalfDay}
-        onHalfDayChange={setCurrentHalfDay}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <PaintingToolbar
+          currentTool={currentTool}
+          onToolChange={setCurrentTool}
+          currentHalfDay={currentHalfDay}
+          onHalfDayChange={setCurrentHalfDay}
+        />
+      </motion.div>
 
       {/* Calendar */}
-      <CalendarGrid
-        currentTool={currentTool}
-        currentHalfDay={currentHalfDay}
-        getDayStatus={getDayStatus}
-        getHalfDayStatus={getHalfDayStatus}
-        hasSplitDay={hasSplitDay}
-        setDayStatus={setDayStatus}
-        formatDateKey={formatDateKey}
-        birthdays={birthdays}
-      />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        <CalendarGrid
+          currentTool={currentTool}
+          currentHalfDay={currentHalfDay}
+          getDayStatus={getDayStatus}
+          getHalfDayStatus={getHalfDayStatus}
+          hasSplitDay={hasSplitDay}
+          setDayStatus={setDayStatus}
+          formatDateKey={formatDateKey}
+          birthdays={birthdays}
+        />
+      </motion.div>
 
-      {/* Légende */}
-      <div className="card">
-        <div className="flex items-center gap-3 mb-4">
-          <Calendar className="w-5 h-5 text-[var(--accent)]" />
-          <h3 className="font-bold text-[var(--text-primary)]">Légende</h3>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-work-bg)] border border-[var(--status-work)]">
-            <Briefcase className="w-4 h-4 text-[var(--status-work)]" />
-            <span className="text-sm font-medium text-[var(--status-work)]">Bureau</span>
+      {/* Legend */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="flex flex-wrap gap-2 justify-center"
+      >
+        {legendItems.map((item) => (
+          <div
+            key={item.label}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium ${item.colorClass}`}
+          >
+            <item.icon className="w-3.5 h-3.5" />
+            <span>{item.label}</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-remote-bg)] border border-[var(--status-remote)]">
-            <Home className="w-4 h-4 text-[var(--status-remote)]" />
-            <span className="text-sm font-medium text-[var(--status-remote)]">Télétravail</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-training-bg)] border border-[var(--status-training)]">
-            <GraduationCap className="w-4 h-4 text-[var(--status-training)]" />
-            <span className="text-sm font-medium text-[var(--status-training)]">Formation reçue</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-trainer-bg)] border border-[var(--status-trainer)]">
-            <Presentation className="w-4 h-4 text-[var(--status-trainer)]" />
-            <span className="text-sm font-medium text-[var(--status-trainer)]">Formateur/Réunion</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--status-leave-bg)] border border-[var(--status-leave)]">
-            <Palmtree className="w-4 h-4 text-[var(--status-leave)]" />
-            <span className="text-sm font-medium text-[var(--status-leave)]">Congés</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
-            <div className="w-4 h-4 rounded bg-[var(--bg-tertiary)] border border-[var(--border-default)]" />
-            <span className="text-sm font-medium text-[var(--text-muted)]">Week-end / Férié</span>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30">
-            <Cake className="w-4 h-4 text-pink-500" />
-            <span className="text-sm font-medium text-pink-500">Anniversaire</span>
-          </div>
-        </div>
-      </div>
+        ))}
+      </motion.div>
     </div>
   );
 }
