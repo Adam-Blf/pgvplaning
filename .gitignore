@@ -126,3 +126,4 @@ llm/pgv-absence-model/
 llm/pgv-absence-model-merged/
 llm/*.gguf
 nul
+.playwright-mcp/

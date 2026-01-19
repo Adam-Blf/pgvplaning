@@ -23,6 +23,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Ensure user profile exists (create if not)
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .single();
+
+    if (!existingProfile) {
+      // Create profile if it doesn't exist (for users created before migration)
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || '',
+          first_name: user.user_metadata?.first_name || '',
+          last_name: user.user_metadata?.last_name || '',
+        });
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        return NextResponse.json(
+          { error: 'Erreur lors de la création du profil utilisateur' },
+          { status: 500 }
+        );
+      }
+    }
+
     // Check if user already has a team
     const { data: existingMembership } = await supabase
       .from('team_members')

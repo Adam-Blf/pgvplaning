@@ -5,6 +5,57 @@ import { useRouter } from 'next/navigation';
 import { Calendar, Mail, Lock, Loader2, AlertTriangle, UserIcon, Phone } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
+// Mapping des erreurs Supabase vers des messages en français
+function getAuthErrorMessage(error: Error | { message: string; code?: string }): string {
+  const message = error.message.toLowerCase();
+
+  // Erreurs d'inscription - email déjà utilisé
+  if (message.includes('user already registered') ||
+      message.includes('already been registered') ||
+      message.includes('email already in use') ||
+      message.includes('duplicate key') && message.includes('email')) {
+    return 'Cette adresse email est déjà utilisée. Essayez de vous connecter ou utilisez une autre adresse.';
+  }
+
+  // Erreurs d'inscription - téléphone déjà utilisé
+  if (message.includes('phone') && (message.includes('already') || message.includes('duplicate'))) {
+    return 'Ce numéro de téléphone est déjà associé à un compte.';
+  }
+
+  // Erreurs de connexion
+  if (message.includes('invalid login credentials') || message.includes('invalid credentials')) {
+    return 'Email ou mot de passe incorrect.';
+  }
+
+  // Mot de passe trop court
+  if (message.includes('password') && message.includes('at least')) {
+    return 'Le mot de passe doit contenir au moins 6 caractères.';
+  }
+
+  // Email invalide
+  if (message.includes('invalid email') || message.includes('email not valid')) {
+    return 'Adresse email invalide.';
+  }
+
+  // Trop de tentatives
+  if (message.includes('too many requests') || message.includes('rate limit')) {
+    return 'Trop de tentatives. Veuillez patienter quelques minutes.';
+  }
+
+  // Email non confirmé
+  if (message.includes('email not confirmed')) {
+    return 'Veuillez confirmer votre email avant de vous connecter.';
+  }
+
+  // Erreur réseau
+  if (message.includes('network') || message.includes('fetch')) {
+    return 'Erreur de connexion. Vérifiez votre connexion internet.';
+  }
+
+  // Message par défaut
+  return error.message || 'Une erreur est survenue. Veuillez réessayer.';
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,7 +107,8 @@ export default function LoginPage() {
         setError('Vérifiez votre email pour confirmer votre inscription.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      const errorObj = err instanceof Error ? err : { message: String(err) };
+      setError(getAuthErrorMessage(errorObj));
     } finally {
       setIsLoading(false);
     }
