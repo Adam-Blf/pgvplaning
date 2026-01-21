@@ -1,15 +1,60 @@
 'use client';
 
-import { Users, Crown, ChevronDown } from 'lucide-react';
+import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader2 } from 'lucide-react';
 import { useTeam } from '@/contexts/team-context';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export function TeamIndicator() {
   const { team, isLeader, loading } = useTeam();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Générer un lien d'invitation
+  const generateInviteLink = async () => {
+    if (!isLeader) return;
+
+    setIsGenerating(true);
+    try {
+      const response = await fetch('/api/teams/invitations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expiresIn: '7d' }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || 'Erreur lors de la création du lien');
+        return;
+      }
+
+      setInviteUrl(data.invitation.url);
+      toast.success('Lien d\'invitation créé !');
+    } catch (error) {
+      console.error('Error generating invite:', error);
+      toast.error('Erreur lors de la création du lien');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Copier le lien ou le code
+  const copyToClipboard = async (text: string, type: 'link' | 'code') => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast.success(type === 'link' ? 'Lien copié !' : 'Code copié !');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error('Erreur lors de la copie');
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -108,9 +153,63 @@ export function TeamIndicator() {
             <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
               Code d&apos;invitation
             </p>
-            <div className="mt-1 flex items-center justify-between p-2 rounded-lg bg-muted/50 border border-border/50">
+            <button
+              onClick={() => copyToClipboard(team.code, 'code')}
+              className="mt-1 w-full flex items-center justify-between p-2 rounded-lg bg-muted/50 border border-border/50 hover:border-primary/50 hover:bg-muted transition-all group"
+            >
               <span className="font-mono text-xs font-medium text-primary">{team.code}</span>
-            </div>
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-emerald-500" />
+              ) : (
+                <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+              )}
+            </button>
+
+            {/* Bouton de génération de lien (leaders uniquement) */}
+            {isLeader && (
+              <div className="mt-3 space-y-2">
+                <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                  Lien d&apos;invitation
+                </p>
+                {inviteUrl ? (
+                  <button
+                    onClick={() => copyToClipboard(inviteUrl, 'link')}
+                    className="w-full flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/40 transition-all group"
+                  >
+                    <Link2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span className="text-xs text-amber-500 truncate flex-1 text-left">
+                      {inviteUrl.replace(/^https?:\/\//, '').slice(0, 30)}...
+                    </span>
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5 text-amber-500/70 group-hover:text-amber-500 shrink-0" />
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={generateInviteLink}
+                    disabled={isGenerating}
+                    className="w-full flex items-center justify-center gap-2 p-2.5 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 hover:border-amber-500/40 text-amber-500 text-xs font-medium transition-all disabled:opacity-50"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Génération...
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="w-3.5 h-3.5" />
+                        Générer un lien
+                      </>
+                    )}
+                  </button>
+                )}
+                <p className="text-[10px] text-muted-foreground text-center">
+                  Valide 7 jours
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
