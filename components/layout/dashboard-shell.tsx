@@ -52,84 +52,85 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-primary)]">
-      {/* Header */}
-      <header className="sticky top-0 z-50 glass border-b border-[var(--border-subtle)]">
-        <div className="container">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 no-underline group">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-muted)] flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg">
-                  <Activity className="w-5 h-5 text-white" />
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Header - Floating Glassmorphic */}
+      <div className="sticky top-4 z-50 px-4 md:px-6">
+        <header className="mx-auto max-w-5xl rounded-2xl glass border border-white/5 shadow-2xl shadow-black/20">
+          <div className="px-4 md:px-6">
+            <div className="flex items-center justify-between h-14 md:h-16">
+              {/* Logo */}
+              <Link href="/" className="flex items-center gap-3 no-underline group">
+                <div className="relative">
+                  <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-primary to-indigo-500 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shadow-glow">
+                    <Activity className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                  </div>
+                  <div className="absolute -inset-2 bg-primary rounded-xl opacity-0 blur-lg group-hover:opacity-30 transition-opacity duration-500" />
                 </div>
-                <div className="absolute -inset-1 bg-[var(--accent)] rounded-xl opacity-20 blur-sm group-hover:opacity-40 transition-opacity" />
-              </div>
-              <div>
-                <span className="font-[var(--font-display)] font-bold text-[var(--text-primary)] text-lg tracking-tight">
-                  PGV Planning
-                </span>
-                <span className="hidden sm:block text-xs text-[var(--text-muted)]">
-                  Gestion d&apos;Équipe
-                </span>
-              </div>
-            </Link>
+                <div className="flex flex-col">
+                  <span className="font-sans font-bold text-foreground text-sm md:text-base tracking-tight leading-none group-hover:text-primary transition-colors">
+                    Absencia
+                  </span>
+                </div>
+              </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
+              {/* Desktop Navigation - Pill Style */}
+              <nav className="hidden md:flex items-center gap-1 p-1 bg-white/5 rounded-full border border-white/5">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 active:scale-95',
+                        isActive
+                          ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                      )}
+                    >
+                      <item.icon className="w-3.5 h-3.5" />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* Team Indicator or Login Button */}
+              <div className="hidden md:flex items-center gap-4">
+                {loading ? (
+                  <div className="h-9 w-24 rounded-full bg-muted animate-pulse" />
+                ) : isAuthenticated ? (
+                  <TeamIndicator />
+                ) : (
                   <Link
-                    key={item.name}
-                    href={item.href}
-                    className={cn(
-                      'nav-link',
-                      isActive && 'nav-link-active'
-                    )}
+                    href="/login"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/20"
                   >
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.name}</span>
+                    <LogIn className="w-3.5 h-3.5" />
+                    Se connecter
                   </Link>
-                );
-              })}
-            </nav>
+                )}
+              </div>
 
-            {/* Team Indicator or Login Button */}
-            <div className="hidden md:block">
-              {loading ? (
-                <div className="h-9 w-24 rounded-lg bg-[var(--bg-tertiary)] animate-pulse" />
-              ) : isAuthenticated ? (
-                <TeamIndicator />
-              ) : (
-                <Link
-                  href="/login"
-                  className="btn btn-primary flex items-center gap-2"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Se connecter
-                </Link>
-              )}
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+                aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
             </div>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden btn-ghost p-2"
-              aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-            >
-              {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
           </div>
 
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
-            <nav className="md:hidden py-4 border-t border-[var(--border-subtle)] animate-slideUp">
-              <div className="flex flex-col gap-1">
+            <div className="md:hidden border-t border-white/5 px-4 py-3 pb-4 animate-slideUp">
+              <nav className="flex flex-col gap-1">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href;
                   return (
@@ -138,8 +139,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
                       className={cn(
-                        'nav-link',
-                        isActive && 'nav-link-active'
+                        'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                        isActive
+                          ? 'bg-primary/10 text-primary font-medium'
+                          : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
                       )}
                     >
                       <item.icon className="w-4 h-4" />
@@ -153,51 +156,40 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="nav-link mt-2 pt-2 border-t border-[var(--border-subtle)] text-[var(--accent)]"
+                    className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Se connecter</span>
                   </Link>
                 )}
-              </div>
-            </nav>
+              </nav>
+            </div>
           )}
-        </div>
-      </header>
+        </header>
+      </div>
 
       {/* Main content */}
-      <main className="flex-1" id="contenu" role="main">
-        <div className="container py-8">
-          {/* Page header */}
-          <div className="mb-8 animate-fadeIn">
-            <h1 className="text-2xl md:text-3xl text-[var(--text-primary)]">
-              {navigation.find((n) => n.href === pathname)?.name || 'Tableau de bord'}
-            </h1>
-            <div className="mt-2 h-1 w-12 bg-[var(--accent)] rounded-full" />
-          </div>
-
-          {/* Page content */}
-          <div className="animate-slideUp">
-            {children}
-          </div>
+      <main className="flex-1 mt-6" id="contenu" role="main">
+        <div className="container max-w-6xl py-4 md:py-8">
+          {children}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--border-subtle)] bg-[var(--bg-secondary)]">
-        <div className="container py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-[var(--accent)]" />
-              <span className="text-sm font-medium text-[var(--text-secondary)]">
-                Blackout Prod - Solutions Planning
+      <footer className="mt-auto border-t border-white/5 bg-background/50">
+        <div className="container max-w-6xl py-8 md:py-12">
+          <div className="flex flex-col items-center justify-center gap-4 text-center">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
+              <Activity className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Absencia par Blackout Prod
               </span>
             </div>
-            <div className="flex gap-6 text-sm">
-              <Link href="/mentions-legales" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
+            <div className="flex gap-6 text-xs text-muted-foreground">
+              <Link href="/mentions-legales" className="hover:text-primary transition-colors">
                 Mentions légales
               </Link>
-              <Link href="/contact" className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors">
+              <Link href="/contact" className="hover:text-primary transition-colors">
                 Contact
               </Link>
             </div>

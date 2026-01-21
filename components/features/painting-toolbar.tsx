@@ -11,7 +11,6 @@ interface ToolConfig {
   label: string;
   icon: React.ElementType;
   className: string;
-  activeClass: string;
 }
 
 interface HalfDayConfig {
@@ -32,36 +31,31 @@ const tools: ToolConfig[] = [
     id: 'WORK',
     label: 'Bureau',
     icon: Briefcase,
-    className: 'tool-btn-work',
-    activeClass: 'active',
+    className: 'bg-status-work/10 text-status-work border-status-work hover:bg-status-work hover:text-white',
   },
   {
     id: 'REMOTE',
     label: 'Télétravail',
     icon: Home,
-    className: 'tool-btn-remote',
-    activeClass: 'active',
+    className: 'bg-status-remote/10 text-status-remote border-status-remote hover:bg-status-remote hover:text-white',
   },
   {
     id: 'SCHOOL',
     label: 'Formation reçue',
     icon: GraduationCap,
-    className: 'tool-btn-training',
-    activeClass: 'active',
+    className: 'bg-status-school/10 text-status-school border-status-school hover:bg-status-school hover:text-white',
   },
   {
     id: 'TRAINER',
     label: 'Formateur/Réunion',
     icon: Presentation,
-    className: 'tool-btn-trainer',
-    activeClass: 'active',
+    className: 'bg-violet-500/10 text-violet-500 border-violet-500 hover:bg-violet-500 hover:text-white',
   },
   {
     id: 'LEAVE',
     label: 'Congés',
     icon: Palmtree,
-    className: 'tool-btn-leave',
-    activeClass: 'active',
+    className: 'bg-status-leave/10 text-status-leave border-status-leave hover:bg-status-leave hover:text-white',
   },
 ];
 
@@ -79,11 +73,12 @@ export function PaintingToolbar({
   onHalfDayChange
 }: PaintingToolbarProps) {
   return (
-    <div className="card space-y-4">
+    <div className="p-6 rounded-2xl bg-card border border-white/5 shadow-lg space-y-6 backdrop-blur-sm">
       {/* Tool Selection */}
       <fieldset>
-        <legend className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
-          Sélectionnez un type de journée
+        <legend className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+          <span>Type de journée</span>
+          <div className="h-px flex-1 bg-border/50"></div>
         </legend>
 
         <div className="flex items-center gap-3 flex-wrap">
@@ -96,9 +91,10 @@ export function PaintingToolbar({
                 key={tool.id}
                 onClick={() => onToolChange(tool.id)}
                 className={cn(
-                  'tool-btn',
-                  tool.className,
-                  isActive && tool.activeClass
+                  'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ease-out active:scale-95',
+                  isActive
+                    ? cn(tool.className, 'bg-opacity-100 text-white shadow-lg scale-105')
+                    : cn(tool.className, 'bg-opacity-5 border-transparent hover:scale-105 hover:shadow-md')
                 )}
                 aria-pressed={isActive}
               >
@@ -109,14 +105,16 @@ export function PaintingToolbar({
           })}
 
           {/* Separator */}
-          <div className="h-8 w-px bg-[var(--border-subtle)] mx-1 hidden sm:block" />
+          <div className="h-8 w-px bg-border/50 mx-1 hidden sm:block" />
 
           {/* Eraser */}
           <button
             onClick={() => onToolChange('ERASER')}
             className={cn(
-              'tool-btn tool-btn-eraser',
-              currentTool === 'ERASER' && 'active'
+              'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ease-out active:scale-95',
+              currentTool === 'ERASER'
+                ? 'bg-muted text-foreground border-border shadow-lg scale-105'
+                : 'bg-transparent text-muted-foreground border-transparent hover:bg-muted/50 hover:text-foreground hover:scale-105'
             )}
             aria-pressed={currentTool === 'ERASER'}
             title="Effacer / Réinitialiser"
@@ -128,12 +126,13 @@ export function PaintingToolbar({
       </fieldset>
 
       {/* Half-day Selection */}
-      <fieldset className="pt-4 border-t border-[var(--border-subtle)]">
-        <legend className="text-sm font-semibold text-[var(--text-secondary)] mb-4">
-          Granularité
+      <fieldset>
+        <legend className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
+          <span>Granularité</span>
+          <div className="h-px flex-1 bg-border/50"></div>
         </legend>
 
-        <div className="flex items-center gap-2">
+        <div className="inline-flex p-1 rounded-xl bg-muted/30 border border-white/5">
           {halfDayOptions.map((option) => {
             const isActive = currentHalfDay === option.id;
             const Icon = option.icon;
@@ -143,11 +142,10 @@ export function PaintingToolbar({
                 key={option.id}
                 onClick={() => onHalfDayChange(option.id)}
                 className={cn(
-                  'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                  'border border-[var(--border-default)]',
+                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-out',
                   isActive
-                    ? 'bg-[var(--accent)] text-white border-[var(--accent)] shadow-md'
-                    : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] hover:border-[var(--border-hover)]'
+                    ? 'bg-background text-foreground shadow-sm scale-100'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
                 )}
                 aria-pressed={isActive}
               >

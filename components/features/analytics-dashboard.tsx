@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   AreaChart,
   Area,
@@ -15,8 +15,6 @@ import {
   Legend,
 } from 'recharts';
 import {
-  Sun,
-  Moon,
   Download,
   TrendingUp,
   TrendingDown,
@@ -38,44 +36,41 @@ import {
 } from 'lucide-react';
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
-// Configuration des couleurs par statut (style Data Viz)
-const STATUS_COLORS = {
+// Configuration des couleurs par statut (using CSS variables mapped in tailwind config)
+const STATUS_STYLES = {
   work: {
-    primary: '#10b981',
-    secondary: '#34d399',
-    gradient: ['#10b981', '#059669'],
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
-    text: 'text-emerald-400',
+    color: '#6366f1', // Indigo Electric
+    bg: 'bg-status-work/10',
+    border: 'border-status-work/20',
+    text: 'text-status-work',
+    gradient: ['#6366f1', '#818cf8'],
   },
   remote: {
-    primary: '#8b5cf6',
-    secondary: '#a78bfa',
-    gradient: ['#8b5cf6', '#7c3aed'],
-    bg: 'bg-violet-500/10',
-    border: 'border-violet-500/30',
-    text: 'text-violet-400',
+    color: '#10b981', // Emerald
+    bg: 'bg-status-remote/10',
+    border: 'border-status-remote/20',
+    text: 'text-status-remote',
+    gradient: ['#10b981', '#34d399'],
   },
   school: {
-    primary: '#f59e0b',
-    secondary: '#fbbf24',
-    gradient: ['#f59e0b', '#d97706'],
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/30',
-    text: 'text-amber-400',
+    color: '#f59e0b', // Amber
+    bg: 'bg-status-school/10',
+    border: 'border-status-school/20',
+    text: 'text-status-school',
+    gradient: ['#f59e0b', '#fbbf24'],
   },
   leave: {
-    primary: '#ec4899',
-    secondary: '#f472b6',
-    gradient: ['#ec4899', '#db2777'],
-    bg: 'bg-pink-500/10',
-    border: 'border-pink-500/30',
-    text: 'text-pink-400',
+    color: '#f43f5e', // Rose
+    bg: 'bg-status-leave/10',
+    border: 'border-status-leave/20',
+    text: 'text-status-leave',
+    gradient: ['#f43f5e', '#fb7185'],
   },
 };
 
-// Données fictives pour les tendances
 const TRENDS = {
   work: { value: 8, isPositive: true },
   remote: { value: 12, isPositive: true },
@@ -88,22 +83,12 @@ interface AnalyticsDashboardProps {
 }
 
 export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
-  const [isDark, setIsDark] = useState(true);
   const [currentYear] = useState(new Date().getFullYear());
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [activeNav, setActiveNav] = useState('analytics');
 
   const { data: calendarData } = useCalendarData();
   const stats = useCalendarStats(calendarData, currentYear);
-
-  // Appliquer le thème
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   // Générer les données mensuelles pour le graphique
   const monthlyData = useMemo(() => {
@@ -113,7 +98,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
     ];
 
     return months.map((month) => {
-      // Simuler une répartition basée sur les stats globales avec variation
       const variance = () => Math.random() * 4 - 2;
       const baseWork = stats.percentages.work / 100 * 22;
       const baseRemote = stats.percentages.remote / 100 * 22;
@@ -128,13 +112,12 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
   // Données pour le graphique en donut
   const pieData = useMemo(() => [
-    { name: 'Bureau', value: stats.work, color: STATUS_COLORS.work.primary },
-    { name: 'Télétravail', value: stats.remote, color: STATUS_COLORS.remote.primary },
-    { name: 'Formation', value: stats.school, color: STATUS_COLORS.school.primary },
-    { name: 'Congés', value: stats.leave, color: STATUS_COLORS.leave.primary },
+    { name: 'Bureau', value: stats.work, color: STATUS_STYLES.work.color },
+    { name: 'Télétravail', value: stats.remote, color: STATUS_STYLES.remote.color },
+    { name: 'Formation', value: stats.school, color: STATUS_STYLES.school.color },
+    { name: 'Congés', value: stats.leave, color: STATUS_STYLES.leave.color },
   ], [stats]);
 
-  // Navigation items
   const navItems = [
     { id: 'home', icon: Home, label: 'Accueil' },
     { id: 'analytics', icon: BarChart3, label: 'Analytics' },
@@ -143,7 +126,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
     { id: 'settings', icon: Settings, label: 'Paramètres' },
   ];
 
-  // Exports récents (vide - fonctionnalité simplifiée)
   const recentExports: Array<{
     id: string;
     date: string;
@@ -154,18 +136,18 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
   }> = [];
 
   return (
-    <div className={`min-h-screen flex ${isDark ? 'bg-slate-900' : 'bg-gray-50'} transition-colors duration-300 ${className}`}>
+    <div className={cn("min-h-screen flex bg-background text-foreground transition-colors duration-300", className)}>
       {/* Sidebar */}
-      <aside className={`w-64 fixed h-full ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border-r backdrop-blur-xl z-50`}>
+      <aside className="w-64 fixed h-full bg-card/50 border-r border-border/50 backdrop-blur-xl z-50">
         {/* Logo */}
-        <div className={`h-16 flex items-center px-6 ${isDark ? 'border-slate-700' : 'border-gray-200'} border-b`}>
+        <div className="h-16 flex items-center px-6 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl ${isDark ? 'bg-gradient-to-br from-violet-500 to-purple-600' : 'bg-gradient-to-br from-violet-600 to-purple-700'} flex items-center justify-center shadow-lg shadow-violet-500/25`}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-indigo-500 flex items-center justify-center shadow-lg shadow-primary/25">
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>PGV Planning</h1>
-              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>v9.0.0</p>
+              <h1 className="font-semibold text-foreground">PGV Planning</h1>
+              <p className="text-xs text-muted-foreground">v9.0.0</p>
             </div>
           </div>
         </div>
@@ -176,105 +158,66 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             <button
               key={item.id}
               onClick={() => setActiveNav(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                 activeNav === item.id
-                  ? isDark
-                    ? 'bg-violet-500/20 text-violet-400 shadow-lg shadow-violet-500/10'
-                    : 'bg-violet-100 text-violet-700'
-                  : isDark
-                    ? 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+                  ? "bg-primary/10 text-primary shadow-glow-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              )}
             >
               <item.icon className="w-5 h-5" />
               {item.label}
             </button>
           ))}
         </nav>
-
-        {/* Bottom section */}
-        <div className={`absolute bottom-0 left-0 right-0 p-4 ${isDark ? 'border-slate-700' : 'border-gray-200'} border-t`}>
-          <button
-            onClick={() => setIsDark(!isDark)}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-              isDark
-                ? 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <span className="flex items-center gap-3">
-              {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              {isDark ? 'Mode Sombre' : 'Mode Clair'}
-            </span>
-            <div className={`w-12 h-6 rounded-full relative transition-colors ${isDark ? 'bg-violet-500' : 'bg-gray-300'}`}>
-              <div className={`absolute w-5 h-5 rounded-full bg-white top-0.5 transition-transform shadow-sm ${isDark ? 'translate-x-6' : 'translate-x-0.5'}`} />
-            </div>
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 ml-64">
+      <main className="flex-1 ml-64 bg-background">
         {/* Header */}
-        <header className={`h-16 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border-b backdrop-blur-xl sticky top-0 z-40 px-8 flex items-center justify-between`}>
+        <header className="h-16 bg-card/50 border-b border-border/50 backdrop-blur-xl sticky top-0 z-40 px-8 flex items-center justify-between">
           <div>
-            <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <h2 className="text-xl font-semibold text-foreground">
               Analytics & Exports
             </h2>
-            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            <p className="text-sm text-muted-foreground">
               Vue d&apos;ensemble de votre activité {currentYear}
             </p>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Theme toggle button */}
-            <button
-              onClick={() => setIsDark(!isDark)}
-              className={`p-2.5 rounded-xl transition-all duration-200 ${
-                isDark
-                  ? 'bg-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700'
-                  : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
-              }`}
-            >
-              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-
             {/* Profile dropdown */}
             <div className="relative">
               <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 ${
-                  isDark
-                    ? 'hover:bg-slate-700/50'
-                    : 'hover:bg-gray-100'
-                }`}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-white/5"
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center ring-2 ring-white/10">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="text-left hidden sm:block">
-                  <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <p className="text-sm font-medium text-foreground">
                     Utilisateur
                   </p>
-                  <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                  <p className="text-xs text-muted-foreground">
                     Admin
                   </p>
                 </div>
-                <ChevronDown className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+                <ChevronDown className="w-4 h-4 text-muted-foreground" />
               </button>
 
               {isProfileOpen && (
-                <div className={`absolute right-0 mt-2 w-48 rounded-xl ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border shadow-xl py-2`}>
-                  <button className={`w-full flex items-center gap-3 px-4 py-2 text-sm ${isDark ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                <div className="absolute right-0 mt-2 w-48 rounded-xl bg-popover border border-white/10 shadow-xl py-2 animate-grade-in">
+                  <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5">
                     <User className="w-4 h-4" />
                     Mon Profil
                   </button>
-                  <button className={`w-full flex items-center gap-3 px-4 py-2 text-sm ${isDark ? 'text-slate-300 hover:bg-slate-700' : 'text-gray-700 hover:bg-gray-100'}`}>
+                  <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white/5">
                     <Settings className="w-4 h-4" />
                     Paramètres
                   </button>
-                  <hr className={`my-2 ${isDark ? 'border-slate-700' : 'border-gray-200'}`} />
-                  <button className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-100'}`}>
+                  <hr className="my-2 border-white/10" />
+                  <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
                     <LogOut className="w-4 h-4" />
                     Déconnexion
                   </button>
@@ -288,66 +231,58 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <div className="p-8 space-y-6">
           {/* KPI Cards - Top Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {/* Bureau */}
             <KPICard
-              isDark={isDark}
               title="Jours au Bureau"
               value={stats.work}
               percentage={stats.percentages.work}
               trend={TRENDS.work}
               icon={Briefcase}
-              colors={STATUS_COLORS.work}
+              styles={STATUS_STYLES.work}
             />
 
-            {/* Télétravail */}
             <KPICard
-              isDark={isDark}
               title="Jours de Télétravail"
               value={stats.remote}
               percentage={stats.percentages.remote}
               trend={TRENDS.remote}
               icon={Monitor}
-              colors={STATUS_COLORS.remote}
+              styles={STATUS_STYLES.remote}
             />
 
-            {/* Formation */}
             <KPICard
-              isDark={isDark}
               title="Jours de Formation"
               value={stats.school}
               percentage={stats.percentages.school}
               trend={TRENDS.school}
               icon={GraduationCap}
-              colors={STATUS_COLORS.school}
+              styles={STATUS_STYLES.school}
             />
 
-            {/* Congés */}
             <KPICard
-              isDark={isDark}
               title="Jours de Congés"
               value={stats.leave}
               percentage={stats.percentages.leave}
               trend={TRENDS.leave}
               icon={Palmtree}
-              colors={STATUS_COLORS.leave}
+              styles={STATUS_STYLES.leave}
             />
           </div>
 
           {/* Charts - Middle Row */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Area Chart */}
-            <div className={`xl:col-span-2 rounded-2xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border p-6 backdrop-blur-xl`}>
+            <div className="xl:col-span-2 rounded-2xl bg-card border border-white/5 p-6 backdrop-blur-xl shadow-lg shadow-black/20">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Répartition Mensuelle
                   </h3>
-                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                  <p className="text-sm text-muted-foreground">
                     Bureau vs Télétravail par mois
                   </p>
                 </div>
-                <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
-                  <BarChart3 className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+                <div className="p-2 rounded-lg bg-muted/20">
+                  <BarChart3 className="w-5 h-5 text-muted-foreground" />
                 </div>
               </div>
 
@@ -356,45 +291,46 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   <AreaChart data={monthlyData}>
                     <defs>
                       <linearGradient id="colorBureau" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={STATUS_COLORS.work.primary} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={STATUS_COLORS.work.primary} stopOpacity={0} />
+                        <stop offset="5%" stopColor={STATUS_STYLES.work.color} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={STATUS_STYLES.work.color} stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorTeletravail" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={STATUS_COLORS.remote.primary} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={STATUS_COLORS.remote.primary} stopOpacity={0} />
+                        <stop offset="5%" stopColor={STATUS_STYLES.remote.color} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={STATUS_STYLES.remote.color} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
                       strokeDasharray="3 3"
-                      stroke={isDark ? '#334155' : '#e5e7eb'}
+                      stroke="#334155"
                       vertical={false}
+                      opacity={0.2}
                     />
                     <XAxis
                       dataKey="month"
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: isDark ? '#94a3b8' : '#6b7280', fontSize: 12 }}
+                      tick={{ fill: '#94a3b8', fontSize: 12 }}
                     />
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tick={{ fill: isDark ? '#94a3b8' : '#6b7280', fontSize: 12 }}
+                      tick={{ fill: '#94a3b8', fontSize: 12 }}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                        border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                        backgroundColor: '#18181b', // zinc-950
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                        color: '#fff'
                       }}
-                      labelStyle={{ color: isDark ? '#ffffff' : '#111827', fontWeight: 600 }}
-                      itemStyle={{ color: isDark ? '#94a3b8' : '#6b7280' }}
+                      itemStyle={{ color: '#cbd5e1' }}
                     />
                     <Area
                       type="monotone"
                       dataKey="bureau"
                       name="Bureau"
-                      stroke={STATUS_COLORS.work.primary}
+                      stroke={STATUS_STYLES.work.color}
                       strokeWidth={2}
                       fillOpacity={1}
                       fill="url(#colorBureau)"
@@ -403,7 +339,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       type="monotone"
                       dataKey="teletravail"
                       name="Télétravail"
-                      stroke={STATUS_COLORS.remote.primary}
+                      stroke={STATUS_STYLES.remote.color}
                       strokeWidth={2}
                       fillOpacity={1}
                       fill="url(#colorTeletravail)"
@@ -414,18 +350,18 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             </div>
 
             {/* Donut Chart */}
-            <div className={`rounded-2xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border p-6 backdrop-blur-xl`}>
+            <div className="rounded-2xl bg-card border border-white/5 p-6 backdrop-blur-xl shadow-lg shadow-black/20">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <h3 className="text-lg font-semibold text-foreground">
                     Répartition Globale
                   </h3>
-                  <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                  <p className="text-sm text-muted-foreground">
                     {stats.total} jours travaillés
                   </p>
                 </div>
-                <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
-                  <PieChartIcon className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+                <div className="p-2 rounded-lg bg-muted/20">
+                  <PieChartIcon className="w-5 h-5 text-muted-foreground" />
                 </div>
               </div>
 
@@ -440,21 +376,21 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       outerRadius={90}
                       paddingAngle={4}
                       dataKey="value"
+                      stroke="none"
                     >
                       {pieData.map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
                           fill={entry.color}
-                          stroke="transparent"
                         />
                       ))}
                     </Pie>
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                        border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                        backgroundColor: '#18181b',
+                        border: '1px solid rgba(255,255,255,0.1)',
                         borderRadius: '12px',
-                        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                        color: '#fff'
                       }}
                       formatter={(value) => [`${value} jours`, '']}
                     />
@@ -463,7 +399,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       iconType="circle"
                       iconSize={8}
                       formatter={(value) => (
-                        <span className={isDark ? 'text-slate-300' : 'text-gray-700'}>
+                        <span className="text-muted-foreground text-sm font-medium">
                           {value}
                         </span>
                       )}
@@ -475,124 +411,54 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
           </div>
 
           {/* History Table - Bottom Row */}
-          <div className={`rounded-2xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border backdrop-blur-xl overflow-hidden`}>
-            <div className="p-6 flex items-center justify-between border-b border-inherit">
+          <div className="rounded-2xl bg-card border border-white/5 backdrop-blur-xl overflow-hidden shadow-lg shadow-black/20">
+            <div className="p-6 flex items-center justify-between border-b border-white/5">
               <div>
-                <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className="text-lg font-semibold text-foreground">
                   Exports Récents
                 </h3>
-                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                <p className="text-sm text-muted-foreground">
                   Historique des fichiers ICS générés
                 </p>
               </div>
-              <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
-                <Table className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
+              <div className="p-2 rounded-lg bg-muted/20">
+                <Table className="w-5 h-5 text-muted-foreground" />
               </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className={isDark ? 'bg-slate-700/30' : 'bg-gray-50'}>
-                    <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                  <tr className="bg-muted/30">
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Date
                     </th>
-                    <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Employé
                     </th>
-                    <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Type
                     </th>
-                    <th className={`px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Fichier
                     </th>
-                    <th className={`px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       Action
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-inherit">
-                  {recentExports.length > 0 ? (
-                    recentExports.map((item) => (
-                      <tr
-                        key={item.id}
-                        className={`transition-colors ${isDark ? 'hover:bg-slate-700/30' : 'hover:bg-gray-50'}`}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${isDark ? 'bg-slate-700/50' : 'bg-gray-100'}`}>
-                              <Clock className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
-                            </div>
-                            <div>
-                              <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {item.date}
-                              </p>
-                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                                {item.time}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-                              <span className="text-white text-xs font-semibold">
-                                {item.employeeName.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                            <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                              {item.employeeName}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${
-                            item.type === 'Multi-périodes'
-                              ? isDark
-                                ? 'bg-violet-500/20 text-violet-400'
-                                : 'bg-violet-100 text-violet-700'
-                              : isDark
-                                ? 'bg-emerald-500/20 text-emerald-400'
-                                : 'bg-emerald-100 text-emerald-700'
-                          }`}>
-                            {item.type}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <FileText className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`} />
-                            <span className={`text-sm font-mono ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                              {item.filename}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <button
-                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                              isDark
-                                ? 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                                : 'bg-violet-100 text-violet-700 hover:bg-violet-200'
-                            }`}
-                          >
-                            <Download className="w-4 h-4" />
-                            Télécharger
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="px-6 py-12 text-center">
-                        <div className={`inline-flex flex-col items-center gap-3 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                          <FileText className="w-12 h-12 opacity-50" />
-                          <p className="text-sm">Aucun export récent</p>
-                          <p className="text-xs opacity-75">
-                            Les fichiers ICS générés apparaîtront ici
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
+                <tbody className="divide-y divide-white/5">
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center">
+                      <div className="inline-flex flex-col items-center gap-3 text-muted-foreground">
+                        <FileText className="w-12 h-12 opacity-20" />
+                        <p className="text-sm">Aucun export récent</p>
+                        <p className="text-xs opacity-50">
+                          Les fichiers ICS générés apparaîtront ici
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -605,31 +471,30 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
 // Composant KPI Card
 interface KPICardProps {
-  isDark: boolean;
   title: string;
   value: number;
   percentage: number;
   trend: { value: number; isPositive: boolean };
   icon: React.ElementType;
-  colors: typeof STATUS_COLORS.work;
+  styles: typeof STATUS_STYLES.work;
 }
 
-function KPICard({ isDark, title, value, percentage, trend, icon: Icon, colors }: KPICardProps) {
+function KPICard({ title, value, percentage, trend, icon: Icon, styles }: KPICardProps) {
   return (
-    <div className={`rounded-2xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-gray-200'} border p-6 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${isDark ? 'hover:shadow-black/20' : 'hover:shadow-gray-200/50'}`}>
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      className="rounded-2xl bg-card border border-white/5 p-6 backdrop-blur-xl shadow-md transition-all duration-300 hover:shadow-glow hover:border-white/10"
+    >
       <div className="flex items-start justify-between">
-        <div className={`p-3 rounded-xl ${colors.bg} ${colors.border} border`}>
-          <Icon className={`w-6 h-6 ${colors.text}`} />
+        <div className={cn("p-3 rounded-xl border", styles.bg, styles.border)}>
+          <Icon className={cn("w-6 h-6", styles.text)} />
         </div>
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium ${
+        <div className={cn(
+          "flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border border-transparent",
           trend.isPositive
-            ? isDark
-              ? 'bg-emerald-500/20 text-emerald-400'
-              : 'bg-emerald-100 text-emerald-700'
-            : isDark
-              ? 'bg-red-500/20 text-red-400'
-              : 'bg-red-100 text-red-700'
-        }`}>
+            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+            : "bg-red-500/10 text-red-500 border-red-500/20"
+        )}>
           {trend.isPositive ? (
             <TrendingUp className="w-3 h-3" />
           ) : (
@@ -640,12 +505,12 @@ function KPICard({ isDark, title, value, percentage, trend, icon: Icon, colors }
       </div>
 
       <div className="mt-4">
-        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{title}</p>
+        <p className="text-sm text-muted-foreground">{title}</p>
         <div className="flex items-end gap-2 mt-1">
-          <p className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <p className="text-3xl font-bold text-foreground">
             {value}
           </p>
-          <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-400'} mb-1`}>
+          <p className="text-sm text-muted-foreground mb-1">
             jours
           </p>
         </div>
@@ -653,20 +518,22 @@ function KPICard({ isDark, title, value, percentage, trend, icon: Icon, colors }
 
       {/* Progress bar */}
       <div className="mt-4">
-        <div className={`h-2 rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-200'} overflow-hidden`}>
-          <div
-            className="h-full rounded-full transition-all duration-500"
+        <div className="h-2 rounded-full bg-muted/50 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="h-full rounded-full"
             style={{
-              width: `${percentage}%`,
-              background: `linear-gradient(90deg, ${colors.gradient[0]}, ${colors.gradient[1]})`,
+              background: `linear-gradient(90deg, ${styles.gradient[0]}, ${styles.gradient[1]})`,
             }}
           />
         </div>
-        <p className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>
+        <p className="text-xs mt-2 text-muted-foreground">
           {percentage.toFixed(1)}% du total
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

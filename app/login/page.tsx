@@ -16,7 +16,116 @@ import {
   Sparkles,
   Shield,
   Zap,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
+
+// Composant bonhomme animé (style Ralph Loop)
+const PeekingPerson = ({ isLooking, delay = 0 }: { isLooking: boolean; delay?: number }) => (
+  <motion.div
+    className="relative w-8 h-10"
+    initial={false}
+    animate={{
+      rotateY: isLooking ? 0 : 180,
+    }}
+    transition={{
+      duration: 0.4,
+      delay,
+      type: "spring",
+      stiffness: 200,
+      damping: 20
+    }}
+    style={{ transformStyle: 'preserve-3d' }}
+  >
+    {/* Face avant (regarde) */}
+    <motion.svg
+      viewBox="0 0 40 50"
+      className="absolute inset-0 w-full h-full"
+      style={{ backfaceVisibility: 'hidden' }}
+    >
+      {/* Corps */}
+      <ellipse cx="20" cy="38" rx="12" ry="10" fill="#FCD34D" />
+      {/* Tête */}
+      <circle cx="20" cy="18" r="14" fill="#FCD34D" />
+      {/* Yeux */}
+      <motion.g
+        animate={{
+          y: isLooking ? [0, -1, 0] : 0,
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      >
+        <circle cx="14" cy="16" r="3.5" fill="white" />
+        <circle cx="26" cy="16" r="3.5" fill="white" />
+        <motion.circle
+          cx="14" cy="16" r="2" fill="#1F2937"
+          animate={{
+            x: isLooking ? [0, 1, 0] : 0,
+            y: isLooking ? [0, 1, 0] : 0,
+          }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        />
+        <motion.circle
+          cx="26" cy="16" r="2" fill="#1F2937"
+          animate={{
+            x: isLooking ? [0, 1, 0] : 0,
+            y: isLooking ? [0, 1, 0] : 0,
+          }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        />
+      </motion.g>
+      {/* Sourcils */}
+      <motion.g
+        animate={{ y: isLooking ? 0 : -2 }}
+      >
+        <line x1="10" y1="10" x2="17" y2="11" stroke="#92400E" strokeWidth="1.5" strokeLinecap="round" />
+        <line x1="23" y1="11" x2="30" y2="10" stroke="#92400E" strokeWidth="1.5" strokeLinecap="round" />
+      </motion.g>
+      {/* Bouche */}
+      <motion.path
+        d="M 15 24 Q 20 28, 25 24"
+        stroke="#92400E"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        animate={{
+          d: isLooking
+            ? "M 15 24 Q 20 28, 25 24"
+            : "M 16 25 Q 20 24, 24 25"
+        }}
+      />
+    </motion.svg>
+
+    {/* Face arrière (dos tourné) */}
+    <motion.svg
+      viewBox="0 0 40 50"
+      className="absolute inset-0 w-full h-full"
+      style={{
+        backfaceVisibility: 'hidden',
+        transform: 'rotateY(180deg)'
+      }}
+    >
+      {/* Corps de dos */}
+      <ellipse cx="20" cy="38" rx="12" ry="10" fill="#F59E0B" />
+      {/* Tête de dos */}
+      <circle cx="20" cy="18" r="14" fill="#F59E0B" />
+      {/* Cheveux/motif de dos */}
+      <path
+        d="M 10 12 Q 15 6, 20 8 Q 25 6, 30 12"
+        stroke="#D97706"
+        strokeWidth="3"
+        fill="none"
+        strokeLinecap="round"
+      />
+      {/* Petites mains qui se couvrent les yeux (visibles de dos) */}
+      <ellipse cx="12" cy="14" rx="4" ry="3" fill="#FBBF24" />
+      <ellipse cx="28" cy="14" rx="4" ry="3" fill="#FBBF24" />
+    </motion.svg>
+  </motion.div>
+);
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 import Link from 'next/link';
 
@@ -71,6 +180,7 @@ const features = [
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
@@ -366,19 +476,50 @@ export default function LoginPage() {
 
                   <div>
                     <label htmlFor="password" className={labelClasses}>Mot de passe</label>
+                    {/* Bonhommes animés au-dessus du champ */}
+                    <div className="flex justify-center gap-2 mb-2">
+                      <PeekingPerson isLooking={!showPassword} delay={0} />
+                      <PeekingPerson isLooking={!showPassword} delay={0.05} />
+                      <PeekingPerson isLooking={!showPassword} delay={0.1} />
+                    </div>
                     <div className="relative">
                       <Lock className={iconClasses} />
                       <input
                         id="password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className={inputClasses}
+                        className={`${inputClasses} pr-12`}
                         placeholder="••••••••"
                         required
                         minLength={6}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-[var(--bg-primary)] text-[var(--text-muted)] hover:text-amber-500 transition-all duration-200"
+                        aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                      >
+                        <AnimatePresence mode="wait" initial={false}>
+                          <motion.div
+                            key={showPassword ? 'visible' : 'hidden'}
+                            initial={{ opacity: 0, scale: 0.8, rotate: -90 }}
+                            animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, rotate: 90 }}
+                            transition={{ duration: 0.15 }}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </motion.div>
+                        </AnimatePresence>
+                      </button>
                     </div>
+                    <p className="text-xs text-[var(--text-muted)] mt-1.5 text-center">
+                      {showPassword ? '🙈 Les gardiens se sont retournés !' : '👀 Les gardiens surveillent...'}
+                    </p>
                   </div>
 
                   <AnimatePresence>

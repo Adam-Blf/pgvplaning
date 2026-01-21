@@ -17,13 +17,13 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "PGV Planning - Gestion des Plannings d'Équipe",
-  description: "Solution professionnelle de gestion des plannings pour équipes et organisations. Gérez congés, présences, télétravail et formations. Export ICS compatible tous calendriers.",
-  keywords: ["planning", "équipe", "ICS", "calendrier", "congés", "absences", "télétravail", "organisation", "RH", "gestion"],
+  title: "Absencia - Gestion des Absences d'Équipe",
+  description: "Solution professionnelle de gestion des absences pour équipes et organisations. Gérez congés, présences, télétravail et formations. Export ICS compatible tous calendriers.",
+  keywords: ["absences", "équipe", "ICS", "calendrier", "congés", "planning", "télétravail", "organisation", "RH", "gestion"],
   authors: [{ name: "Blackout Prod" }],
   openGraph: {
-    title: "PGV Planning - Gestion des Plannings d'Équipe",
-    description: "Solution professionnelle de gestion des plannings pour équipes et organisations",
+    title: "Absencia - Gestion des Absences d'Équipe",
+    description: "Solution professionnelle de gestion des absences pour équipes et organisations",
     locale: "fr_FR",
     type: "website",
   },
