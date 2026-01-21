@@ -164,7 +164,7 @@ export default function GuidePage() {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold gradient-text-amber">
-                Guide d'utilisation
+                Guide d&apos;utilisation
               </h1>
               <p className="text-[var(--text-secondary)]">
                 Apprenez à utiliser Absencia en quelques minutes
@@ -349,7 +349,7 @@ export default function GuidePage() {
               Application mobile
             </h3>
             <p className="text-sm text-[var(--text-secondary)]">
-              Absencia est une Progressive Web App (PWA). Ajoutez-la à votre écran d'accueil pour une expérience native sur mobile.
+              Absencia est une Progressive Web App (PWA). Ajoutez-la à votre écran d&apos;accueil pour une expérience native sur mobile.
             </p>
           </div>
         </div>
