@@ -442,7 +442,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Admin promotion/demotion functions
+-- Admin promotion/demotion functions (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS promote_to_admin(UUID, UUID);
+DROP FUNCTION IF EXISTS demote_from_admin(UUID, UUID);
+
 CREATE OR REPLACE FUNCTION promote_to_admin(p_leader_id UUID, p_user_id UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
