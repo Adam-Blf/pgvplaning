@@ -86,7 +86,7 @@ async function callOpenAICompatible(
 ): Promise<string> {
   // Détecter le type d'endpoint pour adapter le modèle
   const isLocal = apiEndpoint.includes('localhost') || apiEndpoint.includes('127.0.0.1');
-  const model = modelName || (isLocal ? 'pgv-absence' : 'gpt-3.5-turbo');
+  const model = modelName || (isLocal ? 'absencia-model' : 'gpt-3.5-turbo');
 
   const requestBody = {
     model,

@@ -40,12 +40,32 @@
     --radius: 0.75rem;
     /* rounded-xl by default for large items */
 
-    /* Status Colors (Legacy support via variables if needed, though defined in tailwind config) */
+    /* Custom semantic colors */
+    --bg-primary: #0a0a0b;
+    --bg-secondary: #111113;
+    --bg-tertiary: #1a1a1d;
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --text-disabled: #52525b;
+    --border-default: #27272a;
+    --border-subtle: #1f1f23;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+
+    /* Status Colors */
     --status-work: #6366f1;
     --status-remote: #10b981;
     --status-school: #f59e0b;
     --status-leave: #f43f5e;
   }
+}
+
+/* Text gradient utility */
+.text-gradient {
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @layer base {

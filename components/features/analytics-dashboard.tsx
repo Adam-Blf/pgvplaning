@@ -146,7 +146,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-foreground">PGV Planning</h1>
+              <h1 className="font-semibold text-foreground">Absencia</h1>
               <p className="text-xs text-muted-foreground">v9.0.0</p>
             </div>
           </div>

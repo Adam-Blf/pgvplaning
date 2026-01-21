@@ -1,6 +1,6 @@
-# Guide de Contribution - PGV Planning
+# Guide de Contribution - Absencia
 
-Merci de votre intérêt pour contribuer à PGV Planning !
+Merci de votre intérêt pour contribuer à Absencia !
 
 ## Prérequis
 
@@ -12,36 +12,14 @@ Merci de votre intérêt pour contribuer à PGV Planning !
 
 ```bash
 # Cloner le repository
-git clone https://github.com/Adam-Blf/pgvplaning.git
-cd pgvplaning
+git clone https://github.com/Adam-Blf/absencia.git
+cd absencia
 
 # Installer les dépendances
 npm install
 
 # Lancer le serveur de développement
 npm run dev
-```
-
-## Structure du projet
-
-```
-pgvplaning/
-├── app/                    # Pages et routes Next.js
-│   ├── api/               # Routes API
-│   ├── layout.tsx         # Layout principal
-│   └── page.tsx           # Page d'accueil
-├── components/            # Composants React
-│   ├── features/          # Composants fonctionnels
-│   ├── layout/            # Composants de mise en page
-│   └── ui/                # Composants UI réutilisables
-├── hooks/                 # Hooks React personnalisés
-├── lib/                   # Utilitaires et services
-│   ├── schemas/           # Schémas de validation Zod
-│   ├── services/          # Services métier
-│   └── utils/             # Fonctions utilitaires
-└── __tests__/             # Tests
-    ├── unit/              # Tests unitaires
-    └── integration/       # Tests d'intégration
 ```
 
 ## Conventions de code

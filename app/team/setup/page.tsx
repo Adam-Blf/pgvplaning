@@ -61,7 +61,7 @@ export default function TeamSetupPage() {
           </motion.div>
 
           <h1 className="text-3xl font-semibold text-zinc-100 mb-3">
-            Bienvenue sur <span className="text-amber-500">PGV</span>
+            Bienvenue sur <span className="text-amber-500">Absencia</span>
           </h1>
           <p className="text-zinc-500 max-w-sm mx-auto">
             Créez votre équipe ou rejoignez une équipe existante pour commencer à gérer vos plannings.

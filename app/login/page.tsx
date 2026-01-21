@@ -267,8 +267,8 @@ export default function LoginPage() {
                 <div className="absolute -inset-1 bg-amber-500/20 rounded-2xl blur-sm group-hover:bg-amber-500/30 transition-colors" />
               </div>
               <div>
-                <span className="font-bold text-[var(--text-primary)] text-2xl tracking-tight">PGV Planning</span>
-                <span className="text-[var(--text-muted)] text-sm block">Gestion d&apos;Équipe</span>
+                <span className="font-bold text-[var(--text-primary)] text-2xl tracking-tight">Absencia</span>
+                <span className="text-[var(--text-muted)] text-sm block">Gestion des Absences</span>
               </div>
             </Link>
 
@@ -317,8 +317,8 @@ export default function LoginPage() {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="font-bold text-[var(--text-primary)] text-xl">PGV Planning</span>
-              <span className="text-[var(--text-muted)] text-xs block">Gestion d&apos;Équipe</span>
+              <span className="font-bold text-[var(--text-primary)] text-xl">Absencia</span>
+              <span className="text-[var(--text-muted)] text-xs block">Gestion des Absences</span>
             </div>
           </div>
 

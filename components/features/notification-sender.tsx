@@ -161,7 +161,7 @@ Cordialement,
 ${userName || 'Votre collaborateur'}
 
 ---
-Généré automatiquement par PGV Planning Pro`;
+Généré automatiquement par Absencia`;
 
     return { subject, body };
   };

@@ -152,7 +152,7 @@ export default function ExportsPage() {
     const ics = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//PGV Planning//FR',
+      'PRODID:-//Absencia//FR',
       'CALSCALE:GREGORIAN',
       'METHOD:PUBLISH',
     ];
@@ -176,7 +176,7 @@ export default function ExportsPage() {
 
       ics.push('TRANSP:OPAQUE');
       if (busy) ics.push(busy);
-      ics.push(`UID:${event.date}-${event.halfDay || 'FULL'}-${mode}-${forTeam ? 'team' : 'personal'}@pgvplanning`);
+      ics.push(`UID:${event.date}-${event.halfDay || 'FULL'}-${mode}-${forTeam ? 'team' : 'personal'}@absencia`);
       ics.push('END:VEVENT');
     });
 

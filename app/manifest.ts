@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'PGV Planning - Gestion d\'Équipe',
-    short_name: 'PGV Planning',
+    name: 'Absencia - Gestion des Absences',
+    short_name: 'Absencia',
     description: 'Solution professionnelle de gestion des plannings pour équipes et organisations',
     start_url: '/',
     display: 'standalone',

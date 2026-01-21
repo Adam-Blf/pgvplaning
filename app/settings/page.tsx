@@ -139,7 +139,7 @@ export default function SettingsPage() {
       <div className="text-center py-6">
         <div className="flex items-center justify-center gap-2 text-[var(--text-muted)]">
           <Zap className="w-4 h-4 text-[var(--accent)]" />
-          <span className="font-medium">PGV Planning Pro</span>
+          <span className="font-medium">Absencia Pro</span>
           <span className="badge">v9.0</span>
         </div>
         <p className="text-xs text-[var(--text-disabled)] mt-2">

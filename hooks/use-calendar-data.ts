@@ -20,7 +20,7 @@ export function isDayData(value: DayStatus | DayData): value is DayData {
   return typeof value === 'object' && value !== null && ('am' in value || 'pm' in value);
 }
 
-const STORAGE_KEY = 'pgv-calendar-data';
+const STORAGE_KEY = 'absencia-calendar-data';
 
 // Calcul des jours fériés français
 function getEasterDate(year: number): Date {

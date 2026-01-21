@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Copy, Check, Database, ExternalLink, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
 
-const setupSQL = `-- PGV Planning - Configuration Base de Données
+const setupSQL = `-- Absencia - Configuration Base de Données
 
 -- Supprime la table si elle existe
 DROP TABLE IF EXISTS public.profiles CASCADE;

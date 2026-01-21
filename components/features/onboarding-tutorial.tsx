@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const TUTORIAL_COOKIE = 'pgv_tutorial_seen';
+const TUTORIAL_COOKIE = 'absencia_tutorial_seen';
 
 interface TutorialStep {
   title: string;
@@ -30,7 +30,7 @@ interface TutorialStep {
 
 const tutorialSteps: TutorialStep[] = [
   {
-    title: 'Bienvenue sur PGV Planning !',
+    title: 'Bienvenue sur Absencia !',
     description: 'Découvrez comment gérer votre planning d\'équipe en quelques étapes simples.',
     icon: Sparkles,
     content: (

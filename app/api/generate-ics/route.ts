@@ -12,7 +12,7 @@ function generateIcsContent(data: GenerateIcsRequest): string {
   const lines: string[] = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//PGV Planning//FR',
+    'PRODID:-//Absencia//FR',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     `X-WR-CALNAME:Congés ${data.employeeName}`,
@@ -25,7 +25,7 @@ function generateIcsContent(data: GenerateIcsRequest): string {
     // ICS end date is exclusive, so add 1 day
     endDate.setDate(endDate.getDate() + 1);
 
-    const uid = `${Date.now()}-${index}@pgvplanning`;
+    const uid = `${Date.now()}-${index}@absencia`;
 
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${uid}`);
