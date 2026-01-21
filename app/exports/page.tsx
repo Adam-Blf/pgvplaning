@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Download,
   Home as HomeIcon,
@@ -16,6 +17,9 @@ import {
   AlertTriangle,
   Users,
   User,
+  ArrowRight,
+  Calendar,
+  Wand2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCalendarData, DayStatus, isDayData } from '@/hooks/use-calendar-data';
@@ -27,30 +31,104 @@ const exportCards = [
     title: 'Télétravail',
     description: 'Exporter tous les jours de télétravail',
     icon: HomeIcon,
-    statusClass: 'status-remote',
+    color: 'emerald',
+    gradient: 'from-emerald-500/20 to-emerald-600/5',
+    iconBg: 'bg-emerald-500/10',
+    iconColor: 'text-emerald-400',
+    borderColor: 'border-emerald-500/20',
+    badgeBg: 'bg-emerald-500/10',
+    badgeText: 'text-emerald-400',
+    buttonHover: 'hover:border-emerald-500/40 hover:bg-emerald-500/5',
   },
   {
     id: 'SCHOOL' as DayStatus,
     title: 'Formation reçue',
     description: 'Exporter les jours où vous suivez une formation',
     icon: GraduationCap,
-    statusClass: 'status-training',
+    color: 'amber',
+    gradient: 'from-amber-500/20 to-amber-600/5',
+    iconBg: 'bg-amber-500/10',
+    iconColor: 'text-amber-400',
+    borderColor: 'border-amber-500/20',
+    badgeBg: 'bg-amber-500/10',
+    badgeText: 'text-amber-400',
+    buttonHover: 'hover:border-amber-500/40 hover:bg-amber-500/5',
   },
   {
     id: 'TRAINER' as DayStatus,
-    title: 'Formateur/Réunion',
+    title: 'Formateur / Réunion',
     description: 'Exporter les jours de formation donnée ou réunion',
-    icon: GraduationCap,
-    statusClass: 'status-trainer',
+    icon: Users,
+    color: 'violet',
+    gradient: 'from-violet-500/20 to-violet-600/5',
+    iconBg: 'bg-violet-500/10',
+    iconColor: 'text-violet-400',
+    borderColor: 'border-violet-500/20',
+    badgeBg: 'bg-violet-500/10',
+    badgeText: 'text-violet-400',
+    buttonHover: 'hover:border-violet-500/40 hover:bg-violet-500/5',
   },
   {
     id: 'LEAVE' as DayStatus,
     title: 'Congés',
     description: 'Exporter tous les congés posés',
     icon: Plane,
-    statusClass: 'status-leave',
+    color: 'rose',
+    gradient: 'from-rose-500/20 to-rose-600/5',
+    iconBg: 'bg-rose-500/10',
+    iconColor: 'text-rose-400',
+    borderColor: 'border-rose-500/20',
+    badgeBg: 'bg-rose-500/10',
+    badgeText: 'text-rose-400',
+    buttonHover: 'hover:border-rose-500/40 hover:bg-rose-500/5',
   },
 ];
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 24,
+    },
+  },
+  hover: {
+    y: -4,
+    transition: {
+      type: 'spring',
+      stiffness: 400,
+      damping: 20,
+    },
+  },
+};
 
 export default function ExportsPage() {
   const { data } = useCalendarData();
@@ -59,6 +137,7 @@ export default function ExportsPage() {
   const [aiReason, setAiReason] = useState('formation');
   const [aiResult, setAiResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [activeExport, setActiveExport] = useState<string | null>(null);
 
   // Charger le nom utilisateur depuis localStorage
   useEffect(() => {
@@ -131,6 +210,8 @@ export default function ExportsPage() {
       return;
     }
 
+    setActiveExport(`${mode}-${forTeam ? 'team' : 'personal'}`);
+
     const statusLabels: Record<DayStatus, string> = {
       WORK: 'Bureau',
       REMOTE: 'Télétravail',
@@ -191,6 +272,7 @@ export default function ExportsPage() {
     link.click();
     document.body.removeChild(link);
 
+    setTimeout(() => setActiveExport(null), 1000);
     toast.success(`${events.length} événements exportés (${forTeam ? 'équipe' : 'personnel'})`);
   };
 
@@ -230,28 +312,56 @@ export default function ExportsPage() {
   };
 
   return (
-    <div className="space-y-8 stagger-children">
-      {/* Instructions */}
-      <div className="notice notice-info">
-        <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
-          <Info className="w-5 h-5 text-[var(--info)]" />
+    <motion.div
+      className="space-y-10"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Header avec titre gradient */}
+      <motion.header variants={itemVariants} className="relative">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="w-12 h-12 rounded-2xl gradient-amber flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <FileDown className="w-6 h-6 text-black" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold gradient-text-amber">
+              Exports & Outils
+            </h1>
+            <p className="text-[var(--text-secondary)] mt-1">
+              Exportez votre planning et générez vos messages d&apos;absence
+            </p>
+          </div>
         </div>
-        <div>
-          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-            Exportation au format ICS
-          </h4>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Les fichiers ICS sont compatibles avec tous les calendriers : Outlook, Google Calendar, Apple Calendar, etc.
-            Après téléchargement, importez le fichier dans votre application de calendrier.
-          </p>
+      </motion.header>
+
+      {/* Notice d'information */}
+      <motion.div
+        variants={itemVariants}
+        className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-sky-500/5 p-5"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-transparent" />
+        <div className="relative flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+            <Info className="w-5 h-5 text-sky-400" />
+          </div>
+          <div>
+            <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+              Format ICS universel
+            </h4>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Les fichiers ICS sont compatibles avec tous les calendriers : Outlook, Google Calendar, Apple Calendar, etc.
+              Importez simplement le fichier téléchargé dans votre application.
+            </p>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Section Exports ICS */}
-      <section>
+      <motion.section variants={itemVariants}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <FileDown className="w-4 h-4 text-[var(--accent)]" />
+          <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
+            <Calendar className="w-4 h-4 text-[var(--text-secondary)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
             Télécharger les fichiers ICS
@@ -259,236 +369,315 @@ export default function ExportsPage() {
         </div>
 
         {/* Alerte si nom non configuré */}
-        {!userName && (
-          <div className="notice notice-warning mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[var(--warning-bg)] flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-                Nom non configuré
-              </h4>
-              <p className="text-sm text-[var(--text-secondary)]">
-                Configurez votre nom dans les <a href="/settings" className="text-[var(--accent)] underline">paramètres</a> pour que les exports équipe affichent votre nom.
-              </p>
-            </div>
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-2 gap-4">
-          {exportCards.map((card) => {
-            const Icon = card.icon;
-            const count = dayCounts[card.id];
-            const statusColors: Record<string, { bg: string; border: string; text: string }> = {
-              'status-remote': {
-                bg: 'bg-[var(--status-remote-bg)]',
-                border: 'border-[var(--status-remote)]',
-                text: 'text-[var(--status-remote)]',
-              },
-              'status-training': {
-                bg: 'bg-[var(--status-training-bg)]',
-                border: 'border-[var(--status-training)]',
-                text: 'text-[var(--status-training)]',
-              },
-              'status-trainer': {
-                bg: 'bg-[var(--status-trainer-bg)]',
-                border: 'border-[var(--status-trainer)]',
-                text: 'text-[var(--status-trainer)]',
-              },
-              'status-leave': {
-                bg: 'bg-[var(--status-leave-bg)]',
-                border: 'border-[var(--status-leave)]',
-                text: 'text-[var(--status-leave)]',
-              },
-            };
-            const colors = statusColors[card.statusClass];
-
-            return (
-              <div
-                key={card.id}
-                className={cn(
-                  'card',
-                  count === 0 && 'opacity-50'
-                )}
-              >
-                <div className="flex items-start gap-4 mb-4">
-                  <div
-                    className={cn(
-                      'w-12 h-12 rounded-xl flex items-center justify-center border',
-                      colors.bg,
-                      colors.border
-                    )}
-                  >
-                    <Icon className={cn('w-6 h-6', colors.text)} />
+        <AnimatePresence>
+          {!userName && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-6 overflow-hidden"
+            >
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-4 h-4 text-amber-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-[var(--text-primary)]">
-                        {card.title}
-                      </h3>
-                      <span className={cn(
-                        'px-2 py-0.5 rounded-full text-xs font-semibold',
-                        count > 0 ? `${colors.bg} ${colors.text}` : 'bg-[var(--bg-tertiary)] text-[var(--text-muted)]'
-                      )}>
-                        {count} jour{count !== 1 ? 's' : ''}
-                      </span>
-                    </div>
-                    <p className="text-sm text-[var(--text-muted)]">
-                      {card.description}
+                  <div>
+                    <h4 className="font-medium text-[var(--text-primary)] mb-0.5 text-sm">
+                      Nom non configuré
+                    </h4>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      Configurez votre nom dans les{' '}
+                      <a href="/settings" className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+                        paramètres
+                      </a>{' '}
+                      pour personnaliser les exports équipe.
                     </p>
                   </div>
                 </div>
-
-                {/* Boutons de téléchargement */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => downloadICS(card.id, false)}
-                    disabled={count === 0}
-                    className={cn(
-                      'flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                      count > 0
-                        ? 'bg-[var(--bg-tertiary)] hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]'
-                        : 'bg-[var(--bg-tertiary)] text-[var(--text-disabled)] cursor-not-allowed'
-                    )}
-                  >
-                    <User className="w-4 h-4" />
-                    Personnel
-                    <Download className="w-3 h-3" />
-                  </button>
-                  <button
-                    onClick={() => downloadICS(card.id, true)}
-                    disabled={count === 0}
-                    className={cn(
-                      'flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all',
-                      count > 0
-                        ? `${colors.bg} hover:opacity-80 ${colors.text}`
-                        : 'bg-[var(--bg-tertiary)] text-[var(--text-disabled)] cursor-not-allowed'
-                    )}
-                  >
-                    <Users className="w-4 h-4" />
-                    Équipe
-                    <Download className="w-3 h-3" />
-                  </button>
-                </div>
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Grille des cartes d'export */}
+        <motion.div
+          className="grid md:grid-cols-2 gap-4"
+          variants={containerVariants}
+        >
+          {exportCards.map((card, index) => {
+            const Icon = card.icon;
+            const count = dayCounts[card.id];
+            const isDisabled = count === 0;
+
+            return (
+              <motion.div
+                key={card.id}
+                variants={cardVariants}
+                whileHover={isDisabled ? undefined : 'hover'}
+                custom={index}
+                className={cn(
+                  'relative rounded-2xl border bg-[var(--bg-surface)] overflow-hidden transition-all duration-300',
+                  isDisabled
+                    ? 'opacity-50 border-[var(--border-subtle)]'
+                    : `${card.borderColor} hover:border-opacity-60`
+                )}
+              >
+                {/* Gradient background overlay */}
+                <div className={cn(
+                  'absolute inset-0 bg-gradient-to-br opacity-50',
+                  card.gradient
+                )} />
+
+                <div className="relative p-5">
+                  <div className="flex items-start gap-4 mb-4">
+                    <motion.div
+                      className={cn(
+                        'w-12 h-12 rounded-xl flex items-center justify-center border',
+                        card.iconBg,
+                        card.borderColor
+                      )}
+                      whileHover={{ scale: 1.05, rotate: 5 }}
+                      transition={{ type: 'spring', stiffness: 400 }}
+                    >
+                      <Icon className={cn('w-6 h-6', card.iconColor)} />
+                    </motion.div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-bold text-[var(--text-primary)]">
+                          {card.title}
+                        </h3>
+                        <span className={cn(
+                          'px-2.5 py-0.5 rounded-full text-xs font-semibold',
+                          count > 0
+                            ? `${card.badgeBg} ${card.badgeText}`
+                            : 'bg-[var(--bg-overlay)] text-[var(--text-muted)]'
+                        )}>
+                          {count} jour{count !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+                      <p className="text-sm text-[var(--text-muted)]">
+                        {card.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Boutons de téléchargement */}
+                  <div className="flex gap-2">
+                    <motion.button
+                      onClick={() => downloadICS(card.id, false)}
+                      disabled={isDisabled}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium',
+                        'border border-[var(--border-default)] transition-all duration-200',
+                        isDisabled
+                          ? 'bg-[var(--bg-overlay)] text-[var(--text-disabled)] cursor-not-allowed'
+                          : 'bg-[var(--bg-overlay)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-strong)]'
+                      )}
+                    >
+                      {activeExport === `${card.id}-personal` ? (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="w-4 h-4"
+                        >
+                          <CheckCircle className="w-4 h-4 text-emerald-400" />
+                        </motion.div>
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                      <span>Personnel</span>
+                      <Download className="w-3.5 h-3.5 opacity-60" />
+                    </motion.button>
+
+                    <motion.button
+                      onClick={() => downloadICS(card.id, true)}
+                      disabled={isDisabled}
+                      whileTap={{ scale: 0.98 }}
+                      className={cn(
+                        'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium',
+                        'border transition-all duration-200',
+                        isDisabled
+                          ? 'bg-[var(--bg-overlay)] text-[var(--text-disabled)] cursor-not-allowed border-[var(--border-default)]'
+                          : `${card.iconBg} ${card.iconColor} ${card.borderColor} ${card.buttonHover}`
+                      )}
+                    >
+                      {activeExport === `${card.id}-team` ? (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="w-4 h-4"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </motion.div>
+                      ) : (
+                        <Users className="w-4 h-4" />
+                      )}
+                      <span>Équipe</span>
+                      <Download className="w-3.5 h-3.5 opacity-60" />
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
             );
           })}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
+
+      {/* Divider */}
+      <motion.div variants={itemVariants} className="divider" />
 
       {/* Section Assistant Message d'absence */}
-      <section>
+      <motion.section variants={itemVariants}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <Mail className="w-4 h-4 text-[var(--accent)]" />
+          <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
+            <Mail className="w-4 h-4 text-[var(--text-secondary)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
             Générateur de message d&apos;absence
           </h2>
+          <span className="badge-amber">
+            <Wand2 className="w-3 h-3" />
+            IA
+          </span>
         </div>
 
-        <div className="card">
-          <p className="text-[var(--text-muted)] text-sm mb-6">
-            Générez automatiquement un message de réponse automatique (Out of Office) pour informer vos correspondants de votre absence.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label htmlFor="tone" className="label">
-                Ton du message
-              </label>
-              <select
-                id="tone"
-                value={aiTone}
-                onChange={(e) => setAiTone(e.target.value)}
-                className="select"
-              >
-                <option value="professionnel">Professionnel</option>
-                <option value="amical">Amical</option>
-                <option value="formel">Formel</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="reason" className="label">
-                Raison de l&apos;absence
-              </label>
-              <select
-                id="reason"
-                value={aiReason}
-                onChange={(e) => setAiReason(e.target.value)}
-                className="select"
-              >
-                <option value="formation">Formation</option>
-                <option value="congés">Congés</option>
-                <option value="déplacement">Déplacement professionnel</option>
-                <option value="maladie">Arrêt maladie</option>
-              </select>
-            </div>
+        <motion.div
+          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden"
+          variants={cardVariants}
+        >
+          {/* Header de la carte */}
+          <div className="p-6 border-b border-[var(--border-subtle)] bg-gradient-to-r from-violet-500/5 via-transparent to-transparent">
+            <p className="text-[var(--text-secondary)] text-sm">
+              Générez automatiquement un message de réponse automatique (Out of Office)
+              pour informer vos correspondants de votre absence.
+            </p>
           </div>
 
-          <button
-            onClick={generateOOFMessage}
-            disabled={isLoading}
-            className="btn w-full md:w-auto"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Génération en cours...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Générer le message
-              </>
-            )}
-          </button>
-
-          {/* Résultat */}
-          {aiResult && (
-            <div className="mt-6 pt-6 border-t border-[var(--border-subtle)]">
-              <div className="flex items-center justify-between mb-3">
-                <label className="label flex items-center gap-2 mb-0">
-                  <CheckCircle className="w-4 h-4 text-[var(--success)]" />
-                  Message généré
+          <div className="p-6">
+            <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label htmlFor="tone" className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Ton du message
                 </label>
-                <button
-                  onClick={copyToClipboard}
-                  className="btn-ghost text-sm flex items-center gap-2"
+                <select
+                  id="tone"
+                  value={aiTone}
+                  onChange={(e) => setAiTone(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
                 >
-                  <Copy className="w-4 h-4" />
-                  Copier
-                </button>
+                  <option value="professionnel">Professionnel</option>
+                  <option value="amical">Amical</option>
+                  <option value="formel">Formel</option>
+                </select>
               </div>
-              <textarea
-                value={aiResult}
-                readOnly
-                rows={5}
-                className="input resize-none bg-[var(--bg-tertiary)]"
-              />
-              <p className="hint mt-2">
-                Pensez à remplacer [DATE_RETOUR] par votre date de retour effective.
-              </p>
+              <div>
+                <label htmlFor="reason" className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Raison de l&apos;absence
+                </label>
+                <select
+                  id="reason"
+                  value={aiReason}
+                  onChange={(e) => setAiReason(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                >
+                  <option value="formation">Formation</option>
+                  <option value="congés">Congés</option>
+                  <option value="déplacement">Déplacement professionnel</option>
+                  <option value="maladie">Arrêt maladie</option>
+                </select>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
+
+            <motion.button
+              onClick={generateOOFMessage}
+              disabled={isLoading}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              className={cn(
+                'w-full md:w-auto btn-primary',
+                isLoading && 'opacity-70 cursor-not-allowed'
+              )}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Génération en cours...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Générer le message
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
+
+            {/* Résultat */}
+            <AnimatePresence mode="wait">
+              {aiResult && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                  className="mt-6 pt-6 border-t border-[var(--border-subtle)]"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      <span className="font-medium text-[var(--text-primary)]">
+                        Message généré
+                      </span>
+                    </div>
+                    <motion.button
+                      onClick={copyToClipboard}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="btn-ghost text-sm"
+                    >
+                      <Copy className="w-4 h-4" />
+                      Copier
+                    </motion.button>
+                  </div>
+                  <textarea
+                    value={aiResult}
+                    readOnly
+                    rows={5}
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] resize-none focus:outline-none"
+                  />
+                  <p className="mt-2 text-xs text-[var(--text-muted)]">
+                    Pensez à remplacer <code className="text-amber-400">[DATE_RETOUR]</code> par votre date de retour effective.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </motion.section>
 
       {/* Note sur le service */}
-      <div className="notice notice-warning">
-        <div className="w-10 h-10 rounded-lg bg-[var(--warning-bg)] flex items-center justify-center flex-shrink-0">
-          <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
+      <motion.div
+        variants={itemVariants}
+        className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent" />
+        <div className="relative flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+          </div>
+          <div>
+            <h4 className="font-semibold text-[var(--text-primary)] mb-1">
+              Service de génération
+            </h4>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Le générateur utilise un modèle d&apos;intelligence artificielle open source (Mistral 7B).
+              Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
+            </p>
+          </div>
         </div>
-        <div>
-          <h4 className="font-semibold text-[var(--text-primary)] mb-1">
-            Service de génération
-          </h4>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Le générateur de message utilise un modèle d&apos;intelligence artificielle open source (Mistral 7B).
-            Les résultats peuvent varier. Pensez à relire et adapter le message avant utilisation.
-          </p>
-        </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
