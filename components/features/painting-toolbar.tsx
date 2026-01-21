@@ -1,6 +1,7 @@
 'use client';
 
-import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree, Sun, Moon, Clock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree, Sun, Moon, Clock, Paintbrush } from 'lucide-react';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
@@ -9,8 +10,11 @@ type Tool = DayStatus | 'ERASER';
 interface ToolConfig {
   id: Tool;
   label: string;
+  shortLabel: string;
   icon: React.ElementType;
-  className: string;
+  color: string;
+  bgColor: string;
+  glowColor: string;
 }
 
 interface HalfDayConfig {
@@ -21,41 +25,56 @@ interface HalfDayConfig {
 }
 
 const halfDayOptions: HalfDayConfig[] = [
-  { id: 'FULL', label: 'Journée complète', shortLabel: 'Journée', icon: Clock },
-  { id: 'AM', label: 'Matin', shortLabel: 'Matin', icon: Sun },
-  { id: 'PM', label: 'Après-midi', shortLabel: 'Après-midi', icon: Moon },
+  { id: 'FULL', label: 'Journee complete', shortLabel: 'Jour', icon: Clock },
+  { id: 'AM', label: 'Matin', shortLabel: 'AM', icon: Sun },
+  { id: 'PM', label: 'Apres-midi', shortLabel: 'PM', icon: Moon },
 ];
 
 const tools: ToolConfig[] = [
   {
     id: 'WORK',
     label: 'Bureau',
+    shortLabel: 'Bureau',
     icon: Briefcase,
-    className: 'bg-status-work/10 text-status-work border-status-work hover:bg-status-work hover:text-white',
+    color: 'text-indigo-400',
+    bgColor: 'bg-indigo-500',
+    glowColor: 'shadow-indigo-500/40',
   },
   {
     id: 'REMOTE',
-    label: 'Télétravail',
+    label: 'Teletravail',
+    shortLabel: 'Remote',
     icon: Home,
-    className: 'bg-status-remote/10 text-status-remote border-status-remote hover:bg-status-remote hover:text-white',
+    color: 'text-emerald-400',
+    bgColor: 'bg-emerald-500',
+    glowColor: 'shadow-emerald-500/40',
   },
   {
     id: 'SCHOOL',
-    label: 'Formation reçue',
+    label: 'Formation recue',
+    shortLabel: 'Formation',
     icon: GraduationCap,
-    className: 'bg-status-school/10 text-status-school border-status-school hover:bg-status-school hover:text-white',
+    color: 'text-amber-400',
+    bgColor: 'bg-amber-500',
+    glowColor: 'shadow-amber-500/40',
   },
   {
     id: 'TRAINER',
-    label: 'Formateur/Réunion',
+    label: 'Formateur/Reunion',
+    shortLabel: 'Formateur',
     icon: Presentation,
-    className: 'bg-violet-500/10 text-violet-500 border-violet-500 hover:bg-violet-500 hover:text-white',
+    color: 'text-violet-400',
+    bgColor: 'bg-violet-500',
+    glowColor: 'shadow-violet-500/40',
   },
   {
     id: 'LEAVE',
-    label: 'Congés',
+    label: 'Conges',
+    shortLabel: 'Conges',
     icon: Palmtree,
-    className: 'bg-status-leave/10 text-status-leave border-status-leave hover:bg-status-leave hover:text-white',
+    color: 'text-rose-400',
+    bgColor: 'bg-rose-500',
+    glowColor: 'shadow-rose-500/40',
   },
 ];
 
@@ -73,90 +92,192 @@ export function PaintingToolbar({
   onHalfDayChange
 }: PaintingToolbarProps) {
   return (
-    <div className="p-6 rounded-2xl bg-card border border-white/5 shadow-lg space-y-6 backdrop-blur-sm">
-      {/* Tool Selection */}
-      <fieldset>
-        <legend className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
-          <span>Type de journée</span>
-          <div className="h-px flex-1 bg-border/50"></div>
-        </legend>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          {tools.map((tool) => {
-            const isActive = currentTool === tool.id;
-            const Icon = tool.icon;
-
-            return (
-              <button
-                key={tool.id}
-                onClick={() => onToolChange(tool.id)}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ease-out active:scale-95',
-                  isActive
-                    ? cn(tool.className, 'bg-opacity-100 text-white shadow-lg scale-105')
-                    : cn(tool.className, 'bg-opacity-5 border-transparent hover:scale-105 hover:shadow-md')
-                )}
-                aria-pressed={isActive}
-              >
-                <Icon className="w-4 h-4" />
-                {tool.label}
-              </button>
-            );
-          })}
-
-          {/* Separator */}
-          <div className="h-8 w-px bg-border/50 mx-1 hidden sm:block" />
-
-          {/* Eraser */}
-          <button
-            onClick={() => onToolChange('ERASER')}
-            className={cn(
-              'flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border transition-all duration-200 ease-out active:scale-95',
-              currentTool === 'ERASER'
-                ? 'bg-muted text-foreground border-border shadow-lg scale-105'
-                : 'bg-transparent text-muted-foreground border-transparent hover:bg-muted/50 hover:text-foreground hover:scale-105'
-            )}
-            aria-pressed={currentTool === 'ERASER'}
-            title="Effacer / Réinitialiser"
-          >
-            <Eraser className="w-4 h-4" />
-            <span>Gomme</span>
-          </button>
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.4,
+        ease: [0.16, 1, 0.3, 1]
+      }}
+      className="glass-elevated rounded-2xl overflow-hidden"
+    >
+      {/* Header */}
+      <div className="px-5 py-3 border-b border-[var(--border-subtle)] flex items-center gap-3">
+        <div className="p-2 rounded-xl bg-amber-500/10">
+          <Paintbrush className="w-4 h-4 text-amber-500" />
         </div>
-      </fieldset>
-
-      {/* Half-day Selection */}
-      <fieldset>
-        <legend className="text-sm font-semibold text-muted-foreground mb-4 flex items-center gap-2">
-          <span>Granularité</span>
-          <div className="h-px flex-1 bg-border/50"></div>
-        </legend>
-
-        <div className="inline-flex p-1 rounded-xl bg-muted/30 border border-white/5">
-          {halfDayOptions.map((option) => {
-            const isActive = currentHalfDay === option.id;
-            const Icon = option.icon;
-
-            return (
-              <button
-                key={option.id}
-                onClick={() => onHalfDayChange(option.id)}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ease-out',
-                  isActive
-                    ? 'bg-background text-foreground shadow-sm scale-100'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                )}
-                aria-pressed={isActive}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{option.label}</span>
-                <span className="sm:hidden">{option.shortLabel}</span>
-              </button>
-            );
-          })}
+        <div>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Mode peinture</h3>
+          <p className="text-xs text-[var(--text-tertiary)]">Cliquez ou glissez sur le calendrier</p>
         </div>
-      </fieldset>
-    </div>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Tool Selection */}
+        <fieldset>
+          <legend className="text-xs font-medium text-[var(--text-tertiary)] mb-3 uppercase tracking-wider">
+            Type de journee
+          </legend>
+
+          <div className="flex flex-wrap gap-2">
+            <AnimatePresence mode="popLayout">
+              {tools.map((tool, index) => {
+                const isActive = currentTool === tool.id;
+                const Icon = tool.icon;
+
+                return (
+                  <motion.button
+                    key={tool.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{
+                      delay: index * 0.05,
+                      duration: 0.3,
+                      ease: [0.16, 1, 0.3, 1]
+                    }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => onToolChange(tool.id)}
+                    className={cn(
+                      'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
+                      'transition-colors duration-200',
+                      isActive ? [
+                        tool.bgColor,
+                        'text-white',
+                        'shadow-lg',
+                        tool.glowColor,
+                      ] : [
+                        'bg-[var(--bg-overlay)]',
+                        'border border-[var(--border-subtle)]',
+                        tool.color,
+                        'hover:border-[var(--border-default)]',
+                        'hover:bg-[var(--bg-hover)]',
+                      ]
+                    )}
+                    aria-pressed={isActive}
+                  >
+                    {/* Glow effect when active */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="tool-glow"
+                        className={cn(
+                          'absolute inset-0 rounded-xl',
+                          tool.bgColor,
+                          'opacity-20 blur-xl'
+                        )}
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+
+                    <Icon className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10 hidden sm:inline">{tool.label}</span>
+                    <span className="relative z-10 sm:hidden">{tool.shortLabel}</span>
+
+                    {/* Active indicator dot */}
+                    {isActive && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full shadow-lg z-20"
+                      />
+                    )}
+                  </motion.button>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Divider */}
+            <div className="w-px h-9 bg-[var(--border-default)] mx-1 self-center hidden sm:block" />
+
+            {/* Eraser */}
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => onToolChange('ERASER')}
+              className={cn(
+                'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
+                'transition-colors duration-200',
+                currentTool === 'ERASER' ? [
+                  'bg-[var(--bg-hover)]',
+                  'text-[var(--text-primary)]',
+                  'border border-[var(--border-strong)]',
+                  'shadow-md',
+                ] : [
+                  'bg-[var(--bg-overlay)]',
+                  'border border-[var(--border-subtle)]',
+                  'text-[var(--text-secondary)]',
+                  'hover:border-[var(--border-default)]',
+                  'hover:bg-[var(--bg-hover)]',
+                  'hover:text-[var(--text-primary)]',
+                ]
+              )}
+              aria-pressed={currentTool === 'ERASER'}
+              title="Effacer / Reinitialiser"
+            >
+              <Eraser className="w-4 h-4" />
+              <span className="hidden sm:inline">Gomme</span>
+
+              {currentTool === 'ERASER' && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[var(--text-primary)] rounded-full shadow-lg"
+                />
+              )}
+            </motion.button>
+          </div>
+        </fieldset>
+
+        {/* Divider */}
+        <div className="divider" />
+
+        {/* Half-day Selection */}
+        <fieldset>
+          <legend className="text-xs font-medium text-[var(--text-tertiary)] mb-3 uppercase tracking-wider">
+            Granularite
+          </legend>
+
+          <div className="inline-flex p-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">
+            {halfDayOptions.map((option) => {
+              const isActive = currentHalfDay === option.id;
+              const Icon = option.icon;
+
+              return (
+                <motion.button
+                  key={option.id}
+                  whileHover={{ scale: isActive ? 1 : 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => onHalfDayChange(option.id)}
+                  className={cn(
+                    'relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
+                    'transition-colors duration-200',
+                    isActive
+                      ? 'text-[var(--text-primary)]'
+                      : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
+                  )}
+                  aria-pressed={isActive}
+                >
+                  {/* Background pill for active state */}
+                  {isActive && (
+                    <motion.div
+                      layoutId="halfday-pill"
+                      className="absolute inset-0 bg-[var(--bg-overlay)] border border-[var(--border-default)] rounded-lg shadow-sm"
+                      transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                    />
+                  )}
+
+                  <Icon className={cn(
+                    'w-4 h-4 relative z-10 transition-colors duration-200',
+                    isActive && 'text-amber-500'
+                  )} />
+                  <span className="relative z-10 hidden sm:inline">{option.label}</span>
+                  <span className="relative z-10 sm:hidden">{option.shortLabel}</span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </fieldset>
+      </div>
+    </motion.div>
   );
 }
