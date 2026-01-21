@@ -416,7 +416,8 @@ CREATE POLICY "Team members can view teammate profiles"
     )
   );
 
--- Helper functions
+-- Helper functions (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS get_user_team(UUID);
 CREATE OR REPLACE FUNCTION get_user_team(p_user_id UUID)
 RETURNS TABLE (
   team_id UUID,
@@ -615,7 +616,8 @@ CREATE TRIGGER trigger_restore_leave_balance
   AFTER DELETE ON public.calendar_entries
   FOR EACH ROW EXECUTE FUNCTION restore_leave_balance();
 
--- Leave info helper
+-- Leave info helper (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS get_leave_info(UUID, UUID);
 CREATE OR REPLACE FUNCTION get_leave_info(p_user_id UUID, p_team_id UUID)
 RETURNS TABLE (
   employee_type TEXT,
@@ -654,7 +656,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Leave days by status function
+-- Leave days by status function (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS get_leave_days_by_status(UUID, UUID);
 CREATE OR REPLACE FUNCTION get_leave_days_by_status(p_user_id UUID, p_team_id UUID)
 RETURNS TABLE (
   status TEXT,
@@ -713,7 +716,8 @@ CREATE POLICY "Admins can manage team invitations"
   ON public.team_invitations FOR ALL
   USING (team_id IN (SELECT get_user_admin_team_ids(auth.uid())));
 
--- Invitation validation function
+-- Invitation validation function (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS validate_invitation(TEXT);
 CREATE OR REPLACE FUNCTION validate_invitation(p_token TEXT)
 RETURNS TABLE (
   is_valid BOOLEAN,
@@ -758,7 +762,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 GRANT EXECUTE ON FUNCTION validate_invitation TO authenticated;
 GRANT EXECUTE ON FUNCTION validate_invitation TO anon;
 
--- Use invitation function
+-- Use invitation function (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS use_invitation(TEXT, UUID);
 CREATE OR REPLACE FUNCTION use_invitation(p_token TEXT, p_user_id UUID)
 RETURNS TABLE (
   success BOOLEAN,
@@ -1019,7 +1024,8 @@ ALTER TABLE public.profiles
 ALTER TABLE public.profiles
   ADD CONSTRAINT check_email_format CHECK (email IS NULL OR email ~ '^[^@]+@[^@]+\.[^@]+$');
 
--- Safe join team function
+-- Safe join team function (drop first to allow signature changes)
+DROP FUNCTION IF EXISTS join_team_by_code(UUID, TEXT, TEXT, INTEGER);
 CREATE OR REPLACE FUNCTION join_team_by_code(
   p_user_id UUID,
   p_team_code TEXT,
