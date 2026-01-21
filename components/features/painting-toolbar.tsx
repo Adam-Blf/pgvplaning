@@ -107,8 +107,8 @@ export function PaintingToolbar({
           <Paintbrush className="w-4 h-4 text-amber-500" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Mode peinture</h3>
-          <p className="text-xs text-[var(--text-tertiary)]">Cliquez ou glissez sur le calendrier</p>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">Barre d'outils</h3>
+          <p className="text-xs text-[var(--text-tertiary)]">Sélectionnez un statut</p>
         </div>
       </div>
 
