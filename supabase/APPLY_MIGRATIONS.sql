@@ -9,7 +9,7 @@
 -- 4. Run the query
 --
 -- This script is IDEMPOTENT - safe to run multiple times
--- Last updated: 2024-01-27
+-- Last updated: 2024-01-23
 --
 -- ============================================
 
@@ -49,7 +49,7 @@ CREATE POLICY "Users can insert their own profile"
   ON public.profiles FOR INSERT
   WITH CHECK (auth.uid() = id);
 
--- Handle new user signup (will be updated later with birth_date)
+-- Handle new user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -302,26 +302,39 @@ CREATE POLICY "Team members can view teammate profiles"
     )
   );
 
+-- Helper functions
+CREATE OR REPLACE FUNCTION get_user_team(p_user_id UUID)
+RETURNS TABLE (
+  team_id UUID,
+  team_name TEXT,
+  team_code TEXT,
+  user_role TEXT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT t.id, t.name, t.code, tm.role
+  FROM public.teams t
+  JOIN public.team_members tm ON t.id = tm.team_id
+  WHERE tm.user_id = p_user_id
+  LIMIT 1;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION user_has_team(p_user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS(SELECT 1 FROM public.team_members WHERE user_id = p_user_id);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================
 -- MIGRATION 4: LEAVE MANAGEMENT
 -- ============================================
 
 ALTER TABLE public.team_members
-  ADD COLUMN IF NOT EXISTS employee_type TEXT DEFAULT 'employee' NOT NULL;
-
--- Add check constraint if not exists
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'team_members_employee_type_check'
-  ) THEN
-    ALTER TABLE public.team_members
-      ADD CONSTRAINT team_members_employee_type_check
-      CHECK (employee_type IN ('employee', 'executive'));
-  END IF;
-EXCEPTION WHEN OTHERS THEN
-  NULL;
-END $$;
+  ADD COLUMN IF NOT EXISTS employee_type TEXT
+  CHECK (employee_type IN ('employee', 'executive'))
+  DEFAULT 'employee' NOT NULL;
 
 ALTER TABLE public.team_members
   ADD COLUMN IF NOT EXISTS annual_leave_days INTEGER DEFAULT 25 NOT NULL;
@@ -666,423 +679,7 @@ ALTER TABLE public.profiles
 ALTER TABLE public.profiles
   ADD CONSTRAINT check_email_format CHECK (email IS NULL OR email ~ '^[^@]+@[^@]+\.[^@]+$');
 
--- ============================================
--- MIGRATION 7: SECTOR SUPPORT (Public/Private)
--- ============================================
-
--- Add sector column to teams
-ALTER TABLE public.teams
-  ADD COLUMN IF NOT EXISTS sector TEXT DEFAULT 'public' NOT NULL;
-
--- Add check constraint for sector
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'teams_sector_check'
-  ) THEN
-    ALTER TABLE public.teams
-      ADD CONSTRAINT teams_sector_check
-      CHECK (sector IN ('public', 'private'));
-  END IF;
-EXCEPTION WHEN OTHERS THEN
-  NULL;
-END $$;
-
-CREATE INDEX IF NOT EXISTS idx_teams_sector ON public.teams(sector);
-
--- Helper function to get team sector
-CREATE OR REPLACE FUNCTION get_team_sector(p_team_id UUID)
-RETURNS TEXT AS $$
-BEGIN
-  RETURN (SELECT sector FROM public.teams WHERE id = p_team_id);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- ============================================
--- MIGRATION 8: ADMIN SYSTEM
--- ============================================
-
--- Update role check constraint to include admin
-ALTER TABLE public.team_members
-  DROP CONSTRAINT IF EXISTS team_members_role_check;
-
-ALTER TABLE public.team_members
-  ADD CONSTRAINT team_members_role_check
-  CHECK (role IN ('member', 'admin', 'leader'));
-
--- Create super admins table
-CREATE TABLE IF NOT EXISTS public.super_admins (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
-);
-
--- Insert default super admin
-INSERT INTO public.super_admins (email)
-VALUES ('adambeloucif@gmail.com')
-ON CONFLICT (email) DO NOTHING;
-
-ALTER TABLE public.super_admins ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Super admins can view list" ON public.super_admins;
-CREATE POLICY "Super admins can view list"
-  ON public.super_admins FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.super_admins sa
-      JOIN auth.users u ON u.email = sa.email
-      WHERE u.id = auth.uid()
-    )
-  );
-
--- Check if user is super admin
-CREATE OR REPLACE FUNCTION is_super_admin(p_user_id UUID DEFAULT NULL)
-RETURNS BOOLEAN AS $$
-DECLARE
-  v_user_id UUID;
-  v_email TEXT;
-BEGIN
-  v_user_id := COALESCE(p_user_id, auth.uid());
-
-  SELECT email INTO v_email
-  FROM auth.users
-  WHERE id = v_user_id;
-
-  RETURN EXISTS (
-    SELECT 1 FROM public.super_admins
-    WHERE email = v_email
-  );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Check if user is team admin (admin or leader role)
-CREATE OR REPLACE FUNCTION is_team_admin(p_user_id UUID, p_team_id UUID)
-RETURNS BOOLEAN AS $$
-BEGIN
-  IF is_super_admin(p_user_id) THEN
-    RETURN TRUE;
-  END IF;
-
-  RETURN EXISTS (
-    SELECT 1 FROM public.team_members
-    WHERE user_id = p_user_id
-    AND team_id = p_team_id
-    AND role IN ('admin', 'leader')
-  );
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Promote member to admin
-CREATE OR REPLACE FUNCTION promote_to_admin(
-  p_member_id UUID,
-  p_actor_id UUID DEFAULT NULL
-)
-RETURNS TABLE (
-  success BOOLEAN,
-  error_message TEXT
-) AS $$
-DECLARE
-  v_actor_id UUID;
-  v_member RECORD;
-BEGIN
-  v_actor_id := COALESCE(p_actor_id, auth.uid());
-
-  SELECT * INTO v_member
-  FROM public.team_members
-  WHERE id = p_member_id;
-
-  IF v_member IS NULL THEN
-    RETURN QUERY SELECT FALSE, 'Membre non trouvé'::TEXT;
-    RETURN;
-  END IF;
-
-  IF NOT is_team_admin(v_actor_id, v_member.team_id) THEN
-    RETURN QUERY SELECT FALSE, 'Permission refusée'::TEXT;
-    RETURN;
-  END IF;
-
-  UPDATE public.team_members
-  SET role = 'admin'
-  WHERE id = p_member_id;
-
-  RETURN QUERY SELECT TRUE, NULL::TEXT;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Demote admin to member
-CREATE OR REPLACE FUNCTION demote_to_member(
-  p_member_id UUID,
-  p_actor_id UUID DEFAULT NULL
-)
-RETURNS TABLE (
-  success BOOLEAN,
-  error_message TEXT
-) AS $$
-DECLARE
-  v_actor_id UUID;
-  v_member RECORD;
-  v_actor_role TEXT;
-BEGIN
-  v_actor_id := COALESCE(p_actor_id, auth.uid());
-
-  SELECT * INTO v_member
-  FROM public.team_members
-  WHERE id = p_member_id;
-
-  IF v_member IS NULL THEN
-    RETURN QUERY SELECT FALSE, 'Membre non trouvé'::TEXT;
-    RETURN;
-  END IF;
-
-  IF v_member.role = 'leader' THEN
-    RETURN QUERY SELECT FALSE, 'Impossible de rétrograder le créateur de l''équipe'::TEXT;
-    RETURN;
-  END IF;
-
-  SELECT role INTO v_actor_role
-  FROM public.team_members
-  WHERE user_id = v_actor_id AND team_id = v_member.team_id;
-
-  IF NOT (v_actor_role = 'leader' OR is_super_admin(v_actor_id)) THEN
-    RETURN QUERY SELECT FALSE, 'Seul le créateur peut rétrograder un admin'::TEXT;
-    RETURN;
-  END IF;
-
-  UPDATE public.team_members
-  SET role = 'member'
-  WHERE id = p_member_id;
-
-  RETURN QUERY SELECT TRUE, NULL::TEXT;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Super admin RLS policies
-DROP POLICY IF EXISTS "Super admins can view all teams" ON public.teams;
-CREATE POLICY "Super admins can view all teams"
-  ON public.teams FOR SELECT
-  USING (is_super_admin());
-
-DROP POLICY IF EXISTS "Super admins can update all teams" ON public.teams;
-CREATE POLICY "Super admins can update all teams"
-  ON public.teams FOR UPDATE
-  USING (is_super_admin());
-
-DROP POLICY IF EXISTS "Super admins can view all members" ON public.team_members;
-CREATE POLICY "Super admins can view all members"
-  ON public.team_members FOR SELECT
-  USING (is_super_admin());
-
-DROP POLICY IF EXISTS "Admins can update member roles" ON public.team_members;
-CREATE POLICY "Admins can update member roles"
-  ON public.team_members FOR UPDATE
-  USING (
-    team_id IN (
-      SELECT team_id FROM public.team_members
-      WHERE user_id = auth.uid() AND role IN ('admin', 'leader')
-    )
-    OR is_super_admin()
-  );
-
-GRANT EXECUTE ON FUNCTION is_super_admin TO authenticated;
-GRANT EXECUTE ON FUNCTION is_team_admin TO authenticated;
-GRANT EXECUTE ON FUNCTION promote_to_admin TO authenticated;
-GRANT EXECUTE ON FUNCTION demote_to_member TO authenticated;
-
--- ============================================
--- MIGRATION 9: BIRTH DATE SUPPORT
--- ============================================
-
-ALTER TABLE public.profiles
-  ADD COLUMN IF NOT EXISTS birth_date DATE;
-
-CREATE INDEX IF NOT EXISTS idx_profiles_birth_date
-  ON public.profiles (EXTRACT(MONTH FROM birth_date), EXTRACT(DAY FROM birth_date))
-  WHERE birth_date IS NOT NULL;
-
--- Function to get team birthdays
-CREATE OR REPLACE FUNCTION get_team_birthdays(p_team_id UUID)
-RETURNS TABLE (
-  user_id UUID,
-  full_name TEXT,
-  first_name TEXT,
-  birth_date DATE,
-  birth_month INTEGER,
-  birth_day INTEGER
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    p.id as user_id,
-    p.full_name,
-    p.first_name,
-    p.birth_date,
-    EXTRACT(MONTH FROM p.birth_date)::INTEGER as birth_month,
-    EXTRACT(DAY FROM p.birth_date)::INTEGER as birth_day
-  FROM public.profiles p
-  JOIN public.team_members tm ON tm.user_id = p.id
-  WHERE tm.team_id = p_team_id
-    AND p.birth_date IS NOT NULL
-  ORDER BY
-    EXTRACT(MONTH FROM p.birth_date),
-    EXTRACT(DAY FROM p.birth_date);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION get_team_birthdays TO authenticated;
-
--- Function to get upcoming birthdays
-CREATE OR REPLACE FUNCTION get_upcoming_birthdays(p_team_id UUID, p_days INTEGER DEFAULT 30)
-RETURNS TABLE (
-  user_id UUID,
-  full_name TEXT,
-  first_name TEXT,
-  birth_date DATE,
-  next_birthday DATE,
-  days_until INTEGER
-) AS $$
-DECLARE
-  v_today DATE := CURRENT_DATE;
-  v_this_year INTEGER := EXTRACT(YEAR FROM v_today);
-BEGIN
-  RETURN QUERY
-  SELECT
-    p.id as user_id,
-    p.full_name,
-    p.first_name,
-    p.birth_date,
-    CASE
-      WHEN make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) >= v_today
-      THEN make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER)
-      ELSE make_date(v_this_year + 1, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER)
-    END as next_birthday,
-    CASE
-      WHEN make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) >= v_today
-      THEN (make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) - v_today)
-      ELSE (make_date(v_this_year + 1, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) - v_today)
-    END as days_until
-  FROM public.profiles p
-  JOIN public.team_members tm ON tm.user_id = p.id
-  WHERE tm.team_id = p_team_id
-    AND p.birth_date IS NOT NULL
-    AND (
-      CASE
-        WHEN make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) >= v_today
-        THEN (make_date(v_this_year, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) - v_today)
-        ELSE (make_date(v_this_year + 1, EXTRACT(MONTH FROM p.birth_date)::INTEGER, EXTRACT(DAY FROM p.birth_date)::INTEGER) - v_today)
-      END
-    ) <= p_days
-  ORDER BY days_until;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION get_upcoming_birthdays TO authenticated;
-
--- Update handle_new_user to include birth_date
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO public.profiles (
-    id,
-    email,
-    full_name,
-    first_name,
-    last_name,
-    birth_date
-  )
-  VALUES (
-    NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'first_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'last_name', ''),
-    CASE
-      WHEN NEW.raw_user_meta_data->>'birth_date' IS NOT NULL
-        AND NEW.raw_user_meta_data->>'birth_date' != ''
-      THEN (NEW.raw_user_meta_data->>'birth_date')::DATE
-      ELSE NULL
-    END
-  )
-  ON CONFLICT (id) DO UPDATE SET
-    email = EXCLUDED.email,
-    full_name = COALESCE(EXCLUDED.full_name, profiles.full_name),
-    first_name = COALESCE(EXCLUDED.first_name, profiles.first_name),
-    last_name = COALESCE(EXCLUDED.last_name, profiles.last_name),
-    birth_date = COALESCE(EXCLUDED.birth_date, profiles.birth_date);
-
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- ============================================
--- MIGRATION 10: LEAVE DAYS BY STATUS (cadre/non-cadre)
--- ============================================
-
--- Add default leave days columns to teams (separate for employee vs executive)
-ALTER TABLE public.teams
-  ADD COLUMN IF NOT EXISTS default_leave_days_employee INTEGER DEFAULT 25 NOT NULL;
-
-ALTER TABLE public.teams
-  ADD COLUMN IF NOT EXISTS default_leave_days_executive INTEGER DEFAULT 25 NOT NULL;
-
--- Add constraints for leave days
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'teams_leave_days_employee_check'
-  ) THEN
-    ALTER TABLE public.teams
-      ADD CONSTRAINT teams_leave_days_employee_check
-      CHECK (default_leave_days_employee >= 0 AND default_leave_days_employee <= 60);
-  END IF;
-
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint WHERE conname = 'teams_leave_days_executive_check'
-  ) THEN
-    ALTER TABLE public.teams
-      ADD CONSTRAINT teams_leave_days_executive_check
-      CHECK (default_leave_days_executive >= 0 AND default_leave_days_executive <= 60);
-  END IF;
-EXCEPTION WHEN OTHERS THEN
-  NULL;
-END $$;
-
--- Helper function to get leave days by employee type
-DROP FUNCTION IF EXISTS get_default_leave_days(UUID, TEXT);
-CREATE OR REPLACE FUNCTION get_default_leave_days(
-  p_team_id UUID,
-  p_employee_type TEXT DEFAULT 'employee'
-)
-RETURNS INTEGER AS $$
-DECLARE
-  v_leave_days INTEGER;
-BEGIN
-  IF p_employee_type = 'executive' THEN
-    SELECT default_leave_days_executive INTO v_leave_days
-    FROM public.teams WHERE id = p_team_id;
-  ELSE
-    SELECT default_leave_days_employee INTO v_leave_days
-    FROM public.teams WHERE id = p_team_id;
-  END IF;
-
-  RETURN COALESCE(v_leave_days, 25);
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
-GRANT EXECUTE ON FUNCTION get_default_leave_days TO authenticated;
-
--- ============================================
--- MIGRATION 11: JOIN TEAM FUNCTION (FINAL)
--- ============================================
-
--- Drop old function signatures
-DROP FUNCTION IF EXISTS join_team_by_code(UUID, TEXT, TEXT, INTEGER);
-
--- Create final join team function
+-- Safe join team function
 CREATE OR REPLACE FUNCTION join_team_by_code(
   p_user_id UUID,
   p_team_code TEXT,
@@ -1093,7 +690,6 @@ RETURNS TABLE (
   success BOOLEAN,
   team_id UUID,
   team_name TEXT,
-  team_sector TEXT,
   error_message TEXT
 ) AS $$
 DECLARE
@@ -1101,106 +697,40 @@ DECLARE
   v_existing RECORD;
   v_leave_days INTEGER;
 BEGIN
-  -- Validate code format
   IF NOT (p_team_code ~ '^[A-Z0-9]{8}$') THEN
-    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, NULL::TEXT, 'Code équipe invalide'::TEXT;
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Code équipe invalide'::TEXT;
     RETURN;
   END IF;
 
-  -- Find team by code
   SELECT * INTO v_team FROM public.teams WHERE code = UPPER(p_team_code);
 
   IF v_team IS NULL THEN
-    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, NULL::TEXT, 'Équipe non trouvée'::TEXT;
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Équipe non trouvée'::TEXT;
     RETURN;
   END IF;
 
-  -- Check if user already in a team
   SELECT * INTO v_existing FROM public.team_members WHERE user_id = p_user_id;
 
   IF v_existing IS NOT NULL THEN
-    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, NULL::TEXT, 'Vous êtes déjà membre d''une équipe'::TEXT;
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Vous êtes déjà membre d''une équipe'::TEXT;
     RETURN;
   END IF;
 
-  -- Get leave days based on employee type
-  IF p_employee_type = 'executive' THEN
-    v_leave_days := v_team.default_leave_days_executive;
-  ELSE
-    v_leave_days := v_team.default_leave_days_employee;
-  END IF;
-
-  -- Use provided value if specified
-  IF p_annual_leave_days IS NOT NULL THEN
-    v_leave_days := p_annual_leave_days;
-  END IF;
-
-  -- Insert membership
-  INSERT INTO public.team_members (
-    user_id,
-    team_id,
-    role,
-    employee_type,
-    annual_leave_days,
-    leave_balance,
-    leave_balance_year
-  ) VALUES (
-    p_user_id,
-    v_team.id,
-    'member',
-    p_employee_type,
-    v_leave_days,
-    v_leave_days,
-    EXTRACT(YEAR FROM NOW())::INTEGER
+  v_leave_days := COALESCE(
+    p_annual_leave_days,
+    CASE WHEN p_employee_type = 'executive' THEN 30 ELSE 25 END
   );
 
-  RETURN QUERY SELECT TRUE, v_team.id, v_team.name, v_team.sector, NULL::TEXT;
+  INSERT INTO public.team_members (user_id, team_id, role, employee_type, annual_leave_days, leave_balance, leave_balance_year)
+  VALUES (p_user_id, v_team.id, 'member', p_employee_type, v_leave_days, v_leave_days, EXTRACT(YEAR FROM NOW())::INTEGER);
+
+  RETURN QUERY SELECT TRUE, v_team.id, v_team.name, NULL::TEXT;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION join_team_by_code TO authenticated;
 
--- ============================================
--- MIGRATION 12: GET USER TEAM FUNCTION (FINAL)
--- ============================================
-
--- Drop old function to change return type
-DROP FUNCTION IF EXISTS get_user_team(UUID);
-
--- Create final get_user_team function with all needed fields
-CREATE OR REPLACE FUNCTION get_user_team(p_user_id UUID)
-RETURNS TABLE (
-  team_id UUID,
-  team_name TEXT,
-  team_code TEXT,
-  team_sector TEXT,
-  user_role TEXT,
-  employee_type TEXT,
-  annual_leave_days INTEGER,
-  leave_balance INTEGER
-) AS $$
-BEGIN
-  RETURN QUERY
-  SELECT
-    t.id,
-    t.name,
-    t.code,
-    t.sector,
-    tm.role,
-    tm.employee_type,
-    tm.annual_leave_days,
-    tm.leave_balance
-  FROM public.teams t
-  JOIN public.team_members tm ON t.id = tm.team_id
-  WHERE tm.user_id = p_user_id
-  LIMIT 1;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- ============================================
--- MIGRATION 13: TEAM STATISTICS VIEW
--- ============================================
-
+-- Team statistics view
 DROP VIEW IF EXISTS public.team_leave_statistics;
 CREATE VIEW public.team_leave_statistics AS
 SELECT
@@ -1216,15 +746,6 @@ FROM public.team_members tm
 GROUP BY tm.team_id;
 
 COMMENT ON VIEW public.team_leave_statistics IS 'Aggregated leave statistics per team';
-
--- ============================================
--- DOCUMENTATION COMMENTS
--- ============================================
-
-COMMENT ON COLUMN public.teams.sector IS 'Secteur: public ou private';
-COMMENT ON COLUMN public.teams.default_leave_days_employee IS 'Default annual leave days for non-executive employees (non-cadres)';
-COMMENT ON COLUMN public.teams.default_leave_days_executive IS 'Default annual leave days for executives (cadres)';
-COMMENT ON COLUMN public.team_members.employee_type IS 'Employee status: employee (non-cadre) or executive (cadre)';
 
 -- Commit transaction
 COMMIT;
