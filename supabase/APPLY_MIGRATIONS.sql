@@ -1,5 +1,5 @@
 -- ============================================
--- PGVDIM - CONSOLIDATED MIGRATION SCRIPT
+-- ABSENCIA - CONSOLIDATED MIGRATION SCRIPT
 -- ============================================
 --
 -- INSTRUCTIONS:
@@ -9,11 +9,94 @@
 -- 4. Run the query
 --
 -- This script is IDEMPOTENT - safe to run multiple times
--- Last updated: 2024-01-23
+-- Last updated: 2025-01-21
 --
 -- ============================================
 
+-- ============================================
+-- SECTION 0: RESET DATABASE (OPTIONAL)
+-- ============================================
+-- ATTENTION: Décommentez cette section pour SUPPRIMER
+-- TOUTES les données et recommencer à zéro.
+-- NE PAS FAIRE EN PRODUCTION avec des données existantes!
+--
+-- Pour réinitialiser:
+-- 1. Décommentez les lignes ci-dessous (retirez les --)
+-- 2. Exécutez le script
+-- 3. Re-commentez cette section
+-- 4. Exécutez à nouveau pour recréer proprement
+--
+-- ============================================
+
+/*
+-- DÉBUT SECTION RESET (décommenter pour activer)
+-- ⚠️ DANGER: Supprime TOUTES les données!
+
+-- Désactiver les triggers temporairement
+SET session_replication_role = 'replica';
+
+-- Supprimer les triggers
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP TRIGGER IF EXISTS trigger_set_team_code ON public.teams;
+DROP TRIGGER IF EXISTS trigger_teams_updated_at ON public.teams;
+DROP TRIGGER IF EXISTS trigger_calendar_entries_updated_at ON public.calendar_entries;
+DROP TRIGGER IF EXISTS trigger_set_default_leave_days ON public.team_members;
+DROP TRIGGER IF EXISTS trigger_check_leave_reset ON public.team_members;
+DROP TRIGGER IF EXISTS trigger_update_leave_balance ON public.calendar_entries;
+DROP TRIGGER IF EXISTS trigger_restore_leave_balance ON public.calendar_entries;
+DROP TRIGGER IF EXISTS audit_teams_trigger ON public.teams;
+DROP TRIGGER IF EXISTS audit_team_members_trigger ON public.team_members;
+DROP TRIGGER IF EXISTS trigger_invitation_cleanup ON public.team_invitations;
+
+-- Supprimer les vues
+DROP VIEW IF EXISTS public.team_leave_statistics CASCADE;
+DROP VIEW IF EXISTS public.team_leave_stats_by_status CASCADE;
+
+-- Supprimer les tables (ordre important pour les foreign keys)
+DROP TABLE IF EXISTS public.audit_logs CASCADE;
+DROP TABLE IF EXISTS public.team_invitations CASCADE;
+DROP TABLE IF EXISTS public.calendar_entries CASCADE;
+DROP TABLE IF EXISTS public.team_members CASCADE;
+DROP TABLE IF EXISTS public.teams CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
+-- Supprimer les fonctions
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
+DROP FUNCTION IF EXISTS public.generate_team_code() CASCADE;
+DROP FUNCTION IF EXISTS public.set_team_code() CASCADE;
+DROP FUNCTION IF EXISTS public.update_updated_at() CASCADE;
+DROP FUNCTION IF EXISTS public.get_user_team_ids(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.is_team_leader(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.get_user_leader_team_ids(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.get_user_team(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.user_has_team(UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.set_default_leave_days() CASCADE;
+DROP FUNCTION IF EXISTS public.check_and_reset_leave_balance() CASCADE;
+DROP FUNCTION IF EXISTS public.update_leave_balance() CASCADE;
+DROP FUNCTION IF EXISTS public.restore_leave_balance() CASCADE;
+DROP FUNCTION IF EXISTS public.get_leave_info(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.create_audit_log(UUID, TEXT, TEXT, UUID, JSONB, TEXT, TEXT) CASCADE;
+DROP FUNCTION IF EXISTS public.audit_team_changes() CASCADE;
+DROP FUNCTION IF EXISTS public.audit_membership_changes() CASCADE;
+DROP FUNCTION IF EXISTS public.cleanup_old_audit_logs() CASCADE;
+DROP FUNCTION IF EXISTS public.join_team_by_code(UUID, TEXT, TEXT, INTEGER) CASCADE;
+DROP FUNCTION IF EXISTS public.validate_invitation(TEXT) CASCADE;
+DROP FUNCTION IF EXISTS public.use_invitation(TEXT, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.cleanup_expired_invitations() CASCADE;
+DROP FUNCTION IF EXISTS public.get_leave_days_by_status(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.is_team_admin(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.promote_to_admin(UUID, UUID) CASCADE;
+DROP FUNCTION IF EXISTS public.demote_from_admin(UUID, UUID) CASCADE;
+
+-- Réactiver les triggers
+SET session_replication_role = 'origin';
+
+-- FIN SECTION RESET
+*/
+
+-- ============================================
 -- Start transaction
+-- ============================================
 BEGIN;
 
 -- ============================================
@@ -27,6 +110,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   first_name TEXT,
   last_name TEXT,
   avatar_url TEXT,
+  birthday DATE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -78,31 +162,34 @@ CREATE TABLE IF NOT EXISTS public.teams (
   name TEXT NOT NULL,
   code TEXT UNIQUE NOT NULL,
   description TEXT,
+  sector TEXT CHECK (sector IN ('tech', 'marketing', 'sales', 'hr', 'finance', 'operations', 'support', 'other')),
   created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_teams_code ON public.teams(code);
+CREATE INDEX IF NOT EXISTS idx_teams_sector ON public.teams(sector);
 
 CREATE TABLE IF NOT EXISTS public.team_members (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   team_id UUID REFERENCES public.teams(id) ON DELETE CASCADE NOT NULL,
-  role TEXT CHECK (role IN ('leader', 'member')) DEFAULT 'member' NOT NULL,
+  role TEXT CHECK (role IN ('leader', 'admin', 'member')) DEFAULT 'member' NOT NULL,
   joined_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, team_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_team_members_user ON public.team_members(user_id);
 CREATE INDEX IF NOT EXISTS idx_team_members_team ON public.team_members(team_id);
+CREATE INDEX IF NOT EXISTS idx_team_members_role ON public.team_members(role);
 
 CREATE TABLE IF NOT EXISTS public.calendar_entries (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   team_id UUID REFERENCES public.teams(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   date DATE NOT NULL,
-  status TEXT CHECK (status IN ('WORK', 'REMOTE', 'SCHOOL', 'TRAINER', 'LEAVE', 'HOLIDAY', 'OFF')) NOT NULL,
+  status TEXT CHECK (status IN ('WORK', 'REMOTE', 'SCHOOL', 'TRAINER', 'LEAVE', 'HOLIDAY', 'OFF', 'SICK', 'MISSION')) NOT NULL,
   half_day TEXT CHECK (half_day IN ('AM', 'PM', 'FULL')) DEFAULT 'FULL',
   updated_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -112,6 +199,8 @@ CREATE TABLE IF NOT EXISTS public.calendar_entries (
 
 CREATE INDEX IF NOT EXISTS idx_calendar_entries_team_date ON public.calendar_entries(team_id, date);
 CREATE INDEX IF NOT EXISTS idx_calendar_entries_user ON public.calendar_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_calendar_entries_status ON public.calendar_entries(status);
+CREATE INDEX IF NOT EXISTS idx_calendar_entries_date_range ON public.calendar_entries(team_id, date DESC);
 
 -- Add current_team_id to profiles
 ALTER TABLE public.profiles
@@ -201,6 +290,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION is_team_admin(p_user_id UUID, p_team_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS(
+    SELECT 1 FROM public.team_members
+    WHERE user_id = p_user_id
+    AND team_id = p_team_id
+    AND role IN ('leader', 'admin')
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 CREATE OR REPLACE FUNCTION get_user_leader_team_ids(p_user_id UUID)
 RETURNS SETOF UUID AS $$
 BEGIN
@@ -210,15 +311,27 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+CREATE OR REPLACE FUNCTION get_user_admin_team_ids(p_user_id UUID)
+RETURNS SETOF UUID AS $$
+BEGIN
+  RETURN QUERY
+  SELECT team_id FROM public.team_members
+  WHERE user_id = p_user_id AND role IN ('leader', 'admin');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Drop old policies and recreate
 DROP POLICY IF EXISTS "View team members" ON public.team_members;
 DROP POLICY IF EXISTS "Users can join teams" ON public.team_members;
 DROP POLICY IF EXISTS "Users can leave teams" ON public.team_members;
 DROP POLICY IF EXISTS "Leaders can remove members" ON public.team_members;
 DROP POLICY IF EXISTS "Leaders can update member roles" ON public.team_members;
+DROP POLICY IF EXISTS "Admins can remove members" ON public.team_members;
+DROP POLICY IF EXISTS "Admins can update member roles" ON public.team_members;
 DROP POLICY IF EXISTS "Team members can view their team" ON public.teams;
 DROP POLICY IF EXISTS "Leaders can update their team" ON public.teams;
 DROP POLICY IF EXISTS "Leaders can delete their team" ON public.teams;
+DROP POLICY IF EXISTS "Admins can update their team" ON public.teams;
 DROP POLICY IF EXISTS "Anyone can view team by code" ON public.teams;
 DROP POLICY IF EXISTS "Authenticated users can create teams" ON public.teams;
 DROP POLICY IF EXISTS "View team calendar" ON public.calendar_entries;
@@ -226,6 +339,7 @@ DROP POLICY IF EXISTS "Manage own calendar entries" ON public.calendar_entries;
 DROP POLICY IF EXISTS "Update own calendar entries" ON public.calendar_entries;
 DROP POLICY IF EXISTS "Delete own calendar entries" ON public.calendar_entries;
 DROP POLICY IF EXISTS "Leaders manage team calendar" ON public.calendar_entries;
+DROP POLICY IF EXISTS "Admins manage team calendar" ON public.calendar_entries;
 DROP POLICY IF EXISTS "Team members can view teammate profiles" ON public.profiles;
 
 -- Team members policies
@@ -241,13 +355,13 @@ CREATE POLICY "Users can leave teams"
   ON public.team_members FOR DELETE
   USING (user_id = auth.uid());
 
-CREATE POLICY "Leaders can remove members"
+CREATE POLICY "Admins can remove members"
   ON public.team_members FOR DELETE
-  USING (team_id IN (SELECT get_user_leader_team_ids(auth.uid())));
+  USING (team_id IN (SELECT get_user_admin_team_ids(auth.uid())));
 
-CREATE POLICY "Leaders can update member roles"
+CREATE POLICY "Admins can update member roles"
   ON public.team_members FOR UPDATE
-  USING (team_id IN (SELECT get_user_leader_team_ids(auth.uid())));
+  USING (team_id IN (SELECT get_user_admin_team_ids(auth.uid())));
 
 -- Teams policies
 CREATE POLICY "Anyone can view team by code"
@@ -258,9 +372,9 @@ CREATE POLICY "Team members can view their team"
   ON public.teams FOR SELECT
   USING (id IN (SELECT get_user_team_ids(auth.uid())));
 
-CREATE POLICY "Leaders can update their team"
+CREATE POLICY "Admins can update their team"
   ON public.teams FOR UPDATE
-  USING (id IN (SELECT get_user_leader_team_ids(auth.uid())));
+  USING (id IN (SELECT get_user_admin_team_ids(auth.uid())));
 
 CREATE POLICY "Leaders can delete their team"
   ON public.teams FOR DELETE
@@ -287,9 +401,9 @@ CREATE POLICY "Delete own calendar entries"
   ON public.calendar_entries FOR DELETE
   USING (user_id = auth.uid());
 
-CREATE POLICY "Leaders manage team calendar"
+CREATE POLICY "Admins manage team calendar"
   ON public.calendar_entries FOR ALL
-  USING (team_id IN (SELECT get_user_leader_team_ids(auth.uid())));
+  USING (team_id IN (SELECT get_user_admin_team_ids(auth.uid())));
 
 -- Profiles policy
 CREATE POLICY "Team members can view teammate profiles"
@@ -326,6 +440,54 @@ BEGIN
   RETURN EXISTS(SELECT 1 FROM public.team_members WHERE user_id = p_user_id);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Admin promotion/demotion functions
+CREATE OR REPLACE FUNCTION promote_to_admin(p_leader_id UUID, p_user_id UUID)
+RETURNS BOOLEAN AS $$
+DECLARE
+  v_team_id UUID;
+BEGIN
+  -- Get leader's team
+  SELECT team_id INTO v_team_id FROM public.team_members
+  WHERE user_id = p_leader_id AND role = 'leader';
+
+  IF v_team_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Promote member to admin
+  UPDATE public.team_members
+  SET role = 'admin'
+  WHERE user_id = p_user_id AND team_id = v_team_id AND role = 'member';
+
+  RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION demote_from_admin(p_leader_id UUID, p_user_id UUID)
+RETURNS BOOLEAN AS $$
+DECLARE
+  v_team_id UUID;
+BEGIN
+  -- Get leader's team
+  SELECT team_id INTO v_team_id FROM public.team_members
+  WHERE user_id = p_leader_id AND role = 'leader';
+
+  IF v_team_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  -- Demote admin to member
+  UPDATE public.team_members
+  SET role = 'member'
+  WHERE user_id = p_user_id AND team_id = v_team_id AND role = 'admin';
+
+  RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION promote_to_admin TO authenticated;
+GRANT EXECUTE ON FUNCTION demote_from_admin TO authenticated;
 
 -- ============================================
 -- MIGRATION 4: LEAVE MANAGEMENT
@@ -393,7 +555,8 @@ DECLARE
   days_to_deduct NUMERIC;
   entry_year INTEGER;
 BEGIN
-  IF NEW.status != 'LEAVE' THEN
+  -- Only deduct for LEAVE and SICK status
+  IF NEW.status NOT IN ('LEAVE', 'SICK') THEN
     RETURN NEW;
   END IF;
 
@@ -431,7 +594,7 @@ RETURNS TRIGGER AS $$
 DECLARE
   days_to_restore NUMERIC;
 BEGIN
-  IF OLD.status = 'LEAVE' THEN
+  IF OLD.status IN ('LEAVE', 'SICK') THEN
     days_to_restore := CASE
       WHEN OLD.half_day IN ('AM', 'PM') THEN 0.5
       ELSE 1
@@ -491,8 +654,187 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Leave days by status function
+CREATE OR REPLACE FUNCTION get_leave_days_by_status(p_user_id UUID, p_team_id UUID)
+RETURNS TABLE (
+  status TEXT,
+  total_days NUMERIC,
+  full_days BIGINT,
+  half_days BIGINT
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    ce.status,
+    (COUNT(CASE WHEN ce.half_day = 'FULL' THEN 1 END) +
+     COUNT(CASE WHEN ce.half_day IN ('AM', 'PM') THEN 1 END) * 0.5)::NUMERIC as total_days,
+    COUNT(CASE WHEN ce.half_day = 'FULL' THEN 1 END) as full_days,
+    COUNT(CASE WHEN ce.half_day IN ('AM', 'PM') THEN 1 END) as half_days
+  FROM public.calendar_entries ce
+  WHERE ce.user_id = p_user_id
+    AND ce.team_id = p_team_id
+    AND EXTRACT(YEAR FROM ce.date) = EXTRACT(YEAR FROM NOW())
+  GROUP BY ce.status;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION get_leave_days_by_status TO authenticated;
+
 -- ============================================
--- MIGRATION 5: AUDIT LOGS
+-- MIGRATION 5: TEAM INVITATIONS
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS public.team_invitations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  team_id UUID REFERENCES public.teams(id) ON DELETE CASCADE NOT NULL,
+  token TEXT UNIQUE NOT NULL,
+  created_by UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  max_uses INTEGER DEFAULT NULL,
+  use_count INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_invitations_token ON public.team_invitations(token);
+CREATE INDEX IF NOT EXISTS idx_invitations_team ON public.team_invitations(team_id);
+CREATE INDEX IF NOT EXISTS idx_invitations_expires ON public.team_invitations(expires_at);
+
+ALTER TABLE public.team_invitations ENABLE ROW LEVEL SECURITY;
+
+-- Invitations policies
+DROP POLICY IF EXISTS "Anyone can view active invitation by token" ON public.team_invitations;
+CREATE POLICY "Anyone can view active invitation by token"
+  ON public.team_invitations FOR SELECT
+  USING (is_active = TRUE AND expires_at > NOW());
+
+DROP POLICY IF EXISTS "Admins can manage team invitations" ON public.team_invitations;
+CREATE POLICY "Admins can manage team invitations"
+  ON public.team_invitations FOR ALL
+  USING (team_id IN (SELECT get_user_admin_team_ids(auth.uid())));
+
+-- Invitation validation function
+CREATE OR REPLACE FUNCTION validate_invitation(p_token TEXT)
+RETURNS TABLE (
+  is_valid BOOLEAN,
+  team_id UUID,
+  team_name TEXT,
+  error_message TEXT
+) AS $$
+DECLARE
+  v_invitation RECORD;
+  v_team RECORD;
+BEGIN
+  SELECT * INTO v_invitation
+  FROM public.team_invitations
+  WHERE token = p_token;
+
+  IF v_invitation IS NULL THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Invitation non trouvée'::TEXT;
+    RETURN;
+  END IF;
+
+  IF NOT v_invitation.is_active THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Invitation désactivée'::TEXT;
+    RETURN;
+  END IF;
+
+  IF v_invitation.expires_at < NOW() THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Invitation expirée'::TEXT;
+    RETURN;
+  END IF;
+
+  IF v_invitation.max_uses IS NOT NULL AND v_invitation.use_count >= v_invitation.max_uses THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Nombre maximum d''utilisations atteint'::TEXT;
+    RETURN;
+  END IF;
+
+  SELECT * INTO v_team FROM public.teams WHERE id = v_invitation.team_id;
+
+  RETURN QUERY SELECT TRUE, v_team.id, v_team.name, NULL::TEXT;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION validate_invitation TO authenticated;
+GRANT EXECUTE ON FUNCTION validate_invitation TO anon;
+
+-- Use invitation function
+CREATE OR REPLACE FUNCTION use_invitation(p_token TEXT, p_user_id UUID)
+RETURNS TABLE (
+  success BOOLEAN,
+  team_id UUID,
+  team_name TEXT,
+  error_message TEXT
+) AS $$
+DECLARE
+  v_validation RECORD;
+  v_existing RECORD;
+BEGIN
+  -- Validate the invitation
+  SELECT * INTO v_validation FROM validate_invitation(p_token);
+
+  IF NOT v_validation.is_valid THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, v_validation.error_message;
+    RETURN;
+  END IF;
+
+  -- Check if user is already in a team
+  SELECT * INTO v_existing FROM public.team_members WHERE user_id = p_user_id;
+
+  IF v_existing IS NOT NULL THEN
+    RETURN QUERY SELECT FALSE, NULL::UUID, NULL::TEXT, 'Vous êtes déjà membre d''une équipe'::TEXT;
+    RETURN;
+  END IF;
+
+  -- Add user to team
+  INSERT INTO public.team_members (user_id, team_id, role)
+  VALUES (p_user_id, v_validation.team_id, 'member');
+
+  -- Increment use count
+  UPDATE public.team_invitations
+  SET use_count = use_count + 1
+  WHERE token = p_token;
+
+  RETURN QUERY SELECT TRUE, v_validation.team_id, v_validation.team_name, NULL::TEXT;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION use_invitation TO authenticated;
+
+-- Cleanup expired invitations
+CREATE OR REPLACE FUNCTION cleanup_expired_invitations()
+RETURNS INTEGER AS $$
+DECLARE
+  deleted_count INTEGER;
+BEGIN
+  UPDATE public.team_invitations
+  SET is_active = FALSE
+  WHERE expires_at < NOW() AND is_active = TRUE;
+
+  GET DIAGNOSTICS deleted_count = ROW_COUNT;
+  RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Auto-cleanup trigger
+CREATE OR REPLACE FUNCTION trigger_invitation_cleanup()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Cleanup old invitations periodically (1% chance per insert)
+  IF random() < 0.01 THEN
+    PERFORM cleanup_expired_invitations();
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_invitation_cleanup ON public.team_invitations;
+CREATE TRIGGER trigger_invitation_cleanup
+  AFTER INSERT ON public.team_invitations
+  FOR EACH ROW EXECUTE FUNCTION trigger_invitation_cleanup();
+
+-- ============================================
+-- MIGRATION 6: AUDIT LOGS
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS public.audit_logs (
@@ -513,6 +855,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON public.audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON public.audit_logs(action);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_resource_type ON public.audit_logs(resource_type);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON public.audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_resource ON public.audit_logs(resource_type, resource_id);
 
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
@@ -521,11 +864,11 @@ CREATE POLICY "Users can view own audit logs"
   ON public.audit_logs FOR SELECT
   USING (user_id = auth.uid());
 
-DROP POLICY IF EXISTS "Leaders can view team audit logs" ON public.audit_logs;
-CREATE POLICY "Leaders can view team audit logs"
+DROP POLICY IF EXISTS "Admins can view team audit logs" ON public.audit_logs;
+CREATE POLICY "Admins can view team audit logs"
   ON public.audit_logs FOR SELECT
   USING (
-    EXISTS (SELECT 1 FROM get_user_leader_team_ids(auth.uid()))
+    EXISTS (SELECT 1 FROM get_user_admin_team_ids(auth.uid()))
   );
 
 CREATE OR REPLACE FUNCTION public.create_audit_log(
@@ -638,7 +981,7 @@ END;
 $$;
 
 -- ============================================
--- MIGRATION 6: ARCHITECTURE IMPROVEMENTS
+-- MIGRATION 7: ARCHITECTURE IMPROVEMENTS
 -- ============================================
 
 -- Data validation constraints
@@ -669,9 +1012,6 @@ ALTER TABLE public.teams
 
 -- Performance indexes
 CREATE INDEX IF NOT EXISTS idx_team_members_leave_balance ON public.team_members(user_id, leave_balance_year);
-CREATE INDEX IF NOT EXISTS idx_calendar_entries_status ON public.calendar_entries(status);
-CREATE INDEX IF NOT EXISTS idx_calendar_entries_date_range ON public.calendar_entries(team_id, date DESC);
-CREATE INDEX IF NOT EXISTS idx_audit_logs_resource ON public.audit_logs(resource_type, resource_id);
 
 -- Email validation
 ALTER TABLE public.profiles
@@ -747,7 +1087,26 @@ GROUP BY tm.team_id;
 
 COMMENT ON VIEW public.team_leave_statistics IS 'Aggregated leave statistics per team';
 
+-- Leave stats by status view
+DROP VIEW IF EXISTS public.team_leave_stats_by_status;
+CREATE VIEW public.team_leave_stats_by_status AS
+SELECT
+  ce.team_id,
+  ce.user_id,
+  ce.status,
+  EXTRACT(YEAR FROM ce.date) as year,
+  COUNT(CASE WHEN ce.half_day = 'FULL' THEN 1 END) as full_days,
+  COUNT(CASE WHEN ce.half_day IN ('AM', 'PM') THEN 1 END) as half_days,
+  (COUNT(CASE WHEN ce.half_day = 'FULL' THEN 1 END) +
+   COUNT(CASE WHEN ce.half_day IN ('AM', 'PM') THEN 1 END) * 0.5)::NUMERIC as total_days
+FROM public.calendar_entries ce
+GROUP BY ce.team_id, ce.user_id, ce.status, EXTRACT(YEAR FROM ce.date);
+
+COMMENT ON VIEW public.team_leave_stats_by_status IS 'Leave statistics grouped by status type';
+
+-- ============================================
 -- Commit transaction
+-- ============================================
 COMMIT;
 
 -- ============================================
@@ -762,3 +1121,9 @@ SELECT indexname FROM pg_indexes WHERE schemaname = 'public' ORDER BY indexname;
 
 -- Show all policies
 SELECT policyname, tablename FROM pg_policies WHERE schemaname = 'public' ORDER BY tablename, policyname;
+
+-- Show all functions
+SELECT proname FROM pg_proc p
+JOIN pg_namespace n ON p.pronamespace = n.oid
+WHERE n.nspname = 'public'
+ORDER BY proname;

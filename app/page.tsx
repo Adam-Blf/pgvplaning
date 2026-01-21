@@ -10,6 +10,8 @@ import {
   Clock,
   Shield,
   Zap,
+  ChevronRight,
+  CalendarDays,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -17,61 +19,77 @@ const features = [
   {
     icon: Calendar,
     title: 'Calendrier Intelligent',
-    description: 'Visualisez et planifiez en un coup d\'oeil',
-    color: 'from-blue-500 to-blue-600',
+    description: 'Visualisez et planifiez les absences en un coup d\'oeil',
+    gradient: 'from-indigo-500 to-violet-600',
+    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]',
     href: '/calendar',
   },
   {
     icon: Users,
-    title: 'Gestion d\'Equipe',
-    description: 'Coordonnez votre equipe efficacement',
-    color: 'from-emerald-500 to-emerald-600',
+    title: 'Gestion d\'Équipe',
+    description: 'Coordonnez votre équipe avec des rôles et permissions',
+    gradient: 'from-emerald-500 to-teal-600',
+    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]',
     href: '/team-planner',
   },
   {
     icon: FileDown,
     title: 'Export ICS',
-    description: 'Compatible tous calendriers',
-    color: 'from-violet-500 to-violet-600',
+    description: 'Compatible Google Calendar, Outlook et Apple',
+    gradient: 'from-amber-500 to-orange-600',
+    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(245,158,11,0.4)]',
     href: '/exports',
   },
+];
+
+const stats = [
+  { value: '2min', label: 'Setup', icon: Clock, color: 'text-amber-500' },
+  { value: '100%', label: 'Sécurisé', icon: Shield, color: 'text-emerald-500' },
+  { value: 'ICS', label: 'Export', icon: Zap, color: 'text-violet-500' },
 ];
 
 export default function HomePage() {
   return (
     <div className="min-h-[calc(100vh-8rem)] flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/3 rounded-full blur-2xl translate-y-1/2" />
+      <section className="relative py-16 md:py-24">
+        {/* Decorative Orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-500/[0.07] rounded-full blur-[100px] -translate-y-1/2" />
+          <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-indigo-500/[0.05] rounded-full blur-[80px] translate-y-1/2" />
+        </div>
 
         <div className="relative">
-          {/* Eyebrow */}
+          {/* Eyebrow Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-3 mb-6"
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="flex items-center gap-4 mb-8"
           >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span className="text-xs font-medium text-amber-500 tracking-wide uppercase">
-                Planning Pro
+            <Link
+              href="/calendar"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/40 transition-all"
+            >
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span className="text-sm font-medium text-amber-500">
+                Absencia Pro
               </span>
-            </div>
-            <div className="h-px flex-1 bg-gradient-to-r from-amber-500/20 to-transparent max-w-32" />
+              <ChevronRight className="w-4 h-4 text-amber-500/60 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+            <div className="h-px flex-1 bg-gradient-to-r from-amber-500/30 to-transparent max-w-24" />
           </motion.div>
 
-          {/* Main Title */}
+          {/* Main Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
-              <span className="text-[var(--text-primary)]">Gerez votre </span>
-              <span className="text-gradient">planning</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.95]">
+              <span className="text-[var(--text-primary)]">Gérez vos </span>
+              <span className="text-gradient">absences</span>
               <br />
               <span className="text-[var(--text-primary)]">comme un </span>
               <span className="text-gradient">pro</span>
@@ -82,10 +100,10 @@ export default function HomePage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg md:text-xl text-[var(--text-secondary)] max-w-xl mb-8 leading-relaxed"
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed"
           >
-            Organisez conges, presences et teletravail.
+            Organisez congés, présences et télétravail de votre équipe.
             <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
           </motion.p>
 
@@ -93,22 +111,45 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap gap-4"
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-10 flex flex-wrap gap-4"
           >
             <Link href="/calendar" className="group">
-              <button className="flex items-center gap-3 px-6 py-3.5 bg-amber-500 hover:bg-amber-400 text-black font-semibold rounded-xl transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 hover:-translate-y-0.5">
-                <Calendar className="w-5 h-5" />
+              <button className="btn-primary px-6 py-4 text-base">
+                <CalendarDays className="w-5 h-5" />
                 <span>Ouvrir le calendrier</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
             </Link>
-            <Link href="/exports" className="group">
-              <button className="flex items-center gap-3 px-6 py-3.5 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] font-medium rounded-xl border border-[var(--border-default)] transition-all hover:-translate-y-0.5">
+            <Link href="/exports">
+              <button className="btn-secondary px-6 py-4 text-base">
                 <FileDown className="w-5 h-5" />
                 <span>Exporter planning</span>
               </button>
             </Link>
+          </motion.div>
+
+          {/* Quick Stats - Inline */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-16 flex items-center gap-8 md:gap-12"
+          >
+            {stats.map((stat, index) => (
+              <div key={stat.label} className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center">
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-[var(--text-primary)]">{stat.value}</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">{stat.label}</p>
+                </div>
+                {index < stats.length - 1 && (
+                  <div className="hidden md:block w-px h-8 bg-[var(--border-subtle)] ml-8" />
+                )}
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -118,70 +159,74 @@ export default function HomePage() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="grid md:grid-cols-3 gap-4"
+          transition={{ duration: 0.6, delay: 0.5 }}
         >
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-            >
-              <Link href={feature.href} className="block group">
-                <div className="relative p-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-subtle)] hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-1">
-                  {/* Icon */}
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg`}>
-                    <feature.icon className="w-6 h-6 text-white" />
-                  </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Link href={feature.href} className="block group">
+                  <div className={`card-interactive p-6 h-full ${feature.glow}`}>
+                    {/* Icon */}
+                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg transition-transform group-hover:scale-105`}>
+                      <feature.icon className="w-6 h-6 text-white" />
+                    </div>
 
-                  {/* Content */}
-                  <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-1 group-hover:text-amber-500 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    {feature.description}
-                  </p>
+                    {/* Content */}
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 group-hover:text-amber-500 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
+                      {feature.description}
+                    </p>
 
-                  {/* Arrow */}
-                  <div className="absolute top-6 right-6 w-8 h-8 rounded-lg bg-[var(--bg-tertiary)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                    <ArrowRight className="w-4 h-4 text-amber-500" />
+                    {/* Arrow indicator */}
+                    <div className="mt-4 flex items-center gap-2 text-[var(--text-muted)] group-hover:text-amber-500 transition-colors">
+                      <span className="text-sm font-medium">Explorer</span>
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
       </section>
 
-      {/* Stats Section */}
+      {/* Bottom CTA */}
       <section className="py-12 mt-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="grid grid-cols-3 gap-6"
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="relative"
         >
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-amber-500" />
-              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">2min</span>
+          <div className="card p-8 md:p-12 overflow-hidden">
+            {/* Background glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
+                  Prêt à simplifier vos plannings ?
+                </h2>
+                <p className="text-[var(--text-secondary)]">
+                  Rejoignez une équipe ou créez la vôtre en quelques clics.
+                </p>
+              </div>
+              <Link href="/team/setup" className="shrink-0">
+                <button className="btn-primary px-8 py-4 text-base animate-pulse-glow">
+                  <Users className="w-5 h-5" />
+                  <span>Commencer</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </Link>
             </div>
-            <p className="text-sm text-[var(--text-muted)]">Temps de setup</p>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Shield className="w-5 h-5 text-emerald-500" />
-              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">100%</span>
-            </div>
-            <p className="text-sm text-[var(--text-muted)]">Donnees securisees</p>
-          </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <Zap className="w-5 h-5 text-violet-500" />
-              <span className="text-2xl md:text-3xl font-bold text-[var(--text-primary)]">ICS</span>
-            </div>
-            <p className="text-sm text-[var(--text-muted)]">Export universel</p>
           </div>
         </motion.div>
       </section>
