@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useMemo } from 'react';
 import { TeamIndicator } from '@/components/features/team-indicator';
+import { ChristmasCountdown } from '@/components/features/christmas-countdown';
 import { useAuth } from '@/hooks/use-auth';
 
 interface DashboardShellProps {
@@ -95,8 +96,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 })}
               </nav>
 
-              {/* Team Indicator or Login Button */}
-              <div className="hidden md:flex items-center gap-4">
+              {/* Christmas Countdown + Team Indicator or Login Button */}
+              <div className="hidden md:flex items-center gap-3">
+                <ChristmasCountdown />
                 {loading ? (
                   <div className="h-9 w-24 rounded-full bg-muted animate-pulse" />
                 ) : isAuthenticated ? (
@@ -130,6 +132,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
           {/* Mobile Navigation */}
           {mobileMenuOpen && (
             <div className="md:hidden border-t border-white/5 px-4 py-3 pb-4 animate-slideUp">
+              {/* Christmas Countdown for mobile */}
+              <div className="flex justify-center mb-3">
+                <ChristmasCountdown />
+              </div>
+
               <nav className="flex flex-col gap-1">
                 {navigation.map((item) => {
                   const isActive = pathname === item.href;
