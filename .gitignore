@@ -113,6 +113,7 @@ temp/
 
 # OS generated
 Icon?
+!public/icons/
 .AppleDouble
 .LSOverride
 Network Trash Folder

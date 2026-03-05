@@ -11,46 +11,47 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { PremiumIcons } from '@/components/ui/premium-icons';
+import { AnimatedBlueprintIcon } from '@/components/ui/animated-blueprint-icon';
 
 type Tool = DayStatus | 'ERASER';
 
 // Configuration de la légende avec le design system
 const legendItems = [
   {
-    icon: PremiumIcons.Office,
+    iconName: 'Office' as const,
     label: 'Bureau',
-    colorClass: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400',
-    dotClass: 'bg-indigo-500'
+    colorClass: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
+    dotClass: 'bg-blue-500'
   },
   {
-    icon: PremiumIcons.Home,
+    iconName: 'Home' as const,
     label: 'Télétravail',
-    colorClass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
-    dotClass: 'bg-emerald-500'
+    colorClass: 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400',
+    dotClass: 'bg-cyan-500'
   },
   {
-    icon: PremiumIcons.Education,
+    iconName: 'Education' as const,
     label: 'Formation',
-    colorClass: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
-    dotClass: 'bg-amber-500'
+    colorClass: 'bg-sky-500/10 border-sky-500/30 text-sky-400',
+    dotClass: 'bg-sky-500'
   },
   {
-    icon: PremiumIcons.Meeting,
+    iconName: 'Meeting' as const,
     label: 'Réunion',
-    colorClass: 'bg-violet-500/10 border-violet-500/30 text-violet-400',
-    dotClass: 'bg-violet-500'
+    colorClass: 'bg-blue-400/10 border-blue-400/30 text-blue-300',
+    dotClass: 'bg-blue-400'
   },
   {
-    icon: PremiumIcons.Vacation,
+    iconName: 'Vacation' as const,
     label: 'Congés',
-    colorClass: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
-    dotClass: 'bg-rose-500'
+    colorClass: 'bg-slate-500/10 border-slate-500/30 text-slate-400',
+    dotClass: 'bg-slate-500'
   },
   {
-    icon: PremiumIcons.Cake,
+    iconName: 'Cake' as const,
     label: 'Anniversaire',
-    colorClass: 'bg-pink-500/10 border-pink-500/30 text-pink-400',
-    dotClass: 'bg-pink-500'
+    colorClass: 'bg-sky-300/10 border-sky-300/30 text-sky-200',
+    dotClass: 'bg-sky-300'
   },
 ];
 
@@ -204,8 +205,8 @@ export default function CalendarPage() {
               whileHover={{ scale: 1.05, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-14 h-14 rounded-2xl gradient-amber flex items-center justify-center shadow-lg glow-amber">
-                <Calendar className="w-7 h-7 text-black" />
+              <div className="w-14 h-14 rounded-2xl gradient-amber flex items-center justify-center shadow-lg glow-amber overflow-hidden">
+                <AnimatedBlueprintIcon name="Office" className="text-white" size="lg" />
               </div>
             </motion.div>
 
@@ -328,7 +329,7 @@ export default function CalendarPage() {
                       `}
                     >
                       <div className={`w-2 h-2 rounded-full ${item.dotClass}`} />
-                      <item.icon className="w-3.5 h-3.5" />
+                      <AnimatedBlueprintIcon name={item.iconName} className="w-3.5 h-3.5" animateOnMount={false} />
                       <span>{item.label}</span>
                     </motion.div>
                   ))}
