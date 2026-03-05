@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Fira_Sans, Fira_Code, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import { TeamProvider } from "@/contexts/team-context";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const firaSans = Fira_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const firaCode = Fira_Code({
   variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -49,7 +49,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#0c1222" />
       </head>
       <body
-        className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} antialiased font-sans`}
+        className={`${firaSans.variable} ${firaCode.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
         <a

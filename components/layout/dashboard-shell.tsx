@@ -136,7 +136,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                           <Link
                             href={item.href}
                             className={cn(
-                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 active:scale-90',
+                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 active:scale-90 cursor-pointer',
                               isActive
                                 ? 'bg-[var(--crimson-500)] text-white shadow-lg shadow-crimson-500/30 scale-105'
                                 : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/10'
