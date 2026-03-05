@@ -18,6 +18,11 @@ export default function TeamJoinPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleLogout = async () => {
+    if (!auth) {
+      router.push('/login');
+      return;
+    }
+
     try {
       await signOut(auth);
     } catch (error) {
