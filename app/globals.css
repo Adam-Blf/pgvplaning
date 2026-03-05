@@ -8,105 +8,94 @@
    ============================================ */
 
 @layer base {
-  @layer base {
-    :root {
-      /* === CORE PALETTE (Master Blueprint) === */
-      --background: 217 60% 5%;
-      --foreground: 210 40% 98%;
+  :root {
+    /* === CORE PALETTE (Master Blueprint) === */
+    --background: 217 60% 5%;
+    --foreground: 210 40% 98%;
 
-      --card: 217 60% 8%;
-      --card-foreground: 210 40% 98%;
+    --card: 217 60% 8%;
+    --card-foreground: 210 40% 98%;
 
-      --popover: 217 60% 10%;
-      --popover-foreground: 210 40% 98%;
+    --popover: 217 60% 10%;
+    --popover-foreground: 210 40% 98%;
 
-      /* Blueprint Blue as Primary */
-      --primary: 200 100% 50%;
-      /* Pure Cyan/Blue */
-      --primary-foreground: 210 40% 100%;
+    /* Blueprint Blue as Primary */
+    --primary: 200 100% 50%;
+    /* Pure Cyan/Blue */
+    --primary-foreground: 210 40% 100%;
 
-      /* Blueprint Cyan/Light Blue as Secondary/Accent */
-      --secondary: 190 100% 50%;
-      --secondary-foreground: 210 40% 0%;
+    /* Blueprint Cyan/Light Blue as Secondary/Accent */
+    --secondary: 190 100% 50%;
+    --secondary-foreground: 210 40% 0%;
 
-      --muted: 217 30% 15%;
-      --muted-foreground: 210 20% 65%;
+    --muted: 217 30% 15%;
+    --muted-foreground: 210 20% 65%;
 
-      --accent: 190 100% 50%;
-      --accent-foreground: 210 40% 0%;
+    --accent: 190 100% 50%;
+    --accent-foreground: 210 40% 0%;
 
-      --destructive: 0 84% 60%;
-      --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-      --border: 217 40% 15%;
-      --input: 217 40% 15%;
-      --ring: 200 100% 50%;
+    --border: 217 40% 15%;
+    --input: 217 40% 15%;
+    --ring: 200 100% 50%;
 
-      --radius: 0.75rem;
-      /* Slightly more technical/sharp */
+    --radius: 0.75rem;
 
-      /* === SEMANTIC LAYERS === */
-      --bg-base: #020817;
-      /* Deep Navy */
-      --bg-elevated: #040e24;
-      --bg-surface: #061430;
-      --bg-overlay: #081a3d;
-      --bg-hover: #0c2552;
+    /* === SEMANTIC LAYERS === */
+    --bg-base: #020817;
+    --bg-elevated: #040e24;
+    --bg-surface: #061430;
+    --bg-overlay: #081a3d;
+    --bg-hover: #0c2552;
 
-      /* === TEXT HIERARCHY === */
-      --text-primary: #f8fafc;
-      --text-secondary: #cbd5e1;
-      --text-tertiary: #94a3b8;
-      --text-muted: #64748b;
-      --text-disabled: #334155;
+    /* === TEXT HIERARCHY === */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-muted: #64748b;
+    --text-disabled: #334155;
 
-      /* === BORDERS === */
-      --border-subtle: rgba(56, 189, 248, 0.05);
-      --border-default: rgba(56, 189, 248, 0.15);
-      --border-strong: rgba(56, 189, 248, 0.25);
-      --border-focus: rgba(56, 189, 248, 0.6);
+    /* === BORDERS === */
+    --border-subtle: rgba(56, 189, 248, 0.05);
+    --border-default: rgba(56, 189, 248, 0.15);
+    --border-strong: rgba(56, 189, 248, 0.25);
+    --border-focus: rgba(56, 189, 248, 0.6);
 
-      /* === BLUEPRINT SPECTRUM === */
-      --blueprint-500: #0ea5e9;
-      --blueprint-600: #0284c7;
-      --cyan-400: #22d3ee;
-      --cyan-500: #06b6d4;
+    /* === BLUEPRINT SPECTRUM === */
+    --blueprint-500: #0ea5e9;
+    --blueprint-600: #0284c7;
+    --cyan-400: #22d3ee;
+    --cyan-500: #06b6d4;
 
-      /* === STATUS COLORS === */
-      --status-work: #0ea5e9;
-      /* Blueprint Blue */
-      --status-work-glow: rgba(14, 165, 233, 0.3);
-      --status-remote: #22d3ee;
-      /* Cyan */
-      --status-remote-glow: rgba(34, 211, 238, 0.3);
-      --status-school: #38bdf8;
-      /* Sky */
-      --status-school-glow: rgba(56, 189, 248, 0.2);
-      --status-leave: #94a3b8;
-      --status-leave-glow: rgba(148, 163, 184, 0.1);
+    /* === STATUS COLORS === */
+    --status-work: #0ea5e9;
+    --status-work-glow: rgba(14, 165, 233, 0.3);
+    --status-remote: #22d3ee;
+    --status-remote-glow: rgba(34, 211, 238, 0.3);
+    --status-school: #38bdf8;
+    --status-school-glow: rgba(56, 189, 248, 0.2);
+    --status-leave: #94a3b8;
+    --status-leave-glow: rgba(148, 163, 184, 0.1);
 
-      /* === SHADOWS (Standardized) === */
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
-      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
-      --shadow-glow-primary: 0 0 30px -5px rgba(14, 165, 233, 0.4);
-      --shadow-glow-gold: 0 0 30px -5px rgba(34, 211, 238, 0.4);
+    /* === SHADOWS === */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
 
-      /* === SPACING TOKENS === */
-      --space-xs: 0.25rem;
-      --space-sm: 0.5rem;
-      --space-md: 1rem;
-      --space-lg: 1.5rem;
-      --space-xl: 2.0rem;
-      --space-2xl: 3.0rem;
-      --space-3xl: 4.0rem;
+    /* === SPACING === */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2.0rem;
 
-      /* === TRANSITIONS === */
-      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-      --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    /* === TRANSITIONS === */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -376,7 +365,7 @@
 
   .card-glow {
     @apply card;
-    @apply hover:border-[var(--blueprint-500)]/30 hover:shadow-[0_0_30px_-10px_rgba(14, 165, 233, 0.2)];
+    @apply hover:border-sky-500/30 hover:shadow-[0_0_30px_-10px_rgba(14, 165, 233, 0.2)];
   }
 
   /* === BUTTONS === */
@@ -414,7 +403,7 @@
 
   .badge-amber {
     @apply badge;
-    @apply bg-[var(--blueprint-500)]/10 text-[var(--blueprint-500)] border-[var(--blueprint-500)]/20;
+    @apply bg-sky-500/10 text-sky-400 border-sky-500/20;
   }
 
   .badge-success {
@@ -629,19 +618,19 @@
 
 @layer utilities {
   .status-work {
-    @apply bg-indigo-500/10 text-indigo-400 border-indigo-500/20;
+    @apply bg-blue-500/10 text-blue-400 border-blue-500/20;
   }
 
   .status-remote {
-    @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
+    @apply bg-cyan-500/10 text-cyan-400 border-cyan-500/20;
   }
 
   .status-school {
-    @apply bg-amber-500/10 text-amber-400 border-amber-500/20;
+    @apply bg-sky-500/10 text-sky-400 border-sky-500/20;
   }
 
   .status-leave {
-    @apply bg-rose-500/10 text-rose-400 border-rose-500/20;
+    @apply bg-slate-500/10 text-slate-400 border-slate-500/20;
   }
 
   .status-dot {
@@ -649,19 +638,19 @@
   }
 
   .status-dot-work {
-    @apply bg-indigo-500;
+    @apply bg-blue-500;
   }
 
   .status-dot-remote {
-    @apply bg-emerald-500;
+    @apply bg-cyan-500;
   }
 
   .status-dot-school {
-    @apply bg-amber-500;
+    @apply bg-sky-500;
   }
 
   .status-dot-leave {
-    @apply bg-rose-500;
+    @apply bg-slate-500;
   }
 }
 
