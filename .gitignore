@@ -127,3 +127,6 @@ llm/pgv-absence-model-merged/
 llm/*.gguf
 nul
 .playwright-mcp/
+# Delivery Reports
+migration_report.pdf
+generate_pdf.py
