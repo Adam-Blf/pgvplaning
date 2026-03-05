@@ -11,10 +11,24 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Singleton pattern for Firebase initialization
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Initialize Firebase only if config is available
+let app;
+let auth: any;
+let db: any;
+
+try {
+    if (firebaseConfig.apiKey) {
+        app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        auth = getAuth(app);
+        db = getFirestore(app);
+    } else {
+        // Mock or non-initialized states for build time
+        auth = {} as any;
+        db = {} as any;
+    }
+} catch (error) {
+    console.error('Firebase initialization error:', error);
+}
 
 export { app, auth, db };
 
