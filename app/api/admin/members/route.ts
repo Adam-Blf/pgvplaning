@@ -139,11 +139,18 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { memberId, action } = body;
 
-    if (!memberId || !action) {
-      return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 });
+    // Validation stricte du body avec Zod
+    const { z } = await import('zod');
+    const patchSchema = z.object({
+      memberId: z.string().min(1, 'memberId requis'),
+      action: z.enum(['promote', 'demote', 'remove'], { errorMap: () => ({ message: 'Action non reconnue' }) }),
+    });
+    const parsed = patchSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
     }
+    const { memberId, action } = parsed.data;
 
     // Get target member
     const targetMemberDoc = await adminDb.collection('team_members').doc(memberId).get();

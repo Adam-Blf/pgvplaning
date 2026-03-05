@@ -95,8 +95,8 @@ export async function POST(request: NextRequest) {
 
     const inviteRef = await adminDb.collection('team_invitations').add(invitationData);
 
-    // Construire l'URL d'invitation
-    const baseUrl = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || '';
+    // Construire l'URL d'invitation (utiliser NEXT_PUBLIC_APP_URL en priorité pour éviter le spoofing du header Origin)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.headers.get('origin') || '';
     const inviteUrl = `${baseUrl}/invite/${token}`;
 
     return NextResponse.json({

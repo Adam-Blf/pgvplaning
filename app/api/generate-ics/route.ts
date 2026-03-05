@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateIcsRequestSchema, parseFrenchDate, GenerateIcsRequest } from '@/lib/schemas/planning';
+import { adminAuth } from '@/lib/firebase/server';
+import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
 function formatIcsDate(date: Date): string {
   const year = date.getFullYear();
@@ -56,6 +58,29 @@ function generateFileName(employeeName: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`ics:${clientId}`, RATE_LIMITS.default);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
+  // Authentification Firebase
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+  }
+  const idToken = authHeader.split('Bearer ')[1];
+  try {
+    await adminAuth.verifyIdToken(idToken);
+  } catch {
+    return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const validationResult = generateIcsRequestSchema.safeParse(body);

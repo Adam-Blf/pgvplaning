@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebase/server';
 import { z } from 'zod';
+import crypto from 'crypto';
 import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
 // Schema for team creation - with separate leave days for employee vs executive (cadre)
@@ -75,8 +76,8 @@ export async function POST(request: NextRequest) {
 
     const { name, description, sector, leaveDaysEmployee, leaveDaysExecutive } = validationResult.data;
 
-    // Create team
-    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    // Create team (code généré avec crypto.randomBytes pour une entropie sécurisée)
+    const code = crypto.randomBytes(4).toString('hex').toUpperCase();
     const teamRef = adminDb.collection('teams').doc();
     const teamData = {
       name,

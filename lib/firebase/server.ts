@@ -1,9 +1,21 @@
+/**
+ * Client Firebase Admin - Côté serveur
+ * 
+ * Initialise le SDK Firebase Admin pour les opérations serveur :
+ * - Accès Firestore avec privilèges admin (bypass des règles de sécurité)
+ * - Vérification et gestion des tokens d'authentification
+ * 
+ * Utilise les variables d'environnement FIREBASE_* (privées, côté serveur uniquement).
+ * Pattern singleton : n'initialise qu'une seule fois même en cas de hot-reload.
+ */
+
 import * as admin from 'firebase-admin';
 
-// Initialize Firebase Admin only once
+// Initialiser Firebase Admin une seule fois (vérification du singleton)
 if (!admin.apps.length) {
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    // Remplacer les \n littéraux par de vrais retours à la ligne dans la clé privée
     const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     if (projectId && clientEmail && privateKey) {
@@ -16,19 +28,19 @@ if (!admin.apps.length) {
                 }),
             });
         } catch (error) {
-            console.error('Firebase admin initialization error:', error);
+            console.error('Erreur d\'initialisation Firebase Admin :', error);
         }
     } else {
-        // Log a warning instead of an error to prevent build crashes
+        // Avertir plutôt qu'erreur pour ne pas crasher le build
         if (process.env.NODE_ENV === 'production') {
-            console.warn('Firebase admin credentials missing. Service functionality will be limited.');
+            console.warn('Identifiants Firebase Admin manquants. Fonctionnalités limitées.');
         }
     }
 }
 
-// Export initializers/services safely. 
-// Note: Calls to these during build-time static analysis will return dummy objects 
-// if not initialized, but runtime calls should work if env vars are present.
+// Exporter les services de manière sûre.
+// Note : Les appels durant l'analyse statique du build retournent des objets vides,
+// mais les appels runtime fonctionnent si les variables d'environnement sont présentes.
 const adminDb = admin.apps.length ? admin.firestore() : {} as admin.firestore.Firestore;
 const adminAuth = admin.apps.length ? admin.auth() : {} as admin.auth.Auth;
 

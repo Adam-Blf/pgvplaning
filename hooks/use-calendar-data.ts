@@ -1,28 +1,50 @@
+/**
+ * Hook de gestion des données du calendrier
+ * 
+ * Gère le stockage local des statuts journaliers (présence, télétravail, congés...)
+ * avec support des demi-journées (AM/PM).
+ * 
+ * Fonctionnalités :
+ * - Persistance dans localStorage
+ * - Calcul automatique des jours fériés français (fixes + mobiles)
+ * - Support demi-journées (matin/après-midi)
+ * - Mode démo avec données générées
+ * - Mode gomme pour effacer des statuts
+ */
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 
+/** Statut possible pour une journée */
 export type DayStatus = 'WORK' | 'REMOTE' | 'SCHOOL' | 'TRAINER' | 'LEAVE' | 'HOLIDAY' | 'OFF';
 
+/** Indicateur de demi-journée */
 export type HalfDay = 'AM' | 'PM' | 'FULL';
 
+/** Données d'une journée en mode demi-journée */
 export interface DayData {
-  am?: DayStatus;
-  pm?: DayStatus;
+  am?: DayStatus; // Statut du matin
+  pm?: DayStatus; // Statut de l'après-midi
 }
 
+/** Structure complète du calendrier : clé = date YYYY-MM-DD */
 export interface CalendarData {
   [date: string]: DayStatus | DayData;
 }
 
-// Helper to check if a value is DayData (half-day format) or DayStatus (legacy)
+/** Vérifie si une valeur est au format demi-journée (objet) ou journée complète (chaîne) */
 export function isDayData(value: DayStatus | DayData): value is DayData {
   return typeof value === 'object' && value !== null && ('am' in value || 'pm' in value);
 }
 
+// Clé de stockage dans localStorage
 const STORAGE_KEY = 'absencia-calendar-data';
 
-// Calcul des jours fériés français
+/**
+ * Calcul de la date de Pâques pour une année donnée.
+ * Algorithme de Butcher-Meeus (calcul astronomique).
+ */
 function getEasterDate(year: number): Date {
   const a = year % 19;
   const b = Math.floor(year / 100);

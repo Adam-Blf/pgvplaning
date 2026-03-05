@@ -1,47 +1,36 @@
 /**
- * Simple in-memory rate limiting utility
+ * Système de limitation de débit (Rate Limiting) - En mémoire
  *
- * PRODUCTION RECOMMENDATION:
- * For production deployments with multiple server instances,
- * replace this with Redis-based rate limiting using @upstash/ratelimit:
+ * Limite le nombre de requêtes par identifiant (IP) dans une fenêtre de temps.
+ * Utilisé pour protéger les APIs contre les abus et attaques par force brute.
+ *
+ * RECOMMANDATION PRODUCTION :
+ * Pour un déploiement multi-instances, remplacer par Redis via @upstash/ratelimit :
  *
  * ```bash
  * npm install @upstash/ratelimit @upstash/redis
  * ```
  *
- * ```typescript
- * import { Ratelimit } from '@upstash/ratelimit';
- * import { Redis } from '@upstash/redis';
- *
- * const redis = Redis.fromEnv();
- * const ratelimit = new Ratelimit({
- *   redis,
- *   limiter: Ratelimit.slidingWindow(10, '1 m'),
- *   analytics: true,
- * });
- *
- * const { success, limit, remaining, reset } = await ratelimit.limit(identifier);
- * ```
- *
- * Environment variables needed:
+ * Variables d'environnement nécessaires :
  * - UPSTASH_REDIS_REST_URL
  * - UPSTASH_REDIS_REST_TOKEN
  *
- * Current implementation uses in-memory Map which:
- * - Resets on server restart
- * - Does not share state between server instances
- * - Is suitable for development and single-instance deployments
+ * L'implémentation actuelle utilise une Map en mémoire :
+ * - Se réinitialise au redémarrage du serveur
+ * - Ne partage pas l'état entre instances
+ * - Adaptée au développement et aux déploiements mono-instance
  */
 
+/** Entrée de suivi pour un identifiant */
 interface RateLimitEntry {
-  count: number;
-  resetAt: number;
+  count: number;    // Nombre de requêtes dans la fenêtre
+  resetAt: number;  // Timestamp de réinitialisation (ms)
 }
 
-// In-memory store (resets on server restart)
+// Stockage en mémoire (se réinitialise au redémarrage)
 const store = new Map<string, RateLimitEntry>();
 
-// Clean up expired entries periodically
+// Nettoyage périodique des entrées expirées (toutes les minutes)
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();
@@ -50,22 +39,22 @@ if (typeof setInterval !== 'undefined') {
         store.delete(key);
       }
     }
-  }, 60000); // Clean every minute
+  }, 60000);
 }
 
+/** Configuration d'une règle de limitation */
 interface RateLimitConfig {
-  // Maximum requests in the window
-  limit: number;
-  // Window size in milliseconds
-  windowMs: number;
+  limit: number;     // Nombre maximum de requêtes dans la fenêtre
+  windowMs: number;  // Taille de la fenêtre en millisecondes
 }
 
+/** Résultat d'une vérification de limite */
 interface RateLimitResult {
-  success: boolean;
-  limit: number;
-  remaining: number;
-  reset: number;
-  retryAfter?: number;
+  success: boolean;     // true si la requête est autorisée
+  limit: number;        // Limite configurée
+  remaining: number;    // Requêtes restantes
+  reset: number;        // Timestamp de réinitialisation
+  retryAfter?: number;  // Secondes avant de réessayer (si bloqué)
 }
 
 /**

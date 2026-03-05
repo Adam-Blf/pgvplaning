@@ -1,15 +1,26 @@
+/**
+ * Hook de statistiques du calendrier
+ * 
+ * Calcule les statistiques annuelles à partir des données du calendrier :
+ * - Jours de bureau, télétravail, formation, congés
+ * - Pourcentages de chaque catégorie
+ * - Exclut automatiquement les week-ends et jours fériés
+ * - Supporte le format demi-journée (0.5 jour)
+ */
+
 'use client';
 
 import { useMemo } from 'react';
 import { CalendarData, DayStatus, isDayData } from './use-calendar-data';
 
+/** Statistiques annuelles du calendrier */
 export interface CalendarStats {
-  work: number;
-  remote: number;
-  school: number;
-  leave: number;
-  total: number;
-  percentages: {
+  work: number;     // Jours au bureau
+  remote: number;   // Jours en télétravail
+  school: number;   // Jours de formation
+  leave: number;    // Jours de congés
+  total: number;    // Total des jours ouvrés
+  percentages: {    // Pourcentages par catégorie
     work: number;
     remote: number;
     school: number;

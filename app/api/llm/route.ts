@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { adminAuth } from '@/lib/firebase/server';
+import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
 // Liste blanche des hosts autorisés pour les appels API externes (SSRF protection)
 const ALLOWED_HOSTS = [
@@ -128,6 +130,29 @@ async function callOpenAICompatible(
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`llm:${clientId}`, RATE_LIMITS.llm);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
+  // Authentification Firebase
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+  }
+  const idToken = authHeader.split('Bearer ')[1];
+  try {
+    await adminAuth.verifyIdToken(idToken);
+  } catch {
+    return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+  }
+
   try {
     const { prompt, apiKey, apiEndpoint, modelName, useHuggingFace } = await request.json();
 
@@ -160,11 +185,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Erreur LLM:', error);
 
-    // Si l'erreur vient d'un endpoint local, essayer Hugging Face en fallback
-    const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
-
     return NextResponse.json(
-      { error: errorMessage },
+      { error: 'Erreur lors de la génération du message. Réessayez plus tard.' },
       { status: 500 }
     );
   }

@@ -1,3 +1,16 @@
+/**
+ * Contexte d'équipe (Team Context)
+ * 
+ * Fournit les données de l'équipe à tous les composants enfants :
+ * - Informations de l'équipe (nom, code, description)
+ * - Membres de l'équipe avec leurs profils
+ * - Rôle de l'utilisateur actuel (leader/membre)
+ * - Actions : rafraîchir les données, quitter l'équipe
+ * 
+ * S'écoute sur les changements d'authentification Firebase
+ * et charge automatiquement les données d'équipe depuis Firestore.
+ */
+
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
@@ -5,24 +18,28 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import { collection, query, where, getDocs, doc, getDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 
+// ============================================================
 // Types
+// ============================================================
+
+/** Représentation d'une équipe */
 export interface Team {
   id: string;
-  name: string;
-  code: string;
-  description?: string;
-  created_by: string;
-  created_at: string;
+  name: string;         // Nom de l'équipe
+  code: string;         // Code d'accès unique (8 caractères)
+  description?: string; // Description optionnelle
+  created_by: string;   // UID du créateur
+  created_at: string;   // Date de création ISO
 }
 
+/** Membre d'une équipe avec son profil */
 export interface TeamMember {
   id: string;
-  user_id: string;
-  team_id: string;
-  role: 'leader' | 'member';
-  joined_at: string;
-  // Joined from profiles
-  profile?: {
+  user_id: string;  // UID Firebase de l'utilisateur
+  team_id: string;  // ID de l'équipe
+  role: 'leader' | 'member'; // Rôle dans l'équipe
+  joined_at: string;          // Date d'arrivée
+  profile?: {                 // Profil utilisateur joint
     id: string;
     email: string;
     first_name?: string;
@@ -31,15 +48,16 @@ export interface TeamMember {
   };
 }
 
+/** Valeur exposée par le contexte d'équipe */
 export interface TeamContextValue {
-  team: Team | null;
-  membership: TeamMember | null;
-  members: TeamMember[];
-  isLeader: boolean;
-  loading: boolean;
-  error: string | null;
-  refreshTeam: () => Promise<void>;
-  leaveTeam: () => Promise<void>;
+  team: Team | null;              // Équipe actuelle (null si aucune)
+  membership: TeamMember | null;  // Adhésion de l'utilisateur
+  members: TeamMember[];          // Liste de tous les membres
+  isLeader: boolean;              // true si l'utilisateur est leader
+  loading: boolean;               // true pendant le chargement
+  error: string | null;           // Message d'erreur éventuel
+  refreshTeam: () => Promise<void>; // Rafraîchir les données
+  leaveTeam: () => Promise<void>;   // Quitter l'équipe
 }
 
 const TeamContext = createContext<TeamContextValue | undefined>(undefined);

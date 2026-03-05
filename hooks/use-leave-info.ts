@@ -1,15 +1,27 @@
+/**
+ * Hook d'informations sur les congés
+ * 
+ * Récupère et expose les données de congés de l'utilisateur connecté :
+ * - Type d'employé (employé/cadre)
+ * - Solde de congés restants
+ * - Jours utilisés
+ * - Année en cours
+ * - Informations de l'équipe
+ */
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 
+/** Données de congés d'un membre */
 interface LeaveInfo {
-  employeeType: 'employee' | 'executive';
-  employeeTypeLabel: string;
-  annualLeaveDays: number;
-  leaveBalance: number;
-  usedDays: number;
-  year: number;
-  wasReset: boolean;
+  employeeType: 'employee' | 'executive'; // Type : employé ou cadre
+  employeeTypeLabel: string;               // Libellé affiché
+  annualLeaveDays: number;                 // Jours de congés annuels accordés
+  leaveBalance: number;                    // Solde restant
+  usedDays: number;                        // Jours déjà utilisés
+  year: number;                            // Année concernée
+  wasReset: boolean;                       // true si le solde a été réinitialisé
   team: {
     id: string;
     name: string;
@@ -21,6 +33,7 @@ export function useLeaveInfo() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /** Récupérer les informations de congés depuis l'API */
   const fetchLeaveInfo = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -42,6 +55,7 @@ export function useLeaveInfo() {
     }
   }, []);
 
+  // Charger les données au montage du composant
   useEffect(() => {
     fetchLeaveInfo();
   }, [fetchLeaveInfo]);
@@ -50,6 +64,6 @@ export function useLeaveInfo() {
     leaveInfo,
     loading,
     error,
-    refetch: fetchLeaveInfo,
+    refetch: fetchLeaveInfo, // Permet de recharger manuellement
   };
 }

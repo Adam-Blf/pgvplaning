@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/server';
+import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 import * as admin from 'firebase-admin';
 
 interface RouteParams {
@@ -50,6 +51,17 @@ async function validateTokenInfo(token: string) {
 
 // GET /api/teams/invitations/[token] - Valider un token d'invitation
 export async function GET(request: NextRequest, { params }: RouteParams) {
+  // Rate limiting anti brute-force sur la validation de tokens
+  const clientId = getClientIdentifier(request.headers);
+  const rateLimitResult = checkRateLimit(`invite-validate:${clientId}`, RATE_LIMITS.teamJoin);
+
+  if (!rateLimitResult.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: createRateLimitHeaders(rateLimitResult) }
+    );
+  }
+
   try {
     const { token } = await params;
 
@@ -160,12 +172,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const membershipRef = await adminDb.collection('team_members').add(membershipData);
 
-    // Incrémenter le compteur d'utilisation de l'invitation
+    // Incrémenter le compteur d'utilisation de l'invitation (une seule fois via transaction atomique)
     if (validation.invitationId) {
-      await adminDb.collection('team_invitations').doc(validation.invitationId).update({
-        use_count: admin.firestore.FieldValue.increment(1) // Admin SDK approach? Fails typing if not careful but FieldValue is available
-      });
-      // Import can be an issue so let's use get and set
       const invRef = adminDb.collection('team_invitations').doc(validation.invitationId);
       await adminDb.runTransaction(async (t) => {
         const doc = await t.get(invRef);
