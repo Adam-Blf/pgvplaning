@@ -71,12 +71,19 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
-    const team = { id: teamQuery.docs[0].id, ...teamQuery.docs[0].data() };
+    interface TeamDoc {
+      id: string;
+      name: string;
+      sector?: string;
+      [key: string]: unknown;
+    }
+
+    const team = { id: teamQuery.docs[0].id, ...teamQuery.docs[0].data() } as TeamDoc;
 
     return NextResponse.json({
       team: {
         id: team.id,
-        name: team.name as string,
+        name: team.name,
         sector: team.sector || 'public',
       },
     });
@@ -176,8 +183,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    interface TeamDoc {
+      id: string;
+      name: string;
+      code: string;
+      sector?: string;
+      default_leave_days?: number;
+      [key: string]: unknown;
+    }
+
     const teamDoc = teamQuery.docs[0];
-    const team = { id: teamDoc.id, ...teamDoc.data() };
+    const team = { id: teamDoc.id, ...teamDoc.data() } as TeamDoc;
 
     // Use team's default leave days (set by team creator)
     const annualLeaveDays = team.default_leave_days || 25;
