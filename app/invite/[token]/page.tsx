@@ -62,6 +62,8 @@ export default function InvitePage({ params }: InvitePageProps) {
 
   // Vérifier l'authentification
   useEffect(() => {
+    if (!auth) return;
+
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       setIsAuthenticated(!!user);
       // Re-valider l'invitation si l'utilisateur est connecté et on a le token
