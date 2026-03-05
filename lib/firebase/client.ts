@@ -22,9 +22,9 @@ try {
         auth = getAuth(app);
         db = getFirestore(app);
     } else {
-        // Mock or non-initialized states for build time
-        auth = {} as any;
-        db = {} as any;
+        // Return null for build time when credentials aren't available
+        auth = null;
+        db = null;
     }
 } catch (error) {
     console.error('Firebase initialization error:', error);
