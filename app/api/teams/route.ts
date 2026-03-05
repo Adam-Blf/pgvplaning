@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     let decodedToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(idToken);
-    } catch (_) {
+    } catch {
       return NextResponse.json(
         { error: 'Token invalide ou expiré' },
         { status: 401 }
@@ -153,7 +153,7 @@ export async function GET(request: NextRequest) {
     let decodedToken;
     try {
       decodedToken = await adminAuth.verifyIdToken(idToken);
-    } catch (_) {
+    } catch {
       return NextResponse.json(
         { error: 'Token invalide ou expiré' },
         { status: 401 }
