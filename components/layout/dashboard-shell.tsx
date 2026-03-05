@@ -107,54 +107,64 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   {/* Logo */}
                   <Link href="/" className="flex items-center gap-3 no-underline group">
                     <div className="relative">
-                      <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-primary to-indigo-500 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shadow-glow">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-[var(--crimson-500)] to-[var(--gold-500)] flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 shadow-glow-primary">
                         <Activity className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <div className="absolute -inset-2 bg-primary rounded-xl opacity-0 blur-lg group-hover:opacity-30 transition-opacity duration-500" />
+                      <div className="absolute -inset-2 bg-[var(--crimson-500)] rounded-xl opacity-0 blur-lg group-hover:opacity-40 transition-opacity duration-700" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-sans font-bold text-foreground text-sm md:text-base tracking-tight leading-none group-hover:text-primary transition-colors">
+                      <span className="font-sans font-bold text-[var(--text-primary)] text-sm md:text-xl tracking-tighter leading-none group-hover:text-[var(--crimson-500)] transition-colors duration-300">
                         Absencia
+                      </span>
+                      <span className="text-[10px] text-[var(--text-tertiary)] font-medium uppercase tracking-[0.2em] leading-tight">
+                        Planning Pro
                       </span>
                     </div>
                   </Link>
 
                   {/* Desktop Navigation - Pill Style */}
-                  <nav className="hidden md:flex items-center gap-1 p-1 bg-white/5 rounded-full border border-white/5">
-                    {navigation.map((item) => {
+                  <nav className="hidden md:flex items-center gap-1.5 p-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
+                    {navigation.map((item, i) => {
                       const isActive = pathname === item.href;
                       return (
-                        <Link
+                        <motion.div
                           key={item.name}
-                          href={item.href}
-                          className={cn(
-                            'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 active:scale-95',
-                            isActive
-                              ? 'bg-primary text-primary-foreground shadow-md scale-105'
-                              : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
-                          )}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.05 + 0.2 }}
                         >
-                          <item.icon className="w-3.5 h-3.5" />
-                          <span className="hidden lg:inline">{item.name}</span>
-                        </Link>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 active:scale-90',
+                              isActive
+                                ? 'bg-[var(--crimson-500)] text-white shadow-lg shadow-crimson-500/30 scale-105'
+                                : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/10'
+                            )}
+                          >
+                            <item.icon className={cn("w-4 h-4", isActive ? "animate-pulse" : "")} />
+                            <span className="hidden lg:inline">{item.name}</span>
+                          </Link>
+                        </motion.div>
                       );
                     })}
                   </nav>
 
                   {/* Christmas Countdown + Team Indicator or Login Button */}
-                  <div className="hidden md:flex items-center gap-3">
+                  <div className="hidden md:flex items-center gap-4">
                     <ChristmasCountdown />
+                    <div className="divider-vertical h-8" />
                     {loading ? (
-                      <div className="h-9 w-24 rounded-full bg-muted animate-pulse" />
+                      <div className="h-10 w-24 rounded-full bg-white/5 animate-shimmer" />
                     ) : isAuthenticated ? (
                       <TeamIndicator />
                     ) : (
                       <Link
                         href="/login"
-                        className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all hover:scale-105 shadow-lg shadow-primary/20"
+                        className="btn-primary"
                       >
-                        <LogIn className="w-3.5 h-3.5" />
-                        Se connecter
+                        <LogIn className="w-4 h-4" />
+                        Connexion
                       </Link>
                     )}
                   </div>

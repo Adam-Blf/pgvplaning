@@ -89,7 +89,7 @@ export function TeamIndicator() {
           "flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-300",
           "border backdrop-blur-sm",
           showDropdown
-            ? "glass-elevated border-amber-500/30 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]"
+            ? "glass-elevated border-[var(--gold-500)]/30 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]"
             : "glass border-[var(--border-subtle)] hover:border-[var(--border-default)] hover:bg-[var(--bg-overlay)]"
         )}
       >
@@ -97,11 +97,11 @@ export function TeamIndicator() {
         <div className={cn(
           "relative w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-300",
           isLeader
-            ? "bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30"
+            ? "bg-gradient-to-br from-[var(--gold-500)]/20 to-[var(--gold-600)]/10 border border-[var(--gold-500)]/30"
             : "bg-[var(--bg-overlay)] border border-[var(--border-default)]"
         )}>
           {isLeader ? (
-            <Crown className="w-3.5 h-3.5 text-amber-500" />
+            <Crown className="w-3.5 h-3.5 text-[var(--gold-500)]" />
           ) : (
             <Users className="w-3.5 h-3.5 text-[var(--text-secondary)]" />
           )}
@@ -121,7 +121,7 @@ export function TeamIndicator() {
         >
           <ChevronDown className={cn(
             "w-4 h-4 transition-colors duration-200",
-            showDropdown ? "text-amber-500" : "text-[var(--text-tertiary)]"
+            showDropdown ? "text-[var(--gold-500)]" : "text-[var(--text-tertiary)]"
           )} />
         </motion.div>
       </motion.button>
@@ -143,12 +143,12 @@ export function TeamIndicator() {
                 <div className={cn(
                   "w-11 h-11 rounded-xl flex items-center justify-center",
                   isLeader
-                    ? "gradient-amber-soft border border-amber-500/30"
+                    ? "bg-[var(--gold-500)]/10 border border-[var(--gold-500)]/30"
                     : "bg-[var(--bg-surface)] border border-[var(--border-default)]"
                 )}>
                   <Users className={cn(
                     "w-5 h-5",
-                    isLeader ? "text-amber-500" : "text-[var(--text-secondary)]"
+                    isLeader ? "text-[var(--gold-500)]" : "text-[var(--text-secondary)]"
                   )} />
                 </div>
 
@@ -159,7 +159,7 @@ export function TeamIndicator() {
                   {/* Role Badge */}
                   <div className="mt-1">
                     {isLeader ? (
-                      <span className="badge-amber">
+                      <span className="badge border-[var(--gold-500)]/30 text-[var(--gold-500)] bg-[var(--gold-500)]/10">
                         <Crown className="w-3 h-3" />
                         Chef d&apos;equipe
                       </span>

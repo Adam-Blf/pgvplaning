@@ -13,7 +13,7 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-// Status configuration with vibrant colors and glow effects
+// Status configuration with vibrant colors and luxury glow effects
 const STATUS_CONFIG: Record<DayStatus, {
   base: string;
   glow: string;
@@ -21,45 +21,45 @@ const STATUS_CONFIG: Record<DayStatus, {
   ring: string;
 }> = {
   WORK: {
-    base: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
-    glow: 'shadow-[0_0_20px_-4px_rgba(99,102,241,0.5)]',
-    dot: 'bg-indigo-400',
-    ring: 'ring-indigo-500/50',
+    base: 'bg-[var(--crimson-500)]/10 text-[var(--crimson-500)] border-[var(--crimson-500)]/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(220,38,38,0.4)]',
+    dot: 'bg-[var(--crimson-500)]',
+    ring: 'ring-[var(--crimson-500)]/50',
   },
   REMOTE: {
-    base: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-    glow: 'shadow-[0_0_20px_-4px_rgba(16,185,129,0.5)]',
+    base: 'bg-[var(--gold-500)]/10 text-[var(--gold-500)] border-[var(--gold-500)]/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(245,158,11,0.4)]',
+    dot: 'bg-[var(--gold-500)]',
+    ring: 'ring-[var(--gold-500)]/50',
+  },
+  SCHOOL: {
+    base: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(16,185,129,0.3)]',
     dot: 'bg-emerald-400',
     ring: 'ring-emerald-500/50',
   },
-  SCHOOL: {
-    base: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
-    glow: 'shadow-[0_0_20px_-4px_rgba(245,158,11,0.5)]',
-    dot: 'bg-amber-400',
-    ring: 'ring-amber-500/50',
-  },
   TRAINER: {
-    base: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
-    glow: 'shadow-[0_0_20px_-4px_rgba(139,92,246,0.5)]',
-    dot: 'bg-violet-400',
-    ring: 'ring-violet-500/50',
+    base: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(99,102,241,0.3)]',
+    dot: 'bg-indigo-400',
+    ring: 'ring-indigo-500/50',
   },
   LEAVE: {
-    base: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
-    glow: 'shadow-[0_0_20px_-4px_rgba(244,63,94,0.4)]',
-    dot: 'bg-rose-400',
-    ring: 'ring-rose-500/50',
+    base: 'bg-white/5 text-[var(--text-tertiary)] border-white/10',
+    glow: '',
+    dot: 'bg-white/20',
+    ring: 'ring-white/10',
   },
   HOLIDAY: {
-    base: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+    base: 'bg-rose-500/5 text-rose-400/60 border-rose-500/10',
     glow: '',
-    dot: 'bg-slate-400',
-    ring: 'ring-slate-500/30',
+    dot: 'bg-rose-500/40',
+    ring: 'ring-rose-500/20',
   },
   OFF: {
     base: 'bg-transparent text-[var(--text-tertiary)]',
     glow: '',
-    dot: 'bg-slate-600',
+    dot: 'bg-white/10',
     ring: '',
   },
 };
@@ -85,26 +85,43 @@ interface CalendarGridProps {
 
 // Animation variants
 const cellVariants = {
-  initial: { scale: 0.9, opacity: 0 },
-  animate: { scale: 1, opacity: 1 },
-  exit: { scale: 0.9, opacity: 0 },
-  hover: { scale: 1.08, y: -2 },
-  tap: { scale: 0.95 },
+  initial: { scale: 0.8, opacity: 0, y: 10 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 400, damping: 25 }
+  },
+  exit: { scale: 0.8, opacity: 0, transition: { duration: 0.1 } },
+  hover: {
+    scale: 1.05,
+    y: -4,
+    transition: { type: 'spring', stiffness: 500, damping: 15 }
+  },
+  tap: { scale: 0.92 },
 };
 
 const monthVariants = {
   initial: (direction: number) => ({
-    x: direction > 0 ? 50 : -50,
+    x: direction > 0 ? 30 : -30,
     opacity: 0,
+    filter: 'blur(10px)',
   }),
   animate: {
     x: 0,
     opacity: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 30 },
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      stiffness: 300,
+      damping: 30,
+      mass: 0.8
+    },
   },
   exit: (direction: number) => ({
-    x: direction > 0 ? -50 : 50,
+    x: direction > 0 ? -30 : 30,
     opacity: 0,
+    filter: 'blur(10px)',
     transition: { duration: 0.2 },
   }),
 };

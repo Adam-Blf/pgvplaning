@@ -123,21 +123,21 @@ export function LeaveBalanceCard() {
   // Status configuration
   const getStatusConfig = () => {
     if (isLow) return {
-      color: 'rose',
-      text: 'text-rose-400',
-      bg: 'bg-rose-500',
-      bgSubtle: 'bg-rose-500/10',
-      border: 'border-rose-500/20',
-      glow: 'shadow-[0_0_20px_-5px_rgba(244,63,94,0.3)]',
+      color: 'crimson',
+      text: 'text-[var(--crimson-500)]',
+      bg: 'bg-[var(--crimson-500)]',
+      bgSubtle: 'bg-[var(--crimson-500)]/10',
+      border: 'border-[var(--crimson-500)]/20',
+      glow: 'shadow-[0_0_20px_-5px_rgba(220,38,38,0.3)]',
       icon: TrendingDown,
       label: 'Faible'
     };
     if (isMedium) return {
-      color: 'amber',
-      text: 'text-amber-400',
-      bg: 'bg-amber-500',
-      bgSubtle: 'bg-amber-500/10',
-      border: 'border-amber-500/20',
+      color: 'gold',
+      text: 'text-[var(--gold-500)]',
+      bg: 'bg-[var(--gold-500)]',
+      bgSubtle: 'bg-[var(--gold-500)]/10',
+      border: 'border-[var(--gold-500)]/20',
       glow: 'shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]',
       icon: Minus,
       label: 'Modere'
@@ -161,17 +161,17 @@ export function LeaveBalanceCard() {
   const typeConfig = isExecutive
     ? {
       icon: GraduationCap,
-      color: 'text-purple-400',
-      bg: 'bg-purple-500/10',
-      border: 'border-purple-500/20',
-      glow: 'bg-purple-500'
+      color: 'text-[var(--gold-400)]',
+      bg: 'bg-[var(--gold-500)]/10',
+      border: 'border-[var(--gold-500)]/20',
+      glow: 'bg-[var(--gold-500)]'
     }
     : {
       icon: Briefcase,
-      color: 'text-indigo-400',
-      bg: 'bg-indigo-500/10',
-      border: 'border-indigo-500/20',
-      glow: 'bg-indigo-500'
+      color: 'text-[var(--crimson-400)]',
+      bg: 'bg-[var(--crimson-500)]/10',
+      border: 'border-[var(--crimson-500)]/20',
+      glow: 'bg-[var(--crimson-500)]'
     };
 
   const TypeIcon = typeConfig.icon;
