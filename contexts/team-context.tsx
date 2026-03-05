@@ -1,7 +1,9 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { collection, query, where, getDocs, doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/client';
 
 // Types
 export interface Team {
@@ -53,10 +55,8 @@ export function TeamProvider({ children }: TeamProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
-
   const fetchTeamData = useCallback(async () => {
-    if (!supabase) {
+    if (!auth || !db) {
       setLoading(false);
       return;
     }
@@ -65,67 +65,68 @@ export function TeamProvider({ children }: TeamProviderProps) {
       setLoading(true);
       setError(null);
 
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = auth.currentUser;
       if (!user) {
         setLoading(false);
         return;
       }
 
       // Get user's team membership
-      const { data: membershipData, error: membershipError } = await supabase
-        .from('team_members')
-        .select(`
-          *,
-          team:teams(*)
-        `)
-        .eq('user_id', user.id)
-        .single();
+      const membershipsRef = collection(db, 'team_members');
+      const qMembership = query(membershipsRef, where('user_id', '==', user.uid));
+      const membershipSnapshot = await getDocs(qMembership);
 
-      if (membershipError) {
-        if (membershipError.code === 'PGRST116') {
-          // No team found - this is OK, user needs to join/create
-          setTeam(null);
-          setMembership(null);
-          setMembers([]);
-        } else {
-          throw membershipError;
-        }
+      if (membershipSnapshot.empty) {
+        setTeam(null);
+        setMembership(null);
+        setMembers([]);
         setLoading(false);
         return;
       }
 
-      if (membershipData) {
-        const teamData = membershipData.team as Team;
+      const membershipDoc = membershipSnapshot.docs[0];
+      const membershipData = membershipDoc.data() as Omit<TeamMember, 'id' | 'profile'>;
+      const currentMembership: TeamMember = { id: membershipDoc.id, ...membershipData };
+
+      const teamDocRef = doc(db, 'teams', currentMembership.team_id);
+      const teamDocSnap = await getDoc(teamDocRef);
+
+      if (teamDocSnap.exists()) {
+        const teamData = { id: teamDocSnap.id, ...teamDocSnap.data() } as Team;
         setTeam(teamData);
-        setMembership({
-          id: membershipData.id,
-          user_id: membershipData.user_id,
-          team_id: membershipData.team_id,
-          role: membershipData.role,
-          joined_at: membershipData.joined_at,
+        setMembership(currentMembership);
+
+        // Fetch all team members
+        const teamMembersQuery = query(membershipsRef, where('team_id', '==', teamData.id));
+        const teamMembersSnapshot = await getDocs(teamMembersQuery);
+
+        const membersList: TeamMember[] = [];
+        for (const mDoc of teamMembersSnapshot.docs) {
+          const mData = mDoc.data() as Omit<TeamMember, 'id' | 'profile'>;
+
+          // Fetch profile for each member
+          let profile = undefined;
+          const profileRef = doc(db, 'profiles', mData.user_id);
+          const profileSnap = await getDoc(profileRef);
+
+          if (profileSnap.exists()) {
+            profile = { id: profileSnap.id, ...profileSnap.data() } as TeamMember['profile'];
+          }
+
+          membersList.push({
+            id: mDoc.id,
+            ...mData,
+            profile
+          });
+        }
+
+        // Sort by joined_at if it exists
+        membersList.sort((a, b) => {
+          if (!a.joined_at || !b.joined_at) return 0;
+          return new Date(a.joined_at).getTime() - new Date(b.joined_at).getTime();
         });
 
-        // Fetch all team members with their profiles
-        const { data: membersData, error: membersError } = await supabase
-          .from('team_members')
-          .select(`
-            *,
-            profile:profiles(id, email, first_name, last_name, full_name)
-          `)
-          .eq('team_id', teamData.id)
-          .order('joined_at', { ascending: true });
-
-        if (membersError) throw membersError;
-
-        setMembers(membersData?.map(m => ({
-          id: m.id,
-          user_id: m.user_id,
-          team_id: m.team_id,
-          role: m.role,
-          joined_at: m.joined_at,
-          profile: m.profile,
-        })) || []);
+        setMembers(membersList);
       }
     } catch (err) {
       console.error('Error fetching team data:', err);
@@ -133,19 +134,13 @@ export function TeamProvider({ children }: TeamProviderProps) {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   const leaveTeam = useCallback(async () => {
-    if (!supabase || !membership) return;
+    if (!db || !membership) return;
 
     try {
-      const { error } = await supabase
-        .from('team_members')
-        .delete()
-        .eq('id', membership.id);
-
-      if (error) throw error;
-
+      await deleteDoc(doc(db, 'team_members', membership.id));
       setTeam(null);
       setMembership(null);
       setMembers([]);
@@ -153,20 +148,25 @@ export function TeamProvider({ children }: TeamProviderProps) {
       console.error('Error leaving team:', err);
       throw err;
     }
-  }, [supabase, membership]);
+  }, [membership]);
 
   useEffect(() => {
-    fetchTeamData();
+    if (!auth) return;
 
-    // Subscribe to auth changes
-    if (supabase) {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    // Refresh data when auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      if (user) {
         fetchTeamData();
-      });
+      } else {
+        setTeam(null);
+        setMembership(null);
+        setMembers([]);
+        setLoading(false);
+      }
+    });
 
-      return () => subscription.unsubscribe();
-    }
-  }, [fetchTeamData, supabase]);
+    return () => unsubscribe();
+  }, [fetchTeamData]);
 
   const value: TeamContextValue = {
     team,

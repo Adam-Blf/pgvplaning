@@ -126,17 +126,17 @@ const PeekingPerson = ({ isLooking, delay = 0 }: { isLooking: boolean; delay?: n
     </motion.svg>
   </motion.div>
 );
-import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { auth } from '@/lib/firebase/client';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import Link from 'next/link';
 
-// Mapping des erreurs Supabase vers des messages en français
-function getAuthErrorMessage(error: Error | { message: string; code?: string }): string {
-  const message = error.message.toLowerCase();
+// Mapping des erreurs Firebase vers des messages en français
+function getAuthErrorMessage(error: unknown): string {
+  const err = error as { message?: string; code?: string };
+  const message = err?.message?.toLowerCase() || '';
 
-  if (message.includes('user already registered') ||
-      message.includes('already been registered') ||
-      message.includes('email already in use') ||
-      message.includes('duplicate key') && message.includes('email')) {
+  if (message.includes('auth/email-already-in-use') ||
+    message.includes('email already in use')) {
     return 'Cette adresse email est déjà utilisée. Essayez de vous connecter ou utilisez une autre adresse.';
   }
 
@@ -144,19 +144,19 @@ function getAuthErrorMessage(error: Error | { message: string; code?: string }):
     return 'Ce numéro de téléphone est déjà associé à un compte.';
   }
 
-  if (message.includes('invalid login credentials') || message.includes('invalid credentials')) {
+  if (message.includes('auth/invalid-credential') || message.includes('auth/user-not-found') || message.includes('auth/wrong-password')) {
     return 'Email ou mot de passe incorrect.';
   }
 
-  if (message.includes('password') && message.includes('at least')) {
+  if (message.includes('auth/weak-password')) {
     return 'Le mot de passe doit contenir au moins 6 caractères.';
   }
 
-  if (message.includes('invalid email') || message.includes('email not valid')) {
+  if (message.includes('auth/invalid-email') || message.includes('email not valid')) {
     return 'Adresse email invalide.';
   }
 
-  if (message.includes('too many requests') || message.includes('rate limit')) {
+  if (message.includes('auth/too-many-requests') || message.includes('too many requests')) {
     return 'Trop de tentatives. Veuillez patienter quelques minutes.';
   }
 
@@ -168,7 +168,7 @@ function getAuthErrorMessage(error: Error | { message: string; code?: string }):
     return 'Erreur de connexion. Vérifiez votre connexion internet.';
   }
 
-  return error.message || 'Une erreur est survenue. Veuillez réessayer.';
+  return err.message || 'Une erreur est survenue. Veuillez réessayer.';
 }
 
 const features = [
@@ -190,13 +190,12 @@ export default function LoginPage() {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const router = useRouter();
 
-  const isConfigured = useMemo(() => isSupabaseConfigured(), []);
-  const supabase = useMemo(() => createClient(), []);
+  const isConfigured = useMemo(() => !!auth, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) {
-      setError('Supabase non configuré. Contactez l\'administrateur.');
+    if (!auth) {
+      setError('Firebase non configuré. Contactez l\'administrateur.');
       return;
     }
 
@@ -205,30 +204,22 @@ export default function LoginPage() {
 
     try {
       if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
+        await signInWithEmailAndPassword(auth, email, password);
         router.push('/');
         router.refresh();
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-              full_name: `${firstName} ${lastName}`.trim(),
-              phone: phone,
-              birth_date: birthDate || null,
-            },
-          },
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await updateProfile(user, {
+          displayName: `${firstName} ${lastName}`.trim()
         });
-        if (error) throw error;
-        setError('Vérifiez votre email pour confirmer votre inscription.');
+
+        // Optionnel: On pourrait enregistrer des champs supplémentaires dans Firestore ici
+        // comme le `phone` et `birthDate` si besoin.
+
+        router.push('/');
+        router.refresh();
       }
     } catch (err) {
       const errorObj = err instanceof Error ? err : { message: String(err) };
@@ -335,12 +326,12 @@ export default function LoginPage() {
                 </div>
                 <h1 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Configuration requise</h1>
                 <p className="text-[var(--text-secondary)] text-sm mb-6">
-                  Supabase n&apos;est pas configuré. Ajoutez les variables d&apos;environnement:
+                  Supabase (ou Firebase) n&apos;est pas configuré. Ajoutez les variables d&apos;environnement:
                 </p>
                 <div className="bg-[var(--bg-tertiary)] rounded-xl p-4 text-left border border-[var(--border-subtle)]">
                   <code className="text-xs text-amber-400 font-mono">
-                    NEXT_PUBLIC_SUPABASE_URL<br />
-                    NEXT_PUBLIC_SUPABASE_ANON_KEY
+                    NEXT_PUBLIC_FIREBASE_API_KEY<br />
+                    NEXT_PUBLIC_FIREBASE_PROJECT_ID
                   </code>
                 </div>
               </motion.div>
@@ -370,11 +361,10 @@ export default function LoginPage() {
                     <button
                       key={m}
                       onClick={() => setMode(m)}
-                      className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        mode === m
-                          ? 'bg-amber-500 text-black shadow-sm'
-                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-                      }`}
+                      className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ${mode === m
+                        ? 'bg-amber-500 text-black shadow-sm'
+                        : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                        }`}
                     >
                       {m === 'login' ? 'Connexion' : 'Inscription'}
                     </button>
@@ -528,11 +518,10 @@ export default function LoginPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className={`p-4 rounded-xl text-sm ${
-                          error.includes('Vérifiez')
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                        }`}
+                        className={`p-4 rounded-xl text-sm ${error.includes('Vérifiez')
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          }`}
                       >
                         {error}
                       </motion.div>

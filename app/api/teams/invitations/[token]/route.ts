@@ -1,8 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
+import * as admin from 'firebase-admin';
 
 interface RouteParams {
   params: Promise<{ token: string }>;
+}
+
+// Fonction utilitaire pour valider un token
+async function validateTokenInfo(token: string) {
+  const invitationsQuery = await adminDb.collection('team_invitations')
+    .where('token', '==', token)
+    .limit(1)
+    .get();
+
+  if (invitationsQuery.empty) {
+    return { valid: false, error: 'Invitation introuvable ou invalide' };
+  }
+
+  const invitationDoc = invitationsQuery.docs[0];
+  const invitation = invitationDoc.data();
+
+  if (!invitation.is_active) {
+    return { valid: false, error: 'Cette invitation a été désactivée' };
+  }
+
+  if (new Date(invitation.expires_at) < new Date()) {
+    return { valid: false, error: 'Cette invitation a expiré' };
+  }
+
+  if (invitation.max_uses !== null && invitation.use_count >= invitation.max_uses) {
+    return { valid: false, error: 'Le nombre maximum d\'utilisations a été atteint' };
+  }
+
+  const teamDoc = await adminDb.collection('teams').doc(invitation.team_id).get();
+  if (!teamDoc.exists) {
+    return { valid: false, error: 'L\'équipe associée n\'existe plus' };
+  }
+  const team = teamDoc.data();
+
+  return {
+    valid: true,
+    invitationId: invitationDoc.id,
+    teamId: invitation.team_id,
+    teamName: team?.name,
+    teamCode: team?.code,
+    defaultLeaveDays: team?.default_leave_days_employee || 25
+  };
 }
 
 // GET /api/teams/invitations/[token] - Valider un token d'invitation
@@ -17,42 +60,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return NextResponse.json(
-        { error: 'Configuration serveur manquante' },
-        { status: 500 }
-      );
-    }
+    const validation = await validateTokenInfo(token);
 
-    // Valider l'invitation via la fonction SQL
-    const { data: validation, error: validationError } = await adminClient
-      .rpc('validate_invitation', { p_token: token })
-      .single();
-
-    if (validationError) {
-      console.error('Error validating invitation:', validationError);
-      return NextResponse.json(
-        { error: 'Erreur lors de la validation' },
-        { status: 500 }
-      );
-    }
-
-    if (!validation.is_valid) {
+    if (!validation.valid) {
       return NextResponse.json({
         valid: false,
-        error: validation.error_message,
+        error: validation.error,
       });
     }
 
     return NextResponse.json({
       valid: true,
       team: {
-        id: validation.team_id,
-        name: validation.team_name,
-        code: validation.team_code,
+        id: validation.teamId,
+        name: validation.teamName,
+        code: validation.teamCode,
       },
     });
 
@@ -69,35 +91,29 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { token } = await params;
-    const supabase = await createClient();
 
-    // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Vous devez être connecté pour rejoindre une équipe' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Vous devez être connecté pour rejoindre une équipe' }, { status: 401 });
     }
-
-    let adminClient;
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
     try {
-      adminClient = createAdminClient();
+      decodedToken = await adminAuth.verifyIdToken(idToken);
     } catch {
-      return NextResponse.json(
-        { error: 'Configuration serveur manquante' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
     }
+    const userId = decodedToken.uid;
+    const userEmail = decodedToken.email;
+    const userName = decodedToken.name || '';
 
     // Vérifier que l'utilisateur n'est pas déjà dans une équipe
-    const { data: existingMembership } = await adminClient
-      .from('team_members')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
+    const existingMembershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .limit(1)
+      .get();
 
-    if (existingMembership) {
+    if (!existingMembershipQuery.empty) {
       return NextResponse.json(
         { error: 'Vous êtes déjà membre d\'une équipe. Quittez votre équipe actuelle pour en rejoindre une autre.' },
         { status: 409 }
@@ -105,87 +121,74 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     // Valider l'invitation
-    const { data: validation, error: validationError } = await adminClient
-      .rpc('validate_invitation', { p_token: token })
-      .single();
+    const validation = await validateTokenInfo(token);
 
-    if (validationError || !validation.is_valid) {
+    if (!validation.valid) {
       return NextResponse.json({
-        error: validation?.error_message || 'Invitation invalide',
+        error: validation.error || 'Invitation invalide',
       }, { status: 400 });
     }
 
-    // Récupérer les infos de l'équipe pour les jours de congés par défaut
-    const { data: team } = await adminClient
-      .from('teams')
-      .select('default_leave_days_employee')
-      .eq('id', validation.team_id)
-      .single();
-
-    const defaultLeaveDays = team?.default_leave_days_employee || 25;
-
     // S'assurer que le profil existe
-    const { data: existingProfile } = await adminClient
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single();
+    const profileDoc = await adminDb.collection('profiles').doc(userId).get();
 
-    if (!existingProfile) {
-      await adminClient
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || '',
-          first_name: user.user_metadata?.first_name || '',
-          last_name: user.user_metadata?.last_name || '',
-        });
+    if (!profileDoc.exists) {
+      const parts = userName.split(' ');
+      const firstName = parts[0] || '';
+      const lastName = parts.slice(1).join(' ') || '';
+
+      await adminDb.collection('profiles').doc(userId).set({
+        email: userEmail,
+        full_name: userName,
+        first_name: firstName,
+        last_name: lastName,
+        current_team_id: null,
+      });
     }
 
     // Ajouter l'utilisateur à l'équipe
-    const { data: membership, error: memberError } = await adminClient
-      .from('team_members')
-      .insert({
-        user_id: user.id,
-        team_id: validation.team_id,
-        role: 'member',
-        employee_type: 'employee',
-        annual_leave_days: defaultLeaveDays,
-        leave_balance: defaultLeaveDays,
-        leave_balance_year: new Date().getFullYear(),
-      })
-      .select()
-      .single();
+    const membershipData = {
+      user_id: userId,
+      team_id: validation.teamId,
+      role: 'member',
+      employee_type: 'employee',
+      annual_leave_days: validation.defaultLeaveDays,
+      leave_balance: validation.defaultLeaveDays,
+      leave_balance_year: new Date().getFullYear(),
+      joined_at: new Date().toISOString()
+    };
 
-    if (memberError) {
-      console.error('Error joining team:', memberError);
-      return NextResponse.json(
-        { error: 'Erreur lors de l\'adhésion à l\'équipe' },
-        { status: 500 }
-      );
-    }
+    const membershipRef = await adminDb.collection('team_members').add(membershipData);
 
     // Incrémenter le compteur d'utilisation de l'invitation
-    await adminClient.rpc('use_invitation', { p_token: token });
+    if (validation.invitationId) {
+      await adminDb.collection('team_invitations').doc(validation.invitationId).update({
+        use_count: admin.firestore.FieldValue.increment(1) // Admin SDK approach? Fails typing if not careful but FieldValue is available
+      });
+      // Import can be an issue so let's use get and set
+      const invRef = adminDb.collection('team_invitations').doc(validation.invitationId);
+      await adminDb.runTransaction(async (t) => {
+        const doc = await t.get(invRef);
+        if (doc.exists) {
+          t.update(invRef, { use_count: (doc.data()?.use_count || 0) + 1 });
+        }
+      });
+    }
 
     // Mettre à jour le profil avec l'équipe actuelle
-    await adminClient
-      .from('profiles')
-      .update({ current_team_id: validation.team_id })
-      .eq('id', user.id);
+    await adminDb.collection('profiles').doc(userId).update({ current_team_id: validation.teamId });
 
     return NextResponse.json({
       success: true,
-      message: `Vous avez rejoint l'équipe "${validation.team_name}"`,
+      message: `Vous avez rejoint l'équipe "${validation.teamName}"`,
       team: {
-        id: validation.team_id,
-        name: validation.team_name,
-        code: validation.team_code,
+        id: validation.teamId,
+        name: validation.teamName,
+        code: validation.teamCode,
       },
       membership: {
-        id: membership.id,
-        role: membership.role,
+        id: membershipRef.id,
+        role: membershipData.role,
       },
     });
 
@@ -202,54 +205,51 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { token } = await params;
-    const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Vérifier que l'utilisateur est leader
-    const { data: membership } = await supabase
-      .from('team_members')
-      .select('team_id, role')
-      .eq('user_id', user.id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .limit(1)
+      .get();
 
-    if (!membership || membership.role !== 'leader') {
+    if (membershipQuery.empty || membershipQuery.docs[0].data().role !== 'leader') {
       return NextResponse.json(
         { error: 'Accès non autorisé' },
         { status: 403 }
       );
     }
+    const membership = membershipQuery.docs[0].data();
 
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
+    // Trouver l'invitation et la désactiver
+    const invitationsQuery = await adminDb.collection('team_invitations')
+      .where('token', '==', token)
+      .where('team_id', '==', membership.team_id)
+      .limit(1)
+      .get();
+
+    if (invitationsQuery.empty) {
       return NextResponse.json(
-        { error: 'Configuration serveur manquante' },
-        { status: 500 }
+        { error: 'Invitation introuvable' },
+        { status: 404 }
       );
     }
 
-    // Désactiver l'invitation
-    const { error: updateError } = await adminClient
-      .from('team_invitations')
-      .update({ is_active: false })
-      .eq('token', token)
-      .eq('team_id', membership.team_id);
-
-    if (updateError) {
-      console.error('Error deactivating invitation:', updateError);
-      return NextResponse.json(
-        { error: 'Erreur lors de la désactivation' },
-        { status: 500 }
-      );
-    }
+    await adminDb.collection('team_invitations').doc(invitationsQuery.docs[0].id).update({
+      is_active: false
+    });
 
     return NextResponse.json({
       success: true,

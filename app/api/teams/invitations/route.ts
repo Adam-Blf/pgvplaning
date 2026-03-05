@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 
 // Schema pour créer une invitation
 const createInvitationSchema = z.object({
@@ -30,30 +31,32 @@ function getExpirationDate(expiresIn: string): Date {
 // POST /api/teams/invitations - Créer un lien d'invitation
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-
-    // Vérifier l'authentification
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Vérifier que l'utilisateur est leader d'une équipe
-    const { data: membership, error: memberError } = await supabase
-      .from('team_members')
-      .select('team_id, role')
-      .eq('user_id', user.id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .limit(1)
+      .get();
 
-    if (memberError || !membership) {
+    if (membershipQuery.empty) {
       return NextResponse.json(
         { error: 'Vous n\'êtes membre d\'aucune équipe' },
         { status: 403 }
       );
     }
+    const membership = membershipQuery.docs[0].data();
 
     if (membership.role !== 'leader') {
       return NextResponse.json(
@@ -75,49 +78,35 @@ export async function POST(request: NextRequest) {
 
     const { expiresIn, maxUses } = validationResult.data;
 
-    // Utiliser admin client pour créer l'invitation
-    let adminClient;
-    try {
-      adminClient = createAdminClient();
-    } catch {
-      return NextResponse.json(
-        { error: 'Configuration serveur manquante' },
-        { status: 500 }
-      );
-    }
+    // Créer un token unique pour l'invitation
+    const token = uuidv4();
 
     // Créer l'invitation
-    const { data: invitation, error: inviteError } = await adminClient
-      .from('team_invitations')
-      .insert({
-        team_id: membership.team_id,
-        created_by: user.id,
-        expires_at: getExpirationDate(expiresIn).toISOString(),
-        max_uses: maxUses || null,
-      })
-      .select()
-      .single();
+    const invitationData = {
+      team_id: membership.team_id,
+      created_by: userId,
+      token,
+      expires_at: getExpirationDate(expiresIn).toISOString(),
+      max_uses: maxUses || null,
+      use_count: 0,
+      is_active: true,
+      created_at: new Date().toISOString()
+    };
 
-    if (inviteError) {
-      console.error('Error creating invitation:', inviteError);
-      return NextResponse.json(
-        { error: 'Erreur lors de la création de l\'invitation' },
-        { status: 500 }
-      );
-    }
+    const inviteRef = await adminDb.collection('team_invitations').add(invitationData);
 
     // Construire l'URL d'invitation
     const baseUrl = request.headers.get('origin') || process.env.NEXT_PUBLIC_APP_URL || '';
-    const inviteUrl = `${baseUrl}/invite/${invitation.token}`;
+    const inviteUrl = `${baseUrl}/invite/${token}`;
 
     return NextResponse.json({
       invitation: {
-        id: invitation.id,
-        token: invitation.token,
+        id: inviteRef.id,
+        token: token,
         url: inviteUrl,
-        expiresAt: invitation.expires_at,
-        maxUses: invitation.max_uses,
-        useCount: invitation.use_count,
+        expiresAt: invitationData.expires_at,
+        maxUses: invitationData.max_uses,
+        useCount: invitationData.use_count,
       },
       message: 'Lien d\'invitation créé',
     }, { status: 201 });
@@ -132,47 +121,43 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/teams/invitations - Lister les invitations de l'équipe
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Vérifier que l'utilisateur est leader
-    const { data: membership, error: memberError } = await supabase
-      .from('team_members')
-      .select('team_id, role')
-      .eq('user_id', user.id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .limit(1)
+      .get();
 
-    if (memberError || !membership || membership.role !== 'leader') {
+    if (membershipQuery.empty || membershipQuery.docs[0].data().role !== 'leader') {
       return NextResponse.json(
         { error: 'Accès non autorisé' },
         { status: 403 }
       );
     }
+    const membership = membershipQuery.docs[0].data();
 
     // Récupérer les invitations actives
-    const { data: invitations, error: invitationsError } = await supabase
-      .from('team_invitations')
-      .select('*')
-      .eq('team_id', membership.team_id)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+    const invitationsQuery = await adminDb.collection('team_invitations')
+      .where('team_id', '==', membership.team_id)
+      .where('is_active', '==', true)
+      .orderBy('created_at', 'desc')
+      .get();
 
-    if (invitationsError) {
-      console.error('Error fetching invitations:', invitationsError);
-      return NextResponse.json(
-        { error: 'Erreur lors de la récupération des invitations' },
-        { status: 500 }
-      );
-    }
+    const invitations = invitationsQuery.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     return NextResponse.json({ invitations });
 

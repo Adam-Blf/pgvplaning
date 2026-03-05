@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { Users, ArrowLeft, Copy, Check, Loader2, Calendar, Building2, Briefcase, LogOut, UserCog, User } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { auth } from '@/lib/firebase/client';
+import { signOut } from 'firebase/auth';
 
 export default function TeamCreatePage() {
   const router = useRouter();
@@ -20,9 +21,10 @@ export default function TeamCreatePage() {
   const [copied, setCopied] = useState(false);
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    if (supabase) {
-      await supabase.auth.signOut();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
     }
     router.push('/login');
   };
@@ -251,24 +253,20 @@ export default function TeamCreatePage() {
                 <button
                   type="button"
                   onClick={() => setSector('public')}
-                  className={`p-4 rounded-xl border-2 transition-all text-left ${
-                    sector === 'public'
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${sector === 'public'
                       ? 'border-blue-500/50 bg-blue-500/5'
                       : 'border-zinc-700/50 hover:border-zinc-600'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      sector === 'public' ? 'bg-blue-500/10' : 'bg-zinc-800'
-                    }`}>
-                      <Building2 className={`w-5 h-5 ${
-                        sector === 'public' ? 'text-blue-500' : 'text-zinc-500'
-                      }`} />
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${sector === 'public' ? 'bg-blue-500/10' : 'bg-zinc-800'
+                      }`}>
+                      <Building2 className={`w-5 h-5 ${sector === 'public' ? 'text-blue-500' : 'text-zinc-500'
+                        }`} />
                     </div>
                     <div>
-                      <p className={`font-medium ${
-                        sector === 'public' ? 'text-blue-400' : 'text-zinc-300'
-                      }`}>Public</p>
+                      <p className={`font-medium ${sector === 'public' ? 'text-blue-400' : 'text-zinc-300'
+                        }`}>Public</p>
                       <p className="text-xs text-zinc-600">Administrations, services</p>
                     </div>
                   </div>
@@ -277,24 +275,20 @@ export default function TeamCreatePage() {
                 <button
                   type="button"
                   onClick={() => setSector('private')}
-                  className={`p-4 rounded-xl border-2 transition-all text-left ${
-                    sector === 'private'
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${sector === 'private'
                       ? 'border-emerald-500/50 bg-emerald-500/5'
                       : 'border-zinc-700/50 hover:border-zinc-600'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      sector === 'private' ? 'bg-emerald-500/10' : 'bg-zinc-800'
-                    }`}>
-                      <Briefcase className={`w-5 h-5 ${
-                        sector === 'private' ? 'text-emerald-500' : 'text-zinc-500'
-                      }`} />
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${sector === 'private' ? 'bg-emerald-500/10' : 'bg-zinc-800'
+                      }`}>
+                      <Briefcase className={`w-5 h-5 ${sector === 'private' ? 'text-emerald-500' : 'text-zinc-500'
+                        }`} />
                     </div>
                     <div>
-                      <p className={`font-medium ${
-                        sector === 'private' ? 'text-emerald-400' : 'text-zinc-300'
-                      }`}>Privé</p>
+                      <p className={`font-medium ${sector === 'private' ? 'text-emerald-400' : 'text-zinc-300'
+                        }`}>Privé</p>
                       <p className="text-xs text-zinc-600">Entreprises</p>
                     </div>
                   </div>

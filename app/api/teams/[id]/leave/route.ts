@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 
 // POST /api/teams/[id]/leave - Leave a team
 export async function POST(
@@ -8,43 +8,51 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Get user's membership
-    const { data: membership, error: memberError } = await supabase
-      .from('team_members')
-      .select('id, role')
-      .eq('user_id', user.id)
-      .eq('team_id', id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .where('team_id', '==', id)
+      .limit(1)
+      .get();
 
-    if (memberError || !membership) {
+    if (membershipQuery.empty) {
       return NextResponse.json({ error: 'Vous n\'êtes pas membre de cette équipe' }, { status: 404 });
     }
 
+    const membershipDoc = membershipQuery.docs[0];
+    const membership = membershipDoc.data();
+
     // If user is leader, check if there are other leaders
     if (membership.role === 'leader') {
-      const { data: otherLeaders } = await supabase
-        .from('team_members')
-        .select('id')
-        .eq('team_id', id)
-        .eq('role', 'leader')
-        .neq('user_id', user.id);
+      const otherLeadersQuery = await adminDb.collection('team_members')
+        .where('team_id', '==', id)
+        .where('role', '==', 'leader')
+        .get();
 
-      if (!otherLeaders || otherLeaders.length === 0) {
+      const otherLeadersCount = otherLeadersQuery.docs.filter(d => d.data().user_id !== userId).length;
+
+      if (otherLeadersCount === 0) {
         // Check if there are other members
-        const { data: otherMembers } = await supabase
-          .from('team_members')
-          .select('id')
-          .eq('team_id', id)
-          .neq('user_id', user.id);
+        const otherMembersQuery = await adminDb.collection('team_members')
+          .where('team_id', '==', id)
+          .get();
 
-        if (otherMembers && otherMembers.length > 0) {
+        const otherMembersCount = otherMembersQuery.docs.filter(d => d.data().user_id !== userId).length;
+
+        if (otherMembersCount > 0) {
           return NextResponse.json(
             { error: 'Vous êtes le seul leader. Désignez un autre leader avant de quitter ou supprimez l\'équipe.' },
             { status: 400 }
@@ -52,33 +60,20 @@ export async function POST(
         }
 
         // User is the only member, delete the team
-        await supabase.from('teams').delete().eq('id', id);
+        await adminDb.collection('teams').doc(id).delete();
 
         // Clear profile's current team
-        await supabase
-          .from('profiles')
-          .update({ current_team_id: null })
-          .eq('id', user.id);
+        await adminDb.collection('profiles').doc(userId).update({ current_team_id: null });
 
         return NextResponse.json({ message: 'Équipe supprimée car vous étiez le seul membre' });
       }
     }
 
     // Remove user from team
-    const { error: deleteError } = await supabase
-      .from('team_members')
-      .delete()
-      .eq('id', membership.id);
-
-    if (deleteError) {
-      return NextResponse.json({ error: 'Erreur lors de la sortie de l\'équipe' }, { status: 500 });
-    }
+    await membershipDoc.ref.delete();
 
     // Clear profile's current team
-    await supabase
-      .from('profiles')
-      .update({ current_team_id: null })
-      .eq('id', user.id);
+    await adminDb.collection('profiles').doc(userId).update({ current_team_id: null });
 
     return NextResponse.json({ message: 'Vous avez quitté l\'équipe' });
 

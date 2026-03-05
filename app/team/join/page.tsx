@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { createClient } from '@/lib/supabase/client';
+import { auth } from '@/lib/firebase/client';
+import { signOut } from 'firebase/auth';
 
 export default function TeamJoinPage() {
   const router = useRouter();
@@ -17,9 +18,10 @@ export default function TeamJoinPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleLogout = async () => {
-    const supabase = createClient();
-    if (supabase) {
-      await supabase.auth.signOut();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
     }
     router.push('/login');
   };

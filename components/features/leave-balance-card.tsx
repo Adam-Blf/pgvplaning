@@ -118,7 +118,6 @@ export function LeaveBalanceCard() {
   const percentage = (leaveInfo.leaveBalance / leaveInfo.annualLeaveDays) * 100;
   const isLow = percentage <= 20;
   const isMedium = percentage > 20 && percentage <= 50;
-  const isHigh = percentage > 50;
   const isExecutive = leaveInfo.employeeType === 'executive';
 
   // Status configuration
@@ -161,19 +160,19 @@ export function LeaveBalanceCard() {
   // Type configuration
   const typeConfig = isExecutive
     ? {
-        icon: GraduationCap,
-        color: 'text-purple-400',
-        bg: 'bg-purple-500/10',
-        border: 'border-purple-500/20',
-        glow: 'bg-purple-500'
-      }
+      icon: GraduationCap,
+      color: 'text-purple-400',
+      bg: 'bg-purple-500/10',
+      border: 'border-purple-500/20',
+      glow: 'bg-purple-500'
+    }
     : {
-        icon: Briefcase,
-        color: 'text-indigo-400',
-        bg: 'bg-indigo-500/10',
-        border: 'border-indigo-500/20',
-        glow: 'bg-indigo-500'
-      };
+      icon: Briefcase,
+      color: 'text-indigo-400',
+      bg: 'bg-indigo-500/10',
+      border: 'border-indigo-500/20',
+      glow: 'bg-indigo-500'
+    };
 
   const TypeIcon = typeConfig.icon;
 

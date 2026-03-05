@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { z } from 'zod';
 
 // Schema for updating team
@@ -15,49 +15,78 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Check if user is member of this team
-    const { data: membership } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('team_id', id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .where('team_id', '==', id)
+      .limit(1)
+      .get();
 
-    if (!membership) {
+    if (membershipQuery.empty) {
       return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
     }
+    const membership = membershipQuery.docs[0].data();
 
     // Get team with members
-    const { data: team, error: teamError } = await supabase
-      .from('teams')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const teamDoc = await adminDb.collection('teams').doc(id).get();
 
-    if (teamError || !team) {
+    if (!teamDoc.exists) {
       return NextResponse.json({ error: 'Équipe non trouvée' }, { status: 404 });
     }
+    const team = { id: teamDoc.id, ...teamDoc.data() };
 
     // Get members with profiles
-    const { data: members } = await supabase
-      .from('team_members')
-      .select(`
-        *,
-        profile:profiles(id, email, first_name, last_name, full_name)
-      `)
-      .eq('team_id', id)
-      .order('joined_at', { ascending: true });
+    const membersQuery = await adminDb.collection('team_members')
+      .where('team_id', '==', id)
+      .orderBy('joined_at', 'asc')
+      .get();
+
+    interface TeamMember {
+      id: string;
+      user_id: string;
+      team_id: string;
+      role: string;
+      joined_at: string;
+      [key: string]: unknown;
+    }
+
+    const members = membersQuery.docs.map(doc => ({ id: doc.id, ...doc.data() } as TeamMember));
+
+    // Fetch profiles for members
+    const userIds = members.map(m => m.user_id);
+    const profiles: Record<string, unknown> = {};
+
+    if (userIds.length > 0) {
+      await Promise.all(userIds.map(async (uid) => {
+        const pDoc = await adminDb.collection('profiles').doc(uid).get();
+        if (pDoc.exists) {
+          profiles[uid] = { id: pDoc.id, ...pDoc.data() };
+        }
+      }));
+    }
+
+    const membersWithProfiles = members.map(m => ({
+      ...m,
+      profile: profiles[m.user_id] || null
+    }));
 
     return NextResponse.json({
       team,
-      members: members || [],
+      members: membersWithProfiles,
       currentUserRole: membership.role,
     });
 
@@ -74,22 +103,27 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Check if user is leader
-    const { data: membership } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('team_id', id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .where('team_id', '==', id)
+      .limit(1)
+      .get();
 
-    if (!membership || membership.role !== 'leader') {
+    if (membershipQuery.empty || membershipQuery.docs[0].data().role !== 'leader') {
       return NextResponse.json({ error: 'Seul le leader peut modifier l\'équipe' }, { status: 403 });
     }
 
@@ -104,18 +138,16 @@ export async function PATCH(
       );
     }
 
-    const { data: team, error: updateError } = await supabase
-      .from('teams')
-      .update(validationResult.data)
-      .eq('id', id)
-      .select()
-      .single();
+    const teamRef = adminDb.collection('teams').doc(id);
+    await teamRef.update({
+      ...validationResult.data,
+      updated_at: new Date().toISOString()
+    });
 
-    if (updateError) {
-      return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 });
-    }
+    const updatedTeamSnap = await teamRef.get();
+    const updatedTeam = { id: updatedTeamSnap.id, ...updatedTeamSnap.data() };
 
-    return NextResponse.json({ team, message: 'Équipe mise à jour' });
+    return NextResponse.json({ team: updatedTeam, message: 'Équipe mise à jour' });
 
   } catch (error) {
     console.error('Error in PATCH /api/teams/[id]:', error);
@@ -130,34 +162,43 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const supabase = await createClient();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
 
     // Check if user is leader
-    const { data: membership } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('team_id', id)
-      .single();
+    const membershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .where('team_id', '==', id)
+      .limit(1)
+      .get();
 
-    if (!membership || membership.role !== 'leader') {
+    if (membershipQuery.empty || membershipQuery.docs[0].data().role !== 'leader') {
       return NextResponse.json({ error: 'Seul le leader peut supprimer l\'équipe' }, { status: 403 });
     }
 
-    // Delete team (cascade will delete members and calendar entries)
-    const { error: deleteError } = await supabase
-      .from('teams')
-      .delete()
-      .eq('id', id);
+    // Delete team (cascade will delete members, we should do a batch delete in Firestore)
+    const batch = adminDb.batch();
 
-    if (deleteError) {
-      return NextResponse.json({ error: 'Erreur lors de la suppression' }, { status: 500 });
-    }
+    // Delete members
+    const membersQuery = await adminDb.collection('team_members').where('team_id', '==', id).get();
+    membersQuery.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    // Delete team
+    batch.delete(adminDb.collection('teams').doc(id));
+
+    await batch.commit();
 
     return NextResponse.json({ message: 'Équipe supprimée' });
 

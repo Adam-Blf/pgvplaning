@@ -13,7 +13,6 @@ import {
   Presentation,
   Palmtree,
   Cake,
-  Sparkles,
   Info,
   ChevronDown
 } from 'lucide-react';

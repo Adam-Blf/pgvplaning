@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { z } from 'zod';
 import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeaders } from '@/lib/rate-limit';
 
@@ -50,46 +50,33 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient();
-
-    // Get current user (optional check)
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
-    // Use admin client for database operations
-    let adminClient;
+    const idToken = authHeader.split('Bearer ')[1];
     try {
-      adminClient = createAdminClient();
+      await adminAuth.verifyIdToken(idToken);
     } catch {
-      return NextResponse.json(
-        { error: 'Configuration serveur manquante' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
     }
 
     // Find team by code
-    const { data: team, error: teamError } = await adminClient
-      .from('teams')
-      .select('id, name, sector')
-      .eq('code', code.toUpperCase())
-      .single();
+    const teamQuery = await adminDb.collection('teams').where('code', '==', code.toUpperCase()).limit(1).get();
 
-    if (teamError || !team) {
+    if (teamQuery.empty) {
       return NextResponse.json(
         { error: 'Code équipe invalide' },
         { status: 404 }
       );
     }
+    const team = { id: teamQuery.docs[0].id, ...teamQuery.docs[0].data() };
 
     return NextResponse.json({
       team: {
         id: team.id,
-        name: team.name,
+        name: team.name as string,
         sector: team.sector || 'public',
       },
     });
@@ -117,69 +104,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient();
-
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Non authentifié' },
-        { status: 401 }
-      );
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
-
-    // Use admin client for database operations (bypasses RLS)
-    let adminClient;
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
     try {
-      adminClient = createAdminClient();
+      decodedToken = await adminAuth.verifyIdToken(idToken);
     } catch {
-      return NextResponse.json(
-        { error: 'Configuration serveur manquante. Contactez l\'administrateur.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
     }
-
-    // Ensure user profile exists (create if not)
-    const { data: existingProfile } = await adminClient
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single();
-
-    if (!existingProfile) {
-      // Create profile if it doesn't exist (for users created before migration)
-      const { error: profileError } = await adminClient
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          full_name: user.user_metadata?.full_name || '',
-          first_name: user.user_metadata?.first_name || '',
-          last_name: user.user_metadata?.last_name || '',
-        });
-
-      if (profileError) {
-        console.error('Error creating profile:', profileError);
-        return NextResponse.json(
-          { error: 'Erreur lors de la création du profil utilisateur' },
-          { status: 500 }
-        );
-      }
-    }
-
-    // Check if user already has a team
-    const { data: existingMembership } = await adminClient
-      .from('team_members')
-      .select('id')
-      .eq('user_id', user.id)
-      .single();
-
-    if (existingMembership) {
-      return NextResponse.json(
-        { error: 'Vous êtes déjà membre d\'une équipe' },
-        { status: 409 }
-      );
-    }
+    const userId = decodedToken.uid;
+    const userEmail = decodedToken.email;
+    const userName = decodedToken.name || '';
 
     // Parse and validate request body
     const body = await request.json();
@@ -194,61 +132,72 @@ export async function POST(request: NextRequest) {
 
     const { code } = validationResult.data;
 
-    // Find team by code (includes default_leave_days)
-    const { data: team, error: teamError } = await adminClient
-      .from('teams')
-      .select('*')
-      .eq('code', code.toUpperCase())
-      .single();
+    // Check if user already has a team
+    const existingMembershipQuery = await adminDb.collection('team_members')
+      .where('user_id', '==', userId)
+      .limit(1)
+      .get();
 
-    if (teamError || !team) {
+    if (!existingMembershipQuery.empty) {
+      return NextResponse.json(
+        { error: 'Vous êtes déjà membre d\'une équipe' },
+        { status: 409 }
+      );
+    }
+
+    // Ensure user profile exists (create if not)
+    const profileDoc = await adminDb.collection('profiles').doc(userId).get();
+
+    if (!profileDoc.exists) {
+      // Extract first/last name from display name if possible
+      const parts = userName.split(' ');
+      const firstName = parts[0] || '';
+      const lastName = parts.slice(1).join(' ') || '';
+
+      await adminDb.collection('profiles').doc(userId).set({
+        email: userEmail,
+        full_name: userName,
+        first_name: firstName,
+        last_name: lastName,
+        current_team_id: null,
+      });
+    }
+
+    // Find team by code (includes default_leave_days)
+    const teamQuery = await adminDb.collection('teams')
+      .where('code', '==', code.toUpperCase())
+      .limit(1)
+      .get();
+
+    if (teamQuery.empty) {
       return NextResponse.json(
         { error: 'Code équipe invalide' },
         { status: 404 }
       );
     }
 
+    const teamDoc = teamQuery.docs[0];
+    const team = { id: teamDoc.id, ...teamDoc.data() };
+
     // Use team's default leave days (set by team creator)
     const annualLeaveDays = team.default_leave_days || 25;
 
     // Add user as member with team's default leave days
-    const { data: membership, error: memberError } = await adminClient
-      .from('team_members')
-      .insert({
-        user_id: user.id,
-        team_id: team.id,
-        role: 'member',
-        employee_type: 'employee',
-        annual_leave_days: annualLeaveDays,
-        leave_balance: annualLeaveDays,
-        leave_balance_year: new Date().getFullYear(),
-      })
-      .select()
-      .single();
+    const membershipData = {
+      user_id: userId,
+      team_id: team.id,
+      role: 'member',
+      employee_type: 'employee',
+      annual_leave_days: annualLeaveDays,
+      leave_balance: annualLeaveDays,
+      leave_balance_year: new Date().getFullYear(),
+      joined_at: new Date().toISOString()
+    };
 
-    if (memberError) {
-      console.error('Error joining team:', memberError);
-      return NextResponse.json(
-        { error: 'Erreur lors de la jonction à l\'équipe' },
-        { status: 500 }
-      );
-    }
+    const membershipRef = await adminDb.collection('team_members').add(membershipData);
 
     // Update user's profile with current team
-    const { error: profileUpdateError } = await adminClient
-      .from('profiles')
-      .update({ current_team_id: team.id })
-      .eq('id', user.id);
-
-    if (profileUpdateError) {
-      // Rollback membership if profile update fails
-      console.error('Error updating profile:', profileUpdateError);
-      await adminClient.from('team_members').delete().eq('id', membership.id);
-      return NextResponse.json(
-        { error: 'Erreur lors de la configuration du profil' },
-        { status: 500 }
-      );
-    }
+    await adminDb.collection('profiles').doc(userId).update({ current_team_id: team.id });
 
     return NextResponse.json({
       team: {
@@ -257,7 +206,7 @@ export async function POST(request: NextRequest) {
         code: team.code,
         sector: team.sector || 'public',
       },
-      membership,
+      membership: { id: membershipRef.id, ...membershipData },
       message: 'Vous avez rejoint l\'équipe avec succès',
     });
 

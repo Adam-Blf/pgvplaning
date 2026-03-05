@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { User } from '@supabase/supabase-js';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from '@/lib/firebase/client';
+import Cookies from 'js-cookie';
 
 interface AuthState {
   user: User | null;
@@ -19,53 +20,59 @@ export function useAuth(): AuthState {
 
   useEffect(() => {
     mounted.current = true;
-    const supabase = createClient();
 
-    // If Supabase is not configured, just mark as not authenticated
-    if (!supabase) {
+    if (!auth) {
       setLoading(false);
       return;
     }
 
-    // Get initial user with error handling
-    const initializeAuth = async () => {
-      try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError) {
-          console.error('Auth initialization error:', authError);
-          if (mounted.current) {
-            setError('Erreur de connexion');
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (firebaseUser) => {
+        if (firebaseUser) {
+          try {
+            const token = await firebaseUser.getIdToken();
+            Cookies.set('firebase-token', token, { expires: 7, secure: true, sameSite: 'strict' });
+          } catch (e) {
+            console.error('Error getting ID token', e);
           }
+        } else {
+          Cookies.remove('firebase-token');
         }
+
         if (mounted.current) {
-          setUser(user);
+          setUser(firebaseUser);
           setLoading(false);
+          setError(null);
         }
-      } catch (err) {
-        console.error('Unexpected auth error:', err);
+      },
+      (authError) => {
+        console.error('Auth state change error:', authError);
         if (mounted.current) {
-          setError('Erreur inattendue');
+          setError('Erreur de connexion');
           setLoading(false);
+          Cookies.remove('firebase-token');
         }
       }
-    };
+    );
 
-    initializeAuth();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted.current) {
-        setUser(session?.user ?? null);
-        setLoading(false);
-        setError(null);
+    // Refresh token periodically (every 10 minutes)
+    const tokenRefreshInterval = setInterval(async () => {
+      const currentUser = auth?.currentUser;
+      if (currentUser) {
+        try {
+          const token = await currentUser.getIdToken(true);
+          Cookies.set('firebase-token', token, { expires: 7, secure: true, sameSite: 'strict' });
+        } catch (e) {
+          console.error('Error refreshing ID token', e);
+        }
       }
-    });
+    }, 10 * 60 * 1000);
 
     return () => {
       mounted.current = false;
-      subscription?.unsubscribe();
+      unsubscribe();
+      clearInterval(tokenRefreshInterval);
     };
   }, []);
 

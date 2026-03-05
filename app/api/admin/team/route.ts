@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createAdminClient } from '@/lib/supabase/server';
+import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { z } from 'zod';
 
 const updateTeamSchema = z.object({
@@ -11,35 +11,32 @@ const updateTeamSchema = z.object({
 // PATCH /api/admin/team - Update team settings
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient();
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
-    const adminClient = createAdminClient();
+    const idToken = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(idToken);
+    } catch {
+      return NextResponse.json({ error: 'Token invalide' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
+    const userEmail = decodedToken.email;
 
     // Check if user is super admin
-    const { data: superAdmin } = await adminClient
-      .from('super_admins')
-      .select('email')
-      .eq('email', user.email)
-      .single();
-
-    const isSuperAdmin = !!superAdmin;
+    const superAdminQuery = await adminDb.collection('super_admins').where('email', '==', userEmail).limit(1).get();
+    const isSuperAdmin = !superAdminQuery.empty;
 
     // Get user's team membership
-    const { data: membership } = await adminClient
-      .from('team_members')
-      .select('team_id, role')
-      .eq('user_id', user.id)
-      .single();
-
-    if (!membership) {
+    const membershipQuery = await adminDb.collection('team_members').where('user_id', '==', userId).limit(1).get();
+    if (membershipQuery.empty) {
       return NextResponse.json({ error: 'Aucune équipe' }, { status: 404 });
     }
 
+    const membership = membershipQuery.docs[0].data();
     const isTeamAdmin = membership.role === 'admin' || membership.role === 'leader' || isSuperAdmin;
 
     if (!isTeamAdmin) {
@@ -69,31 +66,23 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update team
-    const { data: updatedTeam, error: updateError } = await adminClient
-      .from('teams')
-      .update(updates)
-      .eq('id', membership.team_id)
-      .select()
-      .single();
+    const teamRef = adminDb.collection('teams').doc(membership.team_id);
+    await teamRef.update(updates);
 
-    if (updateError) {
-      console.error('Error updating team:', updateError);
-      return NextResponse.json({ error: 'Erreur lors de la mise à jour' }, { status: 500 });
-    }
+    const updatedTeamSnap = await teamRef.get();
+    const updatedTeam = { id: updatedTeamSnap.id, ...updatedTeamSnap.data() };
 
     // If default leave days changed, update all members' leave days
     if (defaultLeaveDays !== undefined) {
-      const { error: membersUpdateError } = await adminClient
-        .from('team_members')
-        .update({
+      const teamMembersQuery = await adminDb.collection('team_members').where('team_id', '==', membership.team_id).get();
+      const batch = adminDb.batch();
+      teamMembersQuery.forEach(doc => {
+        batch.update(doc.ref, {
           annual_leave_days: defaultLeaveDays,
           leave_balance: defaultLeaveDays,
-        })
-        .eq('team_id', membership.team_id);
-
-      if (membersUpdateError) {
-        console.error('Error updating members leave days:', membersUpdateError);
-      }
+        });
+      });
+      await batch.commit();
     }
 
     return NextResponse.json({

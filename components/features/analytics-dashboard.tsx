@@ -12,7 +12,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
   BarChart,
   Bar,
 } from 'recharts';
@@ -33,7 +32,6 @@ import {
   Home,
   LogOut,
   ChevronDown,
-  Sparkles,
   Activity,
 } from 'lucide-react';
 import { useCalendarData } from '@/hooks/use-calendar-data';
@@ -301,7 +299,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 Analytics & Exports
               </h2>
               <div className="badge-amber">
-                <Sparkles className="w-3 h-3" />
                 {currentYear}
               </div>
             </div>
@@ -487,12 +484,12 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                         </linearGradient>
                         {/* Glow filters */}
                         <filter id="glowWork" x="-50%" y="-50%" width="200%" height="200%">
-                          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                          <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                         <filter id="glowRemote" x="-50%" y="-50%" width="200%" height="200%">
-                          <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                          <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
                         </filter>
                       </defs>
                       <CartesianGrid
@@ -619,10 +616,10 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                     <defs>
                       {pieData.map((entry, index) => (
                         <filter key={`glow-${index}`} id={`glowPie${index}`}>
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                           <feMerge>
-                            <feMergeNode in="coloredBlur"/>
-                            <feMergeNode in="SourceGraphic"/>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
                           </feMerge>
                         </filter>
                       ))}

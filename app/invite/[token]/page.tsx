@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -13,7 +13,8 @@ import {
   Sparkles,
   ArrowRight,
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { auth } from '@/lib/firebase/client';
+import { User, onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 
@@ -37,32 +38,8 @@ export default function InvitePage({ params }: InvitePageProps) {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const supabase = createClient();
-
-  // Vérifier l'authentification
-  useEffect(() => {
-    if (!supabase) return;
-
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsAuthenticated(!!session?.user);
-      // Re-valider l'invitation si l'utilisateur vient de se connecter
-      if (event === 'SIGNED_IN') {
-        validateInvitation();
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [supabase]);
-
   // Valider l'invitation
-  const validateInvitation = async () => {
+  const validateInvitation = useCallback(async () => {
     setState('loading');
     try {
       const response = await fetch(`/api/teams/invitations/${token}`);
@@ -81,13 +58,26 @@ export default function InvitePage({ params }: InvitePageProps) {
       setState('invalid');
       setError('Erreur lors de la validation');
     }
-  };
+  }, [token, isAuthenticated]);
+
+  // Vérifier l'authentification
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      setIsAuthenticated(!!user);
+      // Re-valider l'invitation si l'utilisateur est connecté et on a le token
+      if (user) {
+        validateInvitation();
+      }
+    });
+
+    return () => unsubscribe();
+  }, [validateInvitation]);
 
   useEffect(() => {
     if (isAuthenticated !== null) {
       validateInvitation();
     }
-  }, [token, isAuthenticated]);
+  }, [isAuthenticated, validateInvitation]);
 
   // Accepter l'invitation
   const acceptInvitation = async () => {

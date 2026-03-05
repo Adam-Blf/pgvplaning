@@ -1,8 +1,28 @@
-import { type NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const session = request.cookies.get('firebase-token')?.value;
+
+  // List of protected routes that require authentication
+  const protectedRoutes = ['/admin', '/team', '/settings', '/calendar', '/analytics', '/team-planner'];
+
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // If user is trying to access a protected route without a session, redirect to login
+  if (isProtectedRoute && !session) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // If user is accessing login page, but they already have a session, redirect to home
+  if (request.nextUrl.pathname.startsWith('/login') && session) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

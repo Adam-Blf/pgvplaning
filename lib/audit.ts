@@ -3,7 +3,7 @@
  * Logs are stored in Supabase for compliance and monitoring
  */
 
-import { createAdminClient } from '@/lib/supabase/server';
+import { adminDb } from '@/lib/firebase/server';
 
 export interface AuditLogParams {
   userId: string;
@@ -21,24 +21,16 @@ export interface AuditLogParams {
  */
 export async function createAuditLog(params: AuditLogParams): Promise<{ success: boolean; error?: unknown }> {
   try {
-    const adminClient = createAdminClient();
-
-    const { error } = await adminClient
-      .from('audit_logs')
-      .insert({
-        user_id: params.userId,
-        action: params.action,
-        resource_type: params.resourceType,
-        resource_id: params.resourceId || null,
-        metadata: params.metadata || {},
-        ip_address: params.ip || null,
-        user_agent: params.userAgent || null,
-      });
-
-    if (error) {
-      console.error('[Audit] Failed to create log:', error);
-      return { success: false, error };
-    }
+    await adminDb.collection('audit_logs').add({
+      user_id: params.userId,
+      action: params.action,
+      resource_type: params.resourceType,
+      resource_id: params.resourceId || null,
+      metadata: params.metadata || {},
+      ip_address: params.ip || null,
+      user_agent: params.userAgent || null,
+      created_at: new Date().toISOString()
+    });
 
     return { success: true };
   } catch (error) {
