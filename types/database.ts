@@ -47,6 +47,19 @@ export type CalendarStatus =
   | 'MISSION';
 
 /**
+ * Visual configuration for a calendar status
+ */
+export interface StatusConfig {
+  label: string;
+  shortLabel: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  icon: string;
+  deductsLeave: boolean;
+}
+
+/**
  * Half-day indicator for calendar entries
  * - FULL: Full day
  * - AM: Morning only (0.5 day)
