@@ -11,6 +11,11 @@ export default function TeamSetupPage() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    if (!auth) {
+      router.push('/login');
+      return;
+    }
+
     try {
       await signOut(auth);
     } catch (error) {
