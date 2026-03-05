@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { Auth, getAuth } from 'firebase/auth';
+import { Firestore, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,18 +13,14 @@ const firebaseConfig = {
 
 // Initialize Firebase only if config is available
 let app;
-let auth: any;
-let db: any;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
 
 try {
     if (firebaseConfig.apiKey) {
         app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
         auth = getAuth(app);
         db = getFirestore(app);
-    } else {
-        // Return null for build time when credentials aren't available
-        auth = null;
-        db = null;
     }
 } catch (error) {
     console.error('Firebase initialization error:', error);
