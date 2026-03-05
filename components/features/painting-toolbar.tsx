@@ -1,7 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eraser, Briefcase, Home, GraduationCap, Presentation, Palmtree, Sun, Moon, Clock, Paintbrush } from 'lucide-react';
+import { Eraser, Sun, Moon, Clock, Paintbrush } from 'lucide-react';
+import { PremiumIcons } from '@/components/ui/premium-icons';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
@@ -25,9 +26,9 @@ interface HalfDayConfig {
 }
 
 const halfDayOptions: HalfDayConfig[] = [
-  { id: 'FULL', label: 'Journee complete', shortLabel: 'Jour', icon: Clock },
+  { id: 'FULL', label: 'Journée complète', shortLabel: 'Jour', icon: Clock },
   { id: 'AM', label: 'Matin', shortLabel: 'AM', icon: Sun },
-  { id: 'PM', label: 'Apres-midi', shortLabel: 'PM', icon: Moon },
+  { id: 'PM', label: 'Après-midi', shortLabel: 'PM', icon: Moon },
 ];
 
 const tools: ToolConfig[] = [
@@ -35,43 +36,43 @@ const tools: ToolConfig[] = [
     id: 'WORK',
     label: 'Bureau',
     shortLabel: 'Bureau',
-    icon: Briefcase,
+    icon: PremiumIcons.Office,
     color: 'text-indigo-400',
     bgColor: 'bg-indigo-500',
     glowColor: 'shadow-indigo-500/40',
   },
   {
     id: 'REMOTE',
-    label: 'Teletravail',
+    label: 'Télétravail',
     shortLabel: 'Remote',
-    icon: Home,
+    icon: PremiumIcons.Home,
     color: 'text-emerald-400',
     bgColor: 'bg-emerald-500',
     glowColor: 'shadow-emerald-500/40',
   },
   {
     id: 'SCHOOL',
-    label: 'Formation recue',
+    label: 'Formation reçue',
     shortLabel: 'Formation',
-    icon: GraduationCap,
+    icon: PremiumIcons.Education,
     color: 'text-amber-400',
     bgColor: 'bg-amber-500',
     glowColor: 'shadow-amber-500/40',
   },
   {
     id: 'TRAINER',
-    label: 'Formateur/Reunion',
+    label: 'Formateur/Réunion',
     shortLabel: 'Formateur',
-    icon: Presentation,
+    icon: PremiumIcons.Meeting,
     color: 'text-violet-400',
     bgColor: 'bg-violet-500',
     glowColor: 'shadow-violet-500/40',
   },
   {
     id: 'LEAVE',
-    label: 'Conges',
-    shortLabel: 'Conges',
-    icon: Palmtree,
+    label: 'Congés',
+    shortLabel: 'Congés',
+    icon: PremiumIcons.Vacation,
     color: 'text-rose-400',
     bgColor: 'bg-rose-500',
     glowColor: 'shadow-rose-500/40',
@@ -116,7 +117,7 @@ export function PaintingToolbar({
         {/* Tool Selection */}
         <fieldset>
           <legend className="text-xs font-medium text-[var(--text-tertiary)] mb-3 uppercase tracking-wider">
-            Type de journee
+            Type de journée
           </legend>
 
           <div className="flex flex-wrap gap-2">
@@ -212,7 +213,7 @@ export function PaintingToolbar({
                 ]
               )}
               aria-pressed={currentTool === 'ERASER'}
-              title="Effacer / Reinitialiser"
+              title="Effacer / Réinitialiser"
             >
               <Eraser className="w-4 h-4" />
               <span className="hidden sm:inline">Gomme</span>
@@ -234,7 +235,7 @@ export function PaintingToolbar({
         {/* Half-day Selection */}
         <fieldset>
           <legend className="text-xs font-medium text-[var(--text-tertiary)] mb-3 uppercase tracking-wider">
-            Granularite
+            Granularité
           </legend>
 
           <div className="inline-flex p-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">

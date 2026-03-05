@@ -7,52 +7,47 @@ import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import {
   Calendar,
-  Briefcase,
-  Home,
-  GraduationCap,
-  Presentation,
-  Palmtree,
-  Cake,
   Info,
   ChevronDown
 } from 'lucide-react';
+import { PremiumIcons } from '@/components/ui/premium-icons';
 
 type Tool = DayStatus | 'ERASER';
 
-// Configuration de la legende avec le design system
+// Configuration de la légende avec le design system
 const legendItems = [
   {
-    icon: Briefcase,
+    icon: PremiumIcons.Office,
     label: 'Bureau',
     colorClass: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400',
     dotClass: 'bg-indigo-500'
   },
   {
-    icon: Home,
-    label: 'Teletravail',
+    icon: PremiumIcons.Home,
+    label: 'Télétravail',
     colorClass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
     dotClass: 'bg-emerald-500'
   },
   {
-    icon: GraduationCap,
+    icon: PremiumIcons.Education,
     label: 'Formation',
     colorClass: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
     dotClass: 'bg-amber-500'
   },
   {
-    icon: Presentation,
-    label: 'Reunion',
+    icon: PremiumIcons.Meeting,
+    label: 'Réunion',
     colorClass: 'bg-violet-500/10 border-violet-500/30 text-violet-400',
     dotClass: 'bg-violet-500'
   },
   {
-    icon: Palmtree,
-    label: 'Conges',
+    icon: PremiumIcons.Vacation,
+    label: 'Congés',
     colorClass: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
     dotClass: 'bg-rose-500'
   },
   {
-    icon: Cake,
+    icon: PremiumIcons.Cake,
     label: 'Anniversaire',
     colorClass: 'bg-pink-500/10 border-pink-500/30 text-pink-400',
     dotClass: 'bg-pink-500'
@@ -112,7 +107,7 @@ function QuickStats({ birthdays }: { birthdays: Birthday[] }) {
       <div className="flex items-center gap-2 mb-3">
         <Info className="w-4 h-4 text-[var(--text-muted)]" />
         <span className="text-sm font-medium text-[var(--text-secondary)]">
-          Apercu rapide
+          Aperçu rapide
         </span>
       </div>
 
@@ -154,7 +149,7 @@ export default function CalendarPage() {
       } catch (error) {
         console.error('Error fetching birthdays:', error);
       } finally {
-        // Simuler un delai minimum pour l'UX
+        // Simuler un délai minimum pour l'UX
         setTimeout(() => setIsLoading(false), 300);
       }
     };
@@ -220,7 +215,7 @@ export default function CalendarPage() {
                 <span className="gradient-text-amber">Calendrier</span>
               </h1>
               <p className="text-sm text-[var(--text-secondary)] max-w-md">
-                Cliquez ou glissez pour marquer vos journees.
+                Cliquez ou glissez pour marquer vos journées.
                 Utilisez la barre d&apos;outils pour changer de mode.
               </p>
             </div>
@@ -288,7 +283,7 @@ export default function CalendarPage() {
           className="w-full sm:hidden flex items-center justify-between px-4 py-3 card-interactive"
         >
           <span className="text-sm font-medium text-[var(--text-secondary)]">
-            Legende des statuts
+            Légende des statuts
           </span>
           <motion.div
             animate={{ rotate: showLegend ? 180 : 0 }}

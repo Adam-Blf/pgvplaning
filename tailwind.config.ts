@@ -58,12 +58,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Status colors standardized
+        // Status colors for Blueprint theme
         status: {
-          work: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5' }, // Indigo
-          remote: { DEFAULT: '#10b981', light: '#34d399', dark: '#059669' }, // Emerald
-          school: { DEFAULT: '#f59e0b', light: '#fbbf24', dark: '#d97706' }, // Amber
-          leave: { DEFAULT: '#f43f5e', light: '#fb7185', dark: '#e11d48' }, // Rose
+          work: { DEFAULT: '#0ea5e9', light: '#38bdf8', dark: '#0284c7' }, // Blueprint Blue
+          remote: { DEFAULT: '#22d3ee', light: '#67e8f9', dark: '#0891b2' }, // Cyan
+          school: { DEFAULT: '#38bdf8', light: '#7dd3fc', dark: '#0369a1' }, // Sky
+          leave: { DEFAULT: '#94a3b8', light: '#cbd5e1', dark: '#64748b' }, // Slate
         }
       },
       borderRadius: {

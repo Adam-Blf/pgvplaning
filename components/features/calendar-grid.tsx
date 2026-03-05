@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Cake, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PremiumIcons } from '@/components/ui/premium-icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
@@ -461,7 +462,7 @@ export function CalendarGrid({
             const config = STATUS_CONFIG[status];
             const labels: Record<string, string> = {
               WORK: 'Bureau',
-              REMOTE: 'Remote',
+              REMOTE: 'Télétravail',
               SCHOOL: 'Formation',
               TRAINER: 'Formateur',
               LEAVE: 'Congé',
@@ -491,7 +492,7 @@ function BirthdayIndicator({ names }: { names: string[] }) {
         className="relative w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30"
         title={`Anniversaire: ${names.join(', ')}`}
       >
-        <Cake className="w-3 h-3 text-white" />
+        <PremiumIcons.Cake className="w-3 h-3 text-white" />
         <motion.div
           animate={{
             scale: [1, 1.3, 1],
@@ -504,7 +505,11 @@ function BirthdayIndicator({ names }: { names: string[] }) {
           }}
           className="absolute inset-0 rounded-full bg-pink-400"
         />
-        <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-yellow-300" />
+        <div className="absolute -top-1 -right-1 w-3 h-3 text-yellow-300">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L14.5 9H22L16 14L18.5 21L12 17L5.5 21L8 14L2 9H9.5L12 2Z" />
+          </svg>
+        </div>
       </div>
     </motion.div>
   );

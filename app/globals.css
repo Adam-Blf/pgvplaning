@@ -8,99 +8,105 @@
    ============================================ */
 
 @layer base {
-  :root {
-    /* === CORE PALETTE (Crimson & Gold) === */
-    --background: 0 0% 3%;
-    --foreground: 0 0% 98%;
+  @layer base {
+    :root {
+      /* === CORE PALETTE (Master Blueprint) === */
+      --background: 217 60% 5%;
+      --foreground: 210 40% 98%;
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 98%;
+      --card: 217 60% 8%;
+      --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
+      --popover: 217 60% 10%;
+      --popover-foreground: 210 40% 98%;
 
-    /* Crimson Red as Primary */
-    --primary: 0 72% 51%;
-    --primary-foreground: 0 0% 100%;
+      /* Blueprint Blue as Primary */
+      --primary: 200 100% 50%;
+      /* Pure Cyan/Blue */
+      --primary-foreground: 210 40% 100%;
 
-    /* Gold as Secondary/Accent */
-    --secondary: 45 93% 47%;
-    --secondary-foreground: 0 0% 0%;
+      /* Blueprint Cyan/Light Blue as Secondary/Accent */
+      --secondary: 190 100% 50%;
+      --secondary-foreground: 210 40% 0%;
 
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 63%;
+      --muted: 217 30% 15%;
+      --muted-foreground: 210 20% 65%;
 
-    --accent: 45 93% 47%;
-    --accent-foreground: 0 0% 0%;
+      --accent: 190 100% 50%;
+      --accent-foreground: 210 40% 0%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 12%;
-    --input: 0 0% 12%;
-    --ring: 0 72% 51%;
+      --border: 217 40% 15%;
+      --input: 217 40% 15%;
+      --ring: 200 100% 50%;
 
-    --radius: 1rem;
+      --radius: 0.75rem;
+      /* Slightly more technical/sharp */
 
-    /* === SEMANTIC LAYERS === */
-    --bg-base: #050505;
-    --bg-elevated: #0a0a0a;
-    --bg-surface: #111111;
-    --bg-overlay: #181818;
-    --bg-hover: #1f1f1f;
+      /* === SEMANTIC LAYERS === */
+      --bg-base: #020817;
+      /* Deep Navy */
+      --bg-elevated: #040e24;
+      --bg-surface: #061430;
+      --bg-overlay: #081a3d;
+      --bg-hover: #0c2552;
 
-    /* === TEXT HIERARCHY === */
-    --text-primary: #ffffff;
-    --text-secondary: #d1d1d1;
-    --text-tertiary: #888888;
-    --text-muted: #555555;
-    --text-disabled: #333333;
+      /* === TEXT HIERARCHY === */
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-tertiary: #94a3b8;
+      --text-muted: #64748b;
+      --text-disabled: #334155;
 
-    /* === BORDERS === */
-    --border-subtle: rgba(255, 255, 255, 0.05);
-    --border-default: rgba(255, 255, 255, 0.1);
-    --border-strong: rgba(255, 255, 255, 0.15);
-    --border-focus: rgba(220, 38, 38, 0.6);
+      /* === BORDERS === */
+      --border-subtle: rgba(56, 189, 248, 0.05);
+      --border-default: rgba(56, 189, 248, 0.15);
+      --border-strong: rgba(56, 189, 248, 0.25);
+      --border-focus: rgba(56, 189, 248, 0.6);
 
-    /* === CRIMSON & GOLD SPECTRUM === */
-    --crimson-500: #dc2626;
-    --crimson-600: #b91c1c;
-    --gold-400: #fbbf24;
-    --gold-500: #f59e0b;
+      /* === BLUEPRINT SPECTRUM === */
+      --blueprint-500: #0ea5e9;
+      --blueprint-600: #0284c7;
+      --cyan-400: #22d3ee;
+      --cyan-500: #06b6d4;
 
-    /* === STATUS COLORS === */
-    --status-work: #dc2626;
-    /* Crimson for Work */
-    --status-work-glow: rgba(220, 38, 38, 0.3);
-    --status-remote: #f59e0b;
-    /* Gold for Remote */
-    --status-remote-glow: rgba(245, 158, 11, 0.3);
-    --status-school: #10b981;
-    --status-school-glow: rgba(16, 185, 129, 0.2);
-    --status-leave: #888888;
-    --status-leave-glow: rgba(136, 136, 136, 0.1);
+      /* === STATUS COLORS === */
+      --status-work: #0ea5e9;
+      /* Blueprint Blue */
+      --status-work-glow: rgba(14, 165, 233, 0.3);
+      --status-remote: #22d3ee;
+      /* Cyan */
+      --status-remote-glow: rgba(34, 211, 238, 0.3);
+      --status-school: #38bdf8;
+      /* Sky */
+      --status-school-glow: rgba(56, 189, 248, 0.2);
+      --status-leave: #94a3b8;
+      --status-leave-glow: rgba(148, 163, 184, 0.1);
 
-    /* === SHADOWS (Standardized) === */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
-    --shadow-glow-primary: 0 0 30px -5px rgba(220, 38, 38, 0.4);
-    --shadow-glow-gold: 0 0 30px -5px rgba(245, 158, 11, 0.4);
+      /* === SHADOWS (Standardized) === */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.4);
+      --shadow-glow-primary: 0 0 30px -5px rgba(14, 165, 233, 0.4);
+      --shadow-glow-gold: 0 0 30px -5px rgba(34, 211, 238, 0.4);
 
-    /* === SPACING TOKENS === */
-    --space-xs: 0.25rem;
-    --space-sm: 0.5rem;
-    --space-md: 1rem;
-    --space-lg: 1.5rem;
-    --space-xl: 2.0rem;
-    --space-2xl: 3.0rem;
-    --space-3xl: 4.0rem;
+      /* === SPACING TOKENS === */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.0rem;
+      --space-2xl: 3.0rem;
+      --space-3xl: 4.0rem;
 
-    /* === TRANSITIONS === */
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+      /* === TRANSITIONS === */
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    }
   }
 }
 
@@ -133,9 +139,16 @@
     pointer-events: none;
     z-index: -1;
     background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99, 102, 241, 0.04), transparent),
+      /* Technical Grid Wall */
+      linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px),
+      /* Major Grid */
+      linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+      /* Vignette */
+      radial-gradient(ellipse at center, transparent 0%, rgba(2, 8, 23, 0.8) 100%),
       var(--bg-base);
+    background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px, auto, auto;
   }
 
   /* === NOISE TEXTURE === */
@@ -151,13 +164,13 @@
 
   /* === SELECTION === */
   ::selection {
-    background: var(--amber-500);
+    background: var(--blueprint-500);
     color: var(--bg-base);
   }
 
   /* === FOCUS STYLES === */
   :focus-visible {
-    outline: 2px solid var(--amber-500);
+    outline: 2px solid var(--blueprint-500);
     outline-offset: 2px;
   }
 
@@ -297,15 +310,15 @@
 
   /* === GRADIENTS === */
   .gradient-amber {
-    background: linear-gradient(135deg, var(--amber-500) 0%, var(--amber-600) 100%);
+    background: linear-gradient(135deg, var(--blueprint-500) 0%, var(--blueprint-600) 100%);
   }
 
   .gradient-amber-soft {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.15) 0%, rgba(2, 132, 199, 0.1) 100%);
   }
 
   .gradient-text-amber {
-    background: linear-gradient(135deg, var(--amber-400) 0%, var(--amber-600) 100%);
+    background: linear-gradient(135deg, var(--blueprint-500) 0%, var(--cyan-400) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -319,11 +332,11 @@
 
   /* === GLOW EFFECTS === */
   .glow-amber {
-    box-shadow: var(--shadow-glow-amber);
+    box-shadow: 0 0 30px -5px rgba(14, 165, 233, 0.4);
   }
 
   .glow-amber-sm {
-    box-shadow: var(--shadow-glow-amber-sm);
+    box-shadow: 0 0 20px -5px rgba(14, 165, 233, 0.3);
   }
 
   .glow-status-work {
@@ -351,7 +364,7 @@
 
   /* === CARDS === */
   .card {
-    @apply bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-2xl;
+    @apply bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-xl;
     @apply transition-all duration-300;
   }
 
@@ -363,7 +376,7 @@
 
   .card-glow {
     @apply card;
-    @apply hover:border-amber-500/30 hover:shadow-[0_0_30px_-10px_rgba(245, 158, 11, 0.2)];
+    @apply hover:border-[var(--blueprint-500)]/30 hover:shadow-[0_0_30px_-10px_rgba(14, 165, 233, 0.2)];
   }
 
   /* === BUTTONS === */
@@ -375,9 +388,9 @@
 
   .btn-primary {
     @apply btn;
-    @apply bg-amber-500 text-black;
-    @apply hover:bg-amber-400 hover:-translate-y-0.5;
-    @apply shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30;
+    @apply bg-[var(--blueprint-500)] text-white;
+    @apply hover:bg-[var(--blueprint-600)] hover:-translate-y-0.5;
+    @apply shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30;
   }
 
   .btn-secondary {
@@ -401,7 +414,7 @@
 
   .badge-amber {
     @apply badge;
-    @apply bg-amber-500/10 text-amber-500 border-amber-500/20;
+    @apply bg-[var(--blueprint-500)]/10 text-[var(--blueprint-500)] border-[var(--blueprint-500)]/20;
   }
 
   .badge-success {
@@ -515,11 +528,11 @@
 
   0%,
   100% {
-    box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 0 20px -5px rgba(14, 165, 233, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 30px -5px rgba(14, 165, 233, 0.5);
   }
 }
 
