@@ -21,6 +21,11 @@ export default function TeamCreatePage() {
   const [copied, setCopied] = useState(false);
 
   const handleLogout = async () => {
+    if (!auth) {
+      router.push('/login');
+      return;
+    }
+
     try {
       await signOut(auth);
     } catch (error) {
@@ -254,8 +259,8 @@ export default function TeamCreatePage() {
                   type="button"
                   onClick={() => setSector('public')}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${sector === 'public'
-                      ? 'border-blue-500/50 bg-blue-500/5'
-                      : 'border-zinc-700/50 hover:border-zinc-600'
+                    ? 'border-blue-500/50 bg-blue-500/5'
+                    : 'border-zinc-700/50 hover:border-zinc-600'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -276,8 +281,8 @@ export default function TeamCreatePage() {
                   type="button"
                   onClick={() => setSector('private')}
                   className={`p-4 rounded-xl border-2 transition-all text-left ${sector === 'private'
-                      ? 'border-emerald-500/50 bg-emerald-500/5'
-                      : 'border-zinc-700/50 hover:border-zinc-600'
+                    ? 'border-emerald-500/50 bg-emerald-500/5'
+                    : 'border-zinc-700/50 hover:border-zinc-600'
                     }`}
                 >
                   <div className="flex items-center gap-3">
