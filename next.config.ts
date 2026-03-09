@@ -37,7 +37,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https:",
       "font-src 'self'",
-      "connect-src 'self' https://api-inference.huggingface.co https://generativelanguage.googleapis.com https://ttchixfuljckqtyzopqz.supabase.co wss://ttchixfuljckqtyzopqz.supabase.co",
+      "connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://securetoken.googleapis.com https://*.firebasestorage.app https://api-inference.huggingface.co https://generativelanguage.googleapis.com https://ttchixfuljckqtyzopqz.supabase.co wss://ttchixfuljckqtyzopqz.supabase.co",
       "frame-ancestors 'none'",
     ].join('; ')
   }
