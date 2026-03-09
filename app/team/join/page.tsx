@@ -3,11 +3,13 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut } from 'lucide-react';
+import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut, Hash } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function TeamJoinPage() {
   const router = useRouter();
@@ -90,8 +92,8 @@ export default function TeamJoinPage() {
       toast.success('Vous avez rejoint l\'équipe !');
 
       setTimeout(() => {
-        router.push('/calendar');
-      }, 2000);
+        router.push('/');
+      }, 2500);
 
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Code invalide');
@@ -100,173 +102,137 @@ export default function TeamJoinPage() {
     }
   };
 
-  // Success state
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-        <div
-          className="fixed inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(16, 185, 129, 0.5) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(16, 185, 129, 0.5) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px',
-          }}
-        />
-
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-8 text-center max-w-md relative"
+          className="z-10 w-full max-w-md"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', delay: 0.2 }}
-            className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 ring-1 ring-emerald-500/20"
-          >
-            <Check className="w-10 h-10 text-emerald-500" />
-          </motion.div>
+          <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl p-8 text-center ring-1 ring-emerald-500/20">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+              className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20"
+            >
+              <Check className="w-10 h-10 text-emerald-500" />
+            </motion.div>
 
-          <h1 className="text-2xl font-semibold text-zinc-100 mb-2">
-            Bienvenue !
-          </h1>
-          <p className="text-zinc-400">
-            Vous avez rejoint l&apos;équipe <strong className="text-zinc-200">{teamName}</strong>
-          </p>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Bienvenue !
+            </h1>
+            <p className="text-[var(--text-tertiary)] text-lg">
+              Vous avez rejoint l&apos;équipe <strong className="text-[var(--blueprint-500)] underline">{teamName}</strong>
+            </p>
 
-          <div className="mt-8 flex items-center justify-center gap-2 text-zinc-600">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-            <span className="text-sm font-mono">REDIRECTION EN COURS...</span>
-          </div>
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+              <span className="text-xs font-mono text-[var(--text-muted)] tracking-widest uppercase">Redirection en cours...</span>
+            </div>
+          </Card>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-zinc-950">
-      {/* Grid background */}
-      <div
-        className="fixed inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(16, 185, 129, 0.5) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16, 185, 129, 0.5) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-        }}
-      />
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)] relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute top-[-5%] right-[-5%] w-[30%] h-[30%] rounded-full bg-[var(--blueprint-500)] opacity-5 blur-[100px]" />
+      <div className="absolute bottom-[-5%] left-[-5%] w-[30%] h-[30%] rounded-full bg-[var(--cyan-500)] opacity-5 blur-[100px]" />
 
       {/* Logout button */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={handleLogout}
-        className="fixed top-4 right-4 p-2 rounded-lg bg-zinc-900/50 border border-zinc-800/50 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-all z-50"
+        className="absolute top-6 right-6 text-[var(--text-muted)] hover:text-red-400 hover:bg-red-400/10 rounded-full"
         title="Déconnexion"
       >
         <LogOut className="w-5 h-5" />
-      </button>
+      </Button>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md relative"
+        className="w-full max-w-md relative z-10"
       >
-        <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm overflow-hidden">
-          {/* Header band */}
-          <div className="px-6 py-4 bg-emerald-500/5 border-b border-emerald-500/10">
-            <div className="flex items-center justify-between">
-              <Link
-                href="/team/setup"
-                className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-emerald-500 transition-colors font-mono"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                RETOUR
-              </Link>
-              <span className="text-xs font-mono text-emerald-500/50">REJOINDRE</span>
-            </div>
+        <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+            <Link
+              href="/team/onboarding"
+              className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--blueprint-500)] transition-colors font-mono tracking-widest"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              RETOUR
+            </Link>
+            <span className="text-[10px] font-mono text-[var(--blueprint-500)]/70 tracking-widest uppercase">Mode Adhésion</span>
           </div>
 
           <div className="p-8">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20">
-                <LogIn className="w-7 h-7 text-emerald-500" />
+            <div className="flex flex-col items-center gap-4 mb-10">
+              <div className="w-16 h-16 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center border border-[var(--blueprint-500)]/20 shadow-lg shadow-blue-500/10">
+                <Hash className="w-8 h-8 text-[var(--blueprint-500)]" />
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-zinc-100">
-                  Rejoindre une équipe
-                </h1>
-                <p className="text-sm text-zinc-500 mt-0.5">
-                  Entrez le code fourni par votre équipe
-                </p>
+              <div className="text-center">
+                <CardTitle className="text-2xl font-bold text-white">
+                  Code d&apos;invitation
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Saisissez les 8 caractères pour rejoindre
+                </CardDescription>
               </div>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-8">
-              <div>
-                <label className="block text-xs font-mono text-zinc-500 mb-4 text-center">
-                  CODE D&apos;INVITATION (8 CARACTÈRES)
-                </label>
-
-                <div
-                  className="flex justify-center gap-2"
-                  onPaste={handlePaste}
-                >
-                  {code.map((char, index) => (
-                    <motion.input
-                      key={index}
-                      ref={(el) => { inputRefs.current[index] = el; }}
-                      type="text"
-                      value={char}
-                      onChange={(e) => handleInputChange(index, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(index, e)}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="w-11 h-14 text-center text-xl font-mono font-bold rounded-xl border-2 border-zinc-700/50 bg-zinc-800/50 text-emerald-500 focus:border-emerald-500/50 focus:outline-none focus:bg-emerald-500/5 transition-all"
-                      maxLength={1}
-                      autoComplete="off"
-                    />
-                  ))}
-                </div>
-
-                <p className="text-xs text-zinc-600 text-center mt-4 font-mono">
-                  CTRL+V POUR COLLER LE CODE
-                </p>
+            <form onSubmit={handleSubmit} className="space-y-10">
+              <div onPaste={handlePaste} className="flex justify-center gap-2">
+                {code.map((char, index) => (
+                  <motion.input
+                    key={index}
+                    ref={(el) => { inputRefs.current[index] = el; }}
+                    type="text"
+                    value={char}
+                    onChange={(e) => handleInputChange(index, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(index, e)}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="w-10 h-14 md:w-11 md:h-16 text-center text-2xl font-mono font-bold rounded-2xl border border-white/10 bg-white/5 text-[var(--blueprint-500)] focus:border-[var(--blueprint-500)]/50 focus:ring-4 focus:ring-[var(--blueprint-500)]/10 focus:outline-none transition-all"
+                    maxLength={1}
+                    autoComplete="off"
+                  />
+                ))}
               </div>
 
-              <button
-                type="submit"
-                disabled={loading || code.join('').length !== 8}
-                className="w-full px-4 py-4 rounded-xl bg-emerald-500 text-zinc-900 font-semibold hover:bg-emerald-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 group"
-              >
-                {loading ? (
-                  <>
+              <div className="space-y-4">
+                <Button
+                  type="submit"
+                  disabled={loading || code.join('').length !== 8}
+                  className="w-full h-14 rounded-2xl bg-[var(--blueprint-500)] text-white font-bold text-base hover:bg-[var(--blueprint-600)] shadow-lg shadow-blue-500/20 disabled:opacity-30 group"
+                >
+                  {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Vérification...
-                  </>
-                ) : (
-                  <>
-                    Rejoindre l&apos;équipe
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </button>
+                  ) : (
+                    <>
+                      Rejoindre l&apos;équipe
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </Button>
 
-              {/* Help text */}
-              <div className="p-4 rounded-xl bg-zinc-800/30 border border-zinc-700/30">
-                <p className="text-xs text-zinc-500 leading-relaxed">
-                  <strong className="text-zinc-400 block mb-1">Pas de code ?</strong>
-                  Demandez à votre responsable d&apos;équipe de vous fournir le code d&apos;invitation depuis l&apos;espace Administration.
-                </p>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                  <p className="text-[10px] text-[var(--text-muted)] text-center leading-relaxed uppercase tracking-wider font-semibold">
+                    Un code est nécessaire pour accéder au planning partagé.
+                  </p>
+                </div>
               </div>
             </form>
           </div>
-        </div>
+        </Card>
       </motion.div>
     </div>
   );

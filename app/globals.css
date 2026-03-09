@@ -71,6 +71,12 @@
     --cyan-400: #22d3ee;
     --cyan-500: #06b6d4;
 
+    /* === CRIMSON & GOLD (Accents) === */
+    --crimson-500: #e11d48;
+    --crimson-600: #be123c;
+    --gold-500: #f59e0b;
+    --gold-600: #d97706;
+
     /* === STATUS COLORS === */
     --status-work: #0ea5e9;
     --status-work-glow: rgba(14, 165, 233, 0.3);
@@ -112,6 +118,7 @@
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
   }
+
   .dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
@@ -145,15 +152,19 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
   }
+
   .theme {
     --font-sans: var(--font-sans);
   }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
@@ -322,7 +333,7 @@
   input,
   textarea,
   select {
-    @apply bg-[var(--bg-overlay)] border border-[var(--border-strong)] rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)];
+    @apply bg-[var(--bg-overlay)] border border-[var(--border-strong)] rounded-xl shadow-[inset_0_2px_4px_rgba(0, 0, 0, 0.3)];
     @apply text-[var(--text-primary)] placeholder:text-[var(--text-muted)];
     @apply transition-all duration-200;
     @apply focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20;
@@ -379,6 +390,7 @@
       linear-gradient(135deg, var(--border-strong) 0%, var(--border-subtle) 100%) border-box;
   }
 
+
   /* === GLOW EFFECTS === */
   .glow-amber {
     box-shadow: 0 0 30px -5px rgba(14, 165, 233, 0.4);
@@ -386,6 +398,10 @@
 
   .glow-amber-sm {
     box-shadow: 0 0 20px -5px rgba(14, 165, 233, 0.3);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 0 20px -5px rgba(225, 29, 72, 0.4);
   }
 
   .glow-status-work {

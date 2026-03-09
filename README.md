@@ -53,13 +53,13 @@ Application web moderne permettant de gérer les absences, congés et télétrav
 | Framework | Next.js 15.1 (App Router) |
 | Langage | TypeScript 5.7 (strict mode) |
 | Auth/DB | Firebase (Auth + Firestore) |
-| Styles | Tailwind CSS 3.4 |
-| Animations | Framer Motion 11 |
-| Validation | Zod 3.24 |
-| Tests | Jest + Playwright |
-| UI Icons | Lucide React |
-| Notifications | Sonner |
-| Charts | Recharts |
+| Data | TanStack Query v5 |
+| Styles | Tailwind CSS 3.4 + Framer Motion 11 |
+| Documents | UploadThing & React Dropzone |
+| Emails | Resend & React Email |
+| IA | Gemini (Google Generative AI) |
+| Monitoring | Sentry |
+| iCal | ics (RFC 5545) |
 
 ---
 
@@ -177,6 +177,16 @@ absencia/
 ---
 
 ## Changelog
+
+### v10.0.119 (2026-03-09)
+
+- **Versionnement dynamique** basé sur les commits (119)
+- **Intégration TanStack Query** pour la gestion d'état serveur
+- **Système d'UploadThing** pour les justificatifs PDF/Images
+- **Moteur IA Gemini** pour l'aide à la saisie et les messages
+- **Notifications Email** via Resend
+- **Nouveaux types de contrats** : Stagiaire, Alternant, CDD, Intérim
+- **Onboarding interactif** premium (React Joyride)
 
 ### v10.0.0 (2026-03-05)
 

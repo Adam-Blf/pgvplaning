@@ -12,7 +12,15 @@ export function calculateInitialLeaveBalance(
     let balance = 25; // Base légale française (5 semaines)
 
     if (employeeType === 'cadre') {
-        balance += 2; // Bonus cadre par exemple
+        balance += 2; // Bonus cadre
+    }
+
+    if (employeeType === 'stagiaire') {
+        balance = 25; // Stagiaires ont droit à 2.5j/mois si > 2 mois
+    }
+
+    if (employeeType === 'alternant') {
+        balance = 25; // Alternants ont les mêmes droits que les salariés
     }
 
     if (sector === 'public') {

@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TeamIndicator } from '@/components/features/team-indicator';
 import { ChristmasCountdown } from '@/components/features/christmas-countdown';
+import { OnboardingTutorial } from '@/components/features/onboarding-tutorial';
 import { useAuth } from '@/hooks/use-auth';
 
 interface DashboardShellProps {
@@ -87,6 +88,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <OnboardingTutorial />
       {/* Header - Floating Glassmorphic with scroll hide */}
       <AnimatePresence>
         {isNavbarVisible && (
@@ -256,9 +258,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <footer className="mt-auto border-t border-white/5 bg-background/50">
         <div className="container max-w-6xl py-8 md:py-12">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-              <Activity className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs font-medium text-muted-foreground">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group hover:border-[var(--blueprint-500)]/30 transition-all cursor-default">
+              <Activity className="w-3.5 h-3.5 text-[var(--blueprint-500)] group-hover:animate-pulse" />
+              <span className="text-xs font-medium text-muted-foreground group-hover:text-white transition-colors">
                 Absencia par Blackout Prod
               </span>
             </div>

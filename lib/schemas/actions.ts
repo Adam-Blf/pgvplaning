@@ -44,7 +44,7 @@ export const teamRoleSchema = z.enum(['leader', 'admin', 'member'], {
 /**
  * Employee type enum
  */
-export const employeeTypeSchema = z.enum(['employee', 'executive'], {
+export const employeeTypeSchema = z.enum(['cadre', 'non-cadre', 'stagiaire', 'alternant', 'cdd', 'interim'], {
   errorMap: () => ({ message: 'Type employe invalide' }),
 });
 
@@ -103,7 +103,7 @@ export type CreateTeamInput = z.infer<typeof createTeamSchema>;
  */
 export const joinTeamSchema = z.object({
   code: teamCodeSchema,
-  employee_type: employeeTypeSchema.default('employee'),
+  employee_type: employeeTypeSchema.default('non-cadre'),
   annual_leave_days: z
     .number()
     .min(0, 'Les jours de conges ne peuvent pas etre negatifs')

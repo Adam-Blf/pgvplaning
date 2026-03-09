@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
 export type UserRole = 'leader' | 'admin' | 'member';
-export type EmployeeType = 'cadre' | 'non-cadre';
+export type EmployeeType = 'cadre' | 'non-cadre' | 'stagiaire' | 'alternant' | 'cdd' | 'interim';
 export type SectorType = 'public' | 'prive';
 
 export interface UserProfile {
