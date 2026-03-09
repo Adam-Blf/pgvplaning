@@ -10,9 +10,9 @@ import { z } from 'zod';
 // =============================================================================
 
 /**
- * UUID validation schema
+ * UID validation schema (Firebase UIDs are not necessarily UUIDs)
  */
-export const uuidSchema = z.string().uuid('ID invalide');
+export const uidSchema = z.string().min(1, 'ID invalide');
 
 /**
  * Date string schema (YYYY-MM-DD format)
@@ -138,7 +138,7 @@ export type UpdateTeamInput = z.infer<typeof updateTeamSchema>;
  * Schema for leaving a team
  */
 export const leaveTeamSchema = z.object({
-  teamId: uuidSchema,
+  teamId: uidSchema,
 });
 
 export type LeaveTeamInput = z.infer<typeof leaveTeamSchema>;
@@ -152,8 +152,8 @@ export type LeaveTeamInput = z.infer<typeof leaveTeamSchema>;
  */
 export const createEntrySchema = z
   .object({
-    team_id: uuidSchema,
-    user_id: uuidSchema.optional(), // If not provided, uses current user
+    team_id: uidSchema,
+    user_id: uidSchema.optional(), // If not provided, uses current user
     date: dateStringSchema,
     end_date: dateStringSchema.optional(), // For date ranges
     status: calendarStatusSchema,
@@ -188,7 +188,7 @@ export type UpdateEntryInput = z.infer<typeof updateEntrySchema>;
  * Schema for deleting a calendar entry
  */
 export const deleteEntrySchema = z.object({
-  entryId: uuidSchema,
+  entryId: uidSchema,
 });
 
 export type DeleteEntryInput = z.infer<typeof deleteEntrySchema>;
@@ -197,9 +197,9 @@ export type DeleteEntryInput = z.infer<typeof deleteEntrySchema>;
  * Schema for getting calendar entries
  */
 export const getCalendarEntriesSchema = z.object({
-  teamId: uuidSchema,
+  teamId: uidSchema,
   month: z.date().or(z.string().transform((val) => new Date(val))),
-  userId: uuidSchema.optional(), // Filter by specific user
+  userId: uidSchema.optional(), // Filter by specific user
 });
 
 export type GetCalendarEntriesInput = z.infer<typeof getCalendarEntriesSchema>;
@@ -212,8 +212,8 @@ export type GetCalendarEntriesInput = z.infer<typeof getCalendarEntriesSchema>;
  * Schema for calculating balance
  */
 export const calculateBalanceSchema = z.object({
-  userId: uuidSchema,
-  teamId: uuidSchema,
+  userId: uidSchema,
+  teamId: uidSchema,
 });
 
 export type CalculateBalanceInput = z.infer<typeof calculateBalanceSchema>;
@@ -222,8 +222,8 @@ export type CalculateBalanceInput = z.infer<typeof calculateBalanceSchema>;
  * Schema for syncing balance
  */
 export const syncBalanceSchema = z.object({
-  userId: uuidSchema,
-  teamId: uuidSchema,
+  userId: uidSchema,
+  teamId: uidSchema,
 });
 
 export type SyncBalanceInput = z.infer<typeof syncBalanceSchema>;

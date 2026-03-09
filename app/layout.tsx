@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import { TeamProvider } from "@/contexts/team-context";
+import { AuthProvider } from "@/contexts/auth-context";
 import "./globals.css";
 
 const firaSans = Fira_Sans({
@@ -58,12 +59,14 @@ export default function RootLayout({
         >
           Aller au contenu principal
         </a>
-        <TeamProvider>
-          <DashboardShell>
-            {children}
-          </DashboardShell>
-          <OnboardingTutorial />
-        </TeamProvider>
+        <AuthProvider>
+          <TeamProvider>
+            <DashboardShell>
+              {children}
+            </DashboardShell>
+            <OnboardingTutorial />
+          </TeamProvider>
+        </AuthProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{
