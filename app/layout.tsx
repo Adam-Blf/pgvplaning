@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
-import { Fira_Sans, Fira_Code } from "next/font/google";
+import { Fira_Sans, Fira_Code, Geist } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import { TeamProvider } from "@/contexts/team-context";
 import { AuthProvider } from "@/contexts/auth-context";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const firaSans = Fira_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const firaCode = Fira_Code({
   variable: "--font-mono",
@@ -44,13 +41,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#0c1222" />
       </head>
       <body
-        className={`${firaSans.variable} ${firaCode.variable} antialiased font-sans`}
+        className={`${geist.variable} ${firaCode.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
         <a

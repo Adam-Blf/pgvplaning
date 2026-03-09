@@ -11,7 +11,7 @@ export function calculateInitialLeaveBalance(
     // Logique métier de base
     let balance = 25; // Base légale française (5 semaines)
 
-    if (employeeType === 'executive') {
+    if (employeeType === 'cadre') {
         balance += 2; // Bonus cadre par exemple
     }
 
