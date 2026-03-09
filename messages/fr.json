@@ -1,0 +1,34 @@
+{
+    "Common": {
+        "title": "Absencia",
+        "description": "Gestion intelligente des absences",
+        "loading": "Chargement...",
+        "error": "Une erreur est survenue",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "logout": "Déconnexion"
+    },
+    "Auth": {
+        "login": "Connexion",
+        "register": "Inscription",
+        "email": "Adresse Email",
+        "password": "Mot de passe",
+        "noAccount": "Pas encore de compte ?",
+        "hasAccount": "Déjà un compte ?",
+        "welcome": "Bon retour parmi nous !",
+        "createAccount": "Créer mon compte"
+    },
+    "Dashboard": {
+        "welcome": "Bonjour, {name}",
+        "leaveBalance": "Solde de congés",
+        "pendingRequests": "Demandes en attente",
+        "teamCalendar": "Calendrier d'équipe",
+        "quickStats": "Statistiques rapides"
+    },
+    "Guide": {
+        "title": "Guide Absencia",
+        "subtitle": "Apprenez à maîtriser toutes les fonctionnalités."
+    }
+}

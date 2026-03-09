@@ -13,54 +13,56 @@ import {
   ChevronRight,
   CalendarDays,
 } from 'lucide-react';
-import Link from 'next/link';
-
-const features = [
-  {
-    icon: Calendar,
-    title: 'Calendrier Intelligent',
-    description: 'Visualisez et planifiez les absences en un coup d\'oeil',
-    gradient: 'from-indigo-500 to-violet-600',
-    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]',
-    href: '/calendar',
-  },
-  {
-    icon: Users,
-    title: 'Gestion d\'Équipe',
-    description: 'Coordonnez votre équipe avec des rôles et permissions',
-    gradient: 'from-emerald-500 to-teal-600',
-    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]',
-    href: '/team-planner',
-  },
-  {
-    icon: FileDown,
-    title: 'Export ICS',
-    description: 'Compatible Google Calendar, Outlook et Apple',
-    gradient: 'from-amber-500 to-orange-600',
-    glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(245,158,11,0.4)]',
-    href: '/exports',
-  },
-];
-
-const stats = [
-  { value: '2min', label: 'Setup', icon: Clock, color: 'text-amber-500' },
-  { value: '100%', label: 'Sécurisé', icon: Shield, color: 'text-emerald-500' },
-  { value: 'ICS', label: 'Export', icon: Zap, color: 'text-violet-500' },
-];
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/routing';
 
 export default function HomePage() {
+  const t = useTranslations('Common');
+  const tAuth = useTranslations('Auth');
+  const tDash = useTranslations('Dashboard');
+
+  const features = [
+    {
+      icon: Calendar,
+      title: tDash('teamCalendar'),
+      description: t('description'),
+      gradient: 'from-indigo-500 to-violet-600',
+      glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]',
+      href: '/calendar',
+    },
+    {
+      icon: Users,
+      title: 'Gestion d\'Équipe',
+      description: 'Coordonnez votre équipe avec des rôles et permissions',
+      gradient: 'from-emerald-500 to-teal-600',
+      glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(16,185,129,0.4)]',
+      href: '/team-planner',
+    },
+    {
+      icon: FileDown,
+      title: 'Export ICS',
+      description: 'Compatible Google Calendar, Outlook et Apple',
+      gradient: 'from-amber-500 to-orange-600',
+      glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(245,158,11,0.4)]',
+      href: '/exports',
+    },
+  ];
+
+  const stats = [
+    { value: '2min', label: 'Setup', icon: Clock, color: 'text-amber-500' },
+    { value: '100%', label: 'Sécurisé', icon: Shield, color: 'text-emerald-500' },
+    { value: 'ICS', label: 'Export', icon: Zap, color: 'text-violet-500' },
+  ];
+
   return (
     <div className="min-h-[calc(100vh-8rem)] flex flex-col">
-      {/* Hero Section */}
       <section className="relative py-16 md:py-24">
-        {/* Decorative Orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-500/[0.07] rounded-full blur-[100px] -translate-y-1/2" />
           <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-indigo-500/[0.05] rounded-full blur-[80px] translate-y-1/2" />
         </div>
 
         <div className="relative">
-          {/* Eyebrow Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,7 +82,6 @@ export default function HomePage() {
             <div className="h-px flex-1 bg-gradient-to-r from-amber-500/30 to-transparent max-w-24" />
           </motion.div>
 
-          {/* Main Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -96,18 +97,16 @@ export default function HomePage() {
             </h1>
           </motion.div>
 
-          {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed"
           >
-            Organisez congés, présences et télétravail de votre équipe.
+            {t('description')}
             <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,7 +128,6 @@ export default function HomePage() {
             </Link>
           </motion.div>
 
-          {/* Quick Stats - Inline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -154,7 +152,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features Grid */}
       <section className="py-12">
         <motion.div
           initial={{ opacity: 0 }}
@@ -171,20 +168,15 @@ export default function HomePage() {
               >
                 <Link href={feature.href} className="block group">
                   <div className={`card-interactive p-6 h-full ${feature.glow}`}>
-                    {/* Icon */}
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg transition-transform group-hover:scale-105`}>
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-
-                    {/* Content */}
                     <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 group-hover:text-amber-500 transition-colors">
                       {feature.title}
                     </h3>
                     <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
                       {feature.description}
                     </p>
-
-                    {/* Arrow indicator */}
                     <div className="mt-4 flex items-center gap-2 text-[var(--text-muted)] group-hover:text-amber-500 transition-colors">
                       <span className="text-sm font-medium">Explorer</span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -197,7 +189,6 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      {/* Bottom CTA */}
       <section className="py-12 mt-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -206,7 +197,6 @@ export default function HomePage() {
           className="relative"
         >
           <div className="card p-8 md:p-12 overflow-hidden">
-            {/* Background glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
             <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 

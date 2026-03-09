@@ -1,52 +1,48 @@
-/**
- * Middleware Next.js - Protection des routes
- * 
- * Ce middleware intercepte chaque requête entrante pour :
- * - Protéger les routes nécessitant une authentification
- * - Rediriger les utilisateurs non connectés vers /login
- * - Rediriger les utilisateurs connectés hors de /login
- */
-
 import { NextResponse, type NextRequest } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
+
+const intlMiddleware = createMiddleware(routing);
 
 export async function middleware(request: NextRequest) {
-  // Récupérer le token de session Firebase depuis les cookies
+  // 1. Exécuter le middleware d'internationalisation
+  const response = intlMiddleware(request);
+
+  // 2. Récupérer le token de session Firebase depuis les cookies
   const session = request.cookies.get('firebase-token')?.value;
 
-  // Liste des routes protégées nécessitant une authentification
+  // Liste des routes protégées (sans le préfixe de locale pour la vérification simple)
   const protectedRoutes = ['/admin', '/team', '/settings', '/calendar', '/analytics', '/team-planner'];
+
+  // Extraire le pathname sans la locale
+  const pathname = request.nextUrl.pathname;
+  const pathnameWithoutLocale = pathname.replace(/^\/(fr|en)/, '') || '/';
 
   // Vérifier si la route actuelle est protégée
   const isProtectedRoute = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
+    pathnameWithoutLocale.startsWith(route)
   );
 
   // Si l'utilisateur tente d'accéder à une route protégée sans session, rediriger vers /login
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
+    // On conserve la locale pour la redirection
+    const locale = pathname.split('/')[1] || 'fr';
+    const loginUrl = new URL(`/${locale}/login`, request.url);
+    loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Si l'utilisateur est déjà connecté et accède à /login, rediriger vers l'accueil
-  if (request.nextUrl.pathname.startsWith('/login') && session) {
-    return NextResponse.redirect(new URL('/', request.url));
+  // Si l'utilisateur est déjà connecté et accède à /login, rediriger vers l'accueil (avec locale)
+  if (pathnameWithoutLocale.startsWith('/login') && session) {
+    const locale = pathname.split('/')[1] || 'fr';
+    return NextResponse.redirect(new URL(`/${locale}/`, request.url));
   }
 
-  // Laisser passer la requête normalement
-  return NextResponse.next();
+  // Retourner la réponse du middleware intl (qui contient les headers de locale)
+  return response;
 }
 
-// Configuration du matcher - Exclure les fichiers statiques et assets
 export const config = {
-  matcher: [
-    /*
-     * Intercepter toutes les requêtes SAUF celles commençant par :
-     * - _next/static (fichiers statiques Next.js)
-     * - _next/image (optimisation d'images)
-     * - favicon.ico (icône du site)
-     * - Fichiers du dossier public (svg, png, jpg, etc.)
-     */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
-  ],
+  // Matcher mis à jour pour inclure les locales
+  matcher: ['/', '/(fr|en)/:path*', '/((?!api|_next|_vercel|.*\\..*).*)'],
 };

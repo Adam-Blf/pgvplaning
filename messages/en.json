@@ -1,0 +1,34 @@
+{
+    "Common": {
+        "title": "Absencia",
+        "description": "Smart absence management",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "logout": "Logout"
+    },
+    "Auth": {
+        "login": "Login",
+        "register": "Register",
+        "email": "Email Address",
+        "password": "Password",
+        "noAccount": "Don't have an account?",
+        "hasAccount": "Already have an account?",
+        "welcome": "Welcome back!",
+        "createAccount": "Create my account"
+    },
+    "Dashboard": {
+        "welcome": "Hello, {name}",
+        "leaveBalance": "Leave Balance",
+        "pendingRequests": "Pending Requests",
+        "teamCalendar": "Team Calendar",
+        "quickStats": "Quick Stats"
+    },
+    "Guide": {
+        "title": "Absencia Guide",
+        "subtitle": "Learn how to master all features."
+    }
+}
