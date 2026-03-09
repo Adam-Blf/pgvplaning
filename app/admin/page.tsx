@@ -66,6 +66,49 @@ export default function AdminDashboard() {
   const [defaultLeaveDays, setDefaultLeaveDays] = useState(25);
   const [savingSettings, setSavingSettings] = useState(false);
 
+  const [editingLeaveMember, setEditingLeaveMember] = useState<Member | null>(null);
+  const [editAnnualLeaves, setEditAnnualLeaves] = useState(0);
+  const [editLeaveBalance, setEditLeaveBalance] = useState(0);
+  const [savingLeaves, setSavingLeaves] = useState(false);
+
+  const openLeaveEditor = (member: Member) => {
+    setEditingLeaveMember(member);
+    setEditAnnualLeaves(member.annual_leave_days);
+    setEditLeaveBalance(member.leave_balance);
+  };
+
+  const handleSaveLeaves = async () => {
+    if (!editingLeaveMember) return;
+    setSavingLeaves(true);
+
+    try {
+      const response = await fetch('/api/admin/members', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: editingLeaveMember.id,
+          action: 'update-leaves',
+          annualLeaves: editAnnualLeaves,
+          leaveBalance: editLeaveBalance
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erreur lors de la sauvegarde');
+      }
+
+      toast.success('Soldes de congés mis à jour');
+      await fetchData();
+      setEditingLeaveMember(null);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Erreur');
+    } finally {
+      setSavingLeaves(false);
+    }
+  };
+
   const fetchData = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/members');
@@ -529,7 +572,18 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                               <p className="text-[10px] font-mono text-slate-600 uppercase">Solde Congés</p>
-                              <p className="text-xs font-mono font-bold text-white">{member.leave_balance} / {member.annual_leave_days}j</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-mono font-bold text-white">{member.leave_balance} / {member.annual_leave_days}j</p>
+                                {currentUser?.isTeamAdmin && (
+                                  <button
+                                    onClick={() => openLeaveEditor(member)}
+                                    className="p-1 rounded-md bg-blueprint-500/10 hover:bg-blueprint-500/20 text-blueprint-400 transition-colors"
+                                    title="Modifier le solde"
+                                  >
+                                    <AnimatedBlueprintIcon name="Settings" className="w-3 h-3" animateOnMount={false} />
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="w-px h-8 bg-blueprint-500/5" />
@@ -636,6 +690,85 @@ export default function AdminDashboard() {
             </div>
           </div>
         </motion.div>
+
+        {/* Modal Edition Congés */}
+        <AnimatePresence>
+          {editingLeaveMember && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+              onClick={() => setEditingLeaveMember(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-md bg-[var(--bg-elevated)] border border-blueprint-500/20 rounded-2xl shadow-2xl overflow-hidden"
+              >
+                <div className="p-6 border-b border-blueprint-500/10">
+                  <h3 className="text-lg font-bold text-white flex items-center gap-3">
+                    <AnimatedBlueprintIcon name="Vacation" className="w-5 h-5 text-blueprint-500" />
+                    Édition des Congés
+                  </h3>
+                  <p className="text-sm font-mono text-slate-400 mt-1">
+                    Cible : {getMemberName(editingLeaveMember)}
+                  </p>
+                </div>
+
+                <div className="p-6 space-y-5">
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-mono font-bold text-blueprint-500/60 tracking-widest uppercase">
+                      Total Annuel (Jours)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={editAnnualLeaves}
+                      onChange={(e) => setEditAnnualLeaves(Number(e.target.value) || 0)}
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-blueprint-500/20 text-white font-mono focus:border-blueprint-500 focus:ring-4 focus:ring-blueprint-500/5 outline-none transition-all"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-mono font-bold text-blueprint-500/60 tracking-widest uppercase">
+                      Solde Restant (Jours)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="-50"
+                      max={editAnnualLeaves}
+                      value={editLeaveBalance}
+                      onChange={(e) => setEditLeaveBalance(Number(e.target.value) || 0)}
+                      className="w-full px-4 py-3 rounded-xl bg-[var(--bg-base)] border border-blueprint-500/20 text-white font-mono focus:border-blueprint-500 focus:ring-4 focus:ring-blueprint-500/5 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-blueprint-500/10 flex gap-3">
+                  <button
+                    onClick={() => setEditingLeaveMember(null)}
+                    className="flex-1 px-4 py-3 rounded-xl bg-slate-500/10 text-slate-400 font-bold hover:bg-slate-500/20 transition-all text-sm"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleSaveLeaves}
+                    disabled={savingLeaves}
+                    className="flex-1 px-4 py-3 rounded-xl bg-blueprint-500 text-white font-bold hover:bg-blueprint-600 transition-all glow-amber-sm disabled:opacity-50 text-sm flex items-center justify-center gap-2"
+                  >
+                    {savingLeaves ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Confirmer
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

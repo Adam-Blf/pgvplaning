@@ -144,7 +144,9 @@ export async function PATCH(request: NextRequest) {
     const { z } = await import('zod');
     const patchSchema = z.object({
       memberId: z.string().min(1, 'memberId requis'),
-      action: z.enum(['promote', 'demote', 'remove'], { errorMap: () => ({ message: 'Action non reconnue' }) }),
+      action: z.enum(['promote', 'demote', 'remove', 'update-leaves'], { errorMap: () => ({ message: 'Action non reconnue' }) }),
+      annualLeaves: z.number().optional(),
+      leaveBalance: z.number().optional()
     });
     const parsed = patchSchema.safeParse(body);
     if (!parsed.success) {
@@ -175,6 +177,16 @@ export async function PATCH(request: NextRequest) {
         await targetMemberDoc.ref.update({ role: 'admin' });
 
         return NextResponse.json({ success: true, message: 'Membre promu admin' });
+
+      case 'update-leaves':
+        if (typeof parsed.data.annualLeaves !== 'number' || typeof parsed.data.leaveBalance !== 'number') {
+          return NextResponse.json({ error: 'Données de congés manquantes ou invalides' }, { status: 400 });
+        }
+        await targetMemberDoc.ref.update({
+          annual_leave_days: parsed.data.annualLeaves,
+          leave_balance: parsed.data.leaveBalance
+        });
+        return NextResponse.json({ success: true, message: 'Congés mis à jour' });
 
       case 'demote':
         // Only leader or super admin can demote
