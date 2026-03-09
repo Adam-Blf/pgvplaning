@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, MessageSquare, User, Send, Loader2, CheckCircle, MapPin, Phone, Clock } from 'lucide-react';
+import { Mail, MessageSquare, User, Send, Loader2, CheckCircle, MapPin, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ContactPage() {
@@ -93,21 +93,6 @@ export default function ContactPage() {
             >
               contact@blackoutprod.fr
             </a>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-                <Phone className="w-5 h-5 text-[var(--accent)]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[var(--text-primary)]">Téléphone</h3>
-                <p className="text-sm text-[var(--text-muted)]">Ligne directe</p>
-              </div>
-            </div>
-            <p className="text-[var(--text-secondary)] text-sm">
-              Sur rendez-vous uniquement
-            </p>
           </div>
 
           <div className="card">

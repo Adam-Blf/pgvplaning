@@ -10,7 +10,6 @@ import {
   Loader2,
   AlertTriangle,
   UserIcon,
-  Phone,
   Cake,
   ArrowRight,
   Sparkles,
@@ -140,10 +139,6 @@ function getAuthErrorMessage(error: unknown): string {
     return 'Cette adresse email est déjà utilisée. Essayez de vous connecter ou utilisez une autre adresse.';
   }
 
-  if (message.includes('phone') && (message.includes('already') || message.includes('duplicate'))) {
-    return 'Ce numéro de téléphone est déjà associé à un compte.';
-  }
-
   if (message.includes('auth/invalid-credential') || message.includes('auth/user-not-found') || message.includes('auth/wrong-password')) {
     return 'Email ou mot de passe incorrect.';
   }
@@ -164,8 +159,12 @@ function getAuthErrorMessage(error: unknown): string {
     return 'Veuillez confirmer votre email avant de vous connecter.';
   }
 
-  if (message.includes('network') || message.includes('fetch')) {
-    return 'Erreur de connexion. Vérifiez votre connexion internet.';
+  if (message.includes('network-request-failed') || message.includes('network') || message.includes('fetch')) {
+    return `Erreur de connexion. Vérifiez que l'API Key est valide pour ce domaine. (${err?.code || 'Erreur réseau'})`;
+  }
+
+  if (message.includes('invalid-api-key') || message.includes('api key not valid')) {
+    return "La clé API Firebase est invalide ou non reconnue.";
   }
 
   return err.message || 'Une erreur est survenue. Veuillez réessayer.';
@@ -183,7 +182,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -222,14 +220,16 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err) {
+      console.error("[AUTH ERROR OVERVIEW]", err);
       const errorObj = err instanceof Error ? err : { message: String(err) };
+      console.error("[AUTH ERROR DETAILS]", errorObj.message);
       setError(getAuthErrorMessage(errorObj));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const inputClasses = "w-full pl-11 pr-4 py-3.5 bg-[var(--bg-tertiary)] border border-[var(--border-default)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-disabled)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all duration-200";
+  const inputClasses = "w-full pl-11 pr-4 py-3.5 bg-[var(--bg-overlay)] border border-[var(--border-strong)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all duration-200 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]";
   const labelClasses = "block text-sm font-medium text-[var(--text-secondary)] mb-2";
   const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]";
 
@@ -414,34 +414,18 @@ export default function LoginPage() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label htmlFor="phone" className={labelClasses}>Téléphone</label>
-                            <div className="relative">
-                              <Phone className={iconClasses} />
-                              <input
-                                id="phone"
-                                type="tel"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                className={inputClasses}
-                                placeholder="06 12 34 56 78"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <label htmlFor="birthDate" className={labelClasses}>Date de naissance</label>
-                            <div className="relative">
-                              <Cake className={iconClasses} />
-                              <input
-                                id="birthDate"
-                                type="date"
-                                value={birthDate}
-                                onChange={(e) => setBirthDate(e.target.value)}
-                                className={`${inputClasses} [color-scheme:dark]`}
-                                max={new Date().toISOString().split('T')[0]}
-                              />
-                            </div>
+                        <div>
+                          <label htmlFor="birthDate" className={labelClasses}>Date de naissance</label>
+                          <div className="relative">
+                            <Cake className={iconClasses} />
+                            <input
+                              id="birthDate"
+                              type="date"
+                              value={birthDate}
+                              onChange={(e) => setBirthDate(e.target.value)}
+                              className={`${inputClasses} [color-scheme:dark]`}
+                              max={new Date().toISOString().split('T')[0]}
+                            />
                           </div>
                         </div>
                       </motion.div>
