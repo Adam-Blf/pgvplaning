@@ -30,5 +30,23 @@
     "Guide": {
         "title": "Absencia Guide",
         "subtitle": "Learn how to master all features."
+    },
+    "Calendar": {
+        "title": "My Calendar",
+        "subtitle": "Click or drag to mark your days. Use the toolbar to change mode.",
+        "quickStats": "Quick Overview",
+        "upcomingBirthdays": "{count} birthday{count, plural, =1 {} other {s}} this month",
+        "noBirthdays": "No birthdays soon",
+        "tip": "Tip of the day",
+        "tipText": "Hold click and drag to paint multiple days at once. Use the eraser to quickly clear selections."
+    },
+    "Legend": {
+        "title": "Status Legend",
+        "office": "Office",
+        "home": "Remote",
+        "education": "Training",
+        "meeting": "Meeting",
+        "vacation": "Leave",
+        "birthday": "Birthday"
     }
 }

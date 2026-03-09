@@ -30,5 +30,23 @@
     "Guide": {
         "title": "Guide Absencia",
         "subtitle": "Apprenez à maîtriser toutes les fonctionnalités."
+    },
+    "Calendar": {
+        "title": "Mon Calendrier",
+        "subtitle": "Cliquez ou glissez pour marquer vos journées. Utilisez la barre d'outils pour changer de mode.",
+        "quickStats": "Aperçu rapide",
+        "upcomingBirthdays": "{count} anniversaire{count, plural, =1 {} other {s}} ce mois",
+        "noBirthdays": "Aucun anniversaire proche",
+        "tip": "Astuce du jour",
+        "tipText": "Maintenez le clic et glissez pour peindre plusieurs jours d'un coup. Utilisez la gomme pour effacer rapidement vos sélections."
+    },
+    "Legend": {
+        "title": "Légende des statuts",
+        "office": "Bureau",
+        "home": "Télétravail",
+        "education": "Formation",
+        "meeting": "Réunion",
+        "vacation": "Congés",
+        "birthday": "Anniversaire"
     }
 }
