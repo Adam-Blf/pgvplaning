@@ -6,11 +6,9 @@ import { CalendarGrid, Birthday } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import {
-  Calendar,
   Info,
   ChevronDown
 } from 'lucide-react';
-import { PremiumIcons } from '@/components/ui/premium-icons';
 import { AnimatedBlueprintIcon } from '@/components/ui/animated-blueprint-icon';
 
 type Tool = DayStatus | 'ERASER';

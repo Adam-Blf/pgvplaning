@@ -9,7 +9,6 @@ import {
   Save,
   Loader2,
   AlertTriangle,
-  CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -426,9 +425,9 @@ export default function AdminDashboard() {
             {/* Stats */}
             <div className="mt-8 grid grid-cols-1 gap-4">
               {[
-                { label: 'OPÉRATEURS ACTIFS', value: members.length, color: 'text-white', icon: 'Team' },
-                { label: 'ADMINISTRATEURS', value: members.filter(m => m.role === 'admin' || m.role === 'leader').length, color: 'text-cyan-400', icon: 'Security' },
-                { label: 'RATIO CONGÉS', value: Math.round(members.reduce((acc, m) => acc + m.leave_balance, 0) / (members.length || 1)), color: 'text-slate-400', icon: 'Vacation' },
+                { label: 'OPÉRATEURS ACTIFS', value: members.length, color: 'text-white', icon: 'Team' as const },
+                { label: 'ADMINISTRATEURS', value: members.filter(m => m.role === 'admin' || m.role === 'leader').length, color: 'text-cyan-400', icon: 'Security' as const },
+                { label: 'RATIO CONGÉS', value: Math.round(members.reduce((acc, m) => acc + m.leave_balance, 0) / (members.length || 1)), color: 'text-slate-400', icon: 'Vacation' as const },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -439,7 +438,7 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-blueprint-500/5 border border-blueprint-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <AnimatedBlueprintIcon name={stat.icon as any} className="w-5 h-5 text-blueprint-500" />
+                      <AnimatedBlueprintIcon name={stat.icon} className="w-5 h-5 text-blueprint-500" />
                     </div>
                     <div>
                       <p className="text-[10px] font-mono font-bold text-blueprint-500/40 tracking-widest uppercase">{stat.label}</p>

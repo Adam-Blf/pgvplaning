@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fira_Sans, Fira_Code, JetBrains_Mono } from "next/font/google";
+import { Fira_Sans, Fira_Code } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";

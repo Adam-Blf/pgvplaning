@@ -12,7 +12,6 @@ interface IconProps {
 export const PremiumIcons = {
     // Bureau / Work (Icons8 Mallette)
     Office: ({ className }: IconProps) => {
-        const id = useId().replace(/[:]/g, '');
         return (
             <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={cn("w-6 h-6", className)}>
                 <path fill="var(--blueprint-500)" fillOpacity="0.1" d="M50,21c-3.749,0-12.181,0-10.861,9h3.756l0.266-1.048c0.497-1.959,2.139-3.425,4.166-3.734 C48.161,25.091,49.081,25,50,25s1.839,0.091,2.674,0.218c2.026,0.309,3.668,1.774,4.166,3.734L57.105,30h3.756 C62.181,21,53.749,21,50,21z" />

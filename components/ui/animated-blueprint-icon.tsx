@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import anime from 'animejs';
-// @ts-ignore
+import anime from 'animejs/lib/anime.es.js';
 import { cn } from '@/lib/utils';
 import { PremiumIcons } from './premium-icons';
 
@@ -31,7 +30,7 @@ export const AnimatedBlueprintIcon = ({
     size = 'md',
 }: AnimatedBlueprintIconProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const animationRef = useRef<any>(null);
+    const animationRef = useRef<unknown>(null);
 
     const runAnimation = () => {
         if (!containerRef.current) return;
@@ -45,13 +44,13 @@ export const AnimatedBlueprintIcon = ({
             strokeDashoffset: [anime.setDashoffset, 0],
             easing: 'easeInOutSine',
             duration: 1200,
-            delay: (el: any, i: number) => i * 150,
+            delay: (el: Element, i: number) => i * 150,
             direction: 'alternate',
             loop: false,
             autoplay: true,
-            begin: (anim: any) => {
+            begin: () => {
                 // Ensure paths have strokes for the line drawing effect
-                paths.forEach((path: any) => {
+                paths.forEach((path: Element) => {
                     if (!path.getAttribute('stroke')) {
                         path.setAttribute('stroke', 'currentColor');
                         path.setAttribute('stroke-width', '1');
