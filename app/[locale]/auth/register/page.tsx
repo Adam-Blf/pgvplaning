@@ -44,37 +44,15 @@ export default function RegisterPage() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // 2. Update profile name
-            await updateProfile(user, { displayName });
-
-            // 3. Create minimal profile in Firestore.
-            // Contract type and sector will be set by the team leader later.
-            const profileData: UserProfile = {
-                id: user.uid,
-                email: user.email!,
-                displayName,
-                role: 'member',
-                // Defaults — the team leader will update these
-                employeeType: 'cdi',
-                workTimeCategory: 'temps-plein',
-                workTimePercentage: 100,
-                sector: 'prive',
-                leaveBalance: {
-                    total: 25, // Standard 25j CP, will be recalculated by team leader
-                    used: 0,
-                    remaining: 25,
-                },
-                createdAt: Timestamp.now(),
-                updatedAt: Timestamp.now(),
-            };
-
-            await setDoc(doc(db!, 'profiles', user.uid), profileData);
-
-            // 4. Send verification email — ensures the address really belongs to the user
-            await sendEmailVerification(user, {
-                url: `${window.location.origin}/fr/auth/login?verified=1`,
-                handleCodeInApp: false,
-            });
+            // 2, 3, 4. Perform profile update, Firestore doc creation, and email verification in parallel
+            await Promise.all([
+                updateProfile(user, { displayName }),
+                setDoc(doc(db!, 'profiles', user.uid), profileData),
+                sendEmailVerification(user, {
+                    url: `${window.location.origin}/fr/auth/login?verified=1`,
+                    handleCodeInApp: false,
+                })
+            ]);
 
             toast.success('Compte créé ! Vérifiez votre boîte mail pour activer votre compte.');
             router.push('/auth/verify-email');
