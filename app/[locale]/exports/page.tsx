@@ -28,6 +28,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useTeam } from '@/contexts/team-context';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { authFetch } from '@/lib/auth-fetch';
 
 const exportCards = [
   {
@@ -291,9 +292,8 @@ export default function ExportsPage() {
     const prompt = `Rédige un message d'absence (Out of Office) court pour ${userName}. Raison: ${aiReason}. Ton: ${aiTone}. Inclus impérativement le texte "[DATE_RETOUR]" là où il faut mettre la date de retour. Ne mets pas d'objet de mail, juste le corps du message.`;
 
     try {
-      const response = await fetch('/api/llm', {
+      const response = await authFetch('/api/llm', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, useHuggingFace: true }),
       });
 

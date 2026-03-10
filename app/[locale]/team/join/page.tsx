@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
+import { authFetch } from '@/lib/auth-fetch';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -75,9 +76,8 @@ export default function TeamJoinPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/teams/join', {
+      const response = await authFetch('/api/teams/join', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: fullCode }),
       });
 

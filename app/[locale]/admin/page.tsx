@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatedBlueprintIcon } from '@/components/ui/animated-blueprint-icon';
+import { authFetch } from '@/lib/auth-fetch';
 
 interface Profile {
   email: string;
@@ -82,9 +83,8 @@ export default function AdminDashboard() {
     setSavingLeaves(true);
 
     try {
-      const response = await fetch('/api/admin/members', {
+      const response = await authFetch('/api/admin/members', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           memberId: editingLeaveMember.id,
           action: 'update-leaves',
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
 
   const fetchData = useCallback(async () => {
     try {
-      const response = await fetch('/api/admin/members');
+      const response = await authFetch('/api/admin/members');
       const data = await response.json();
 
       if (!response.ok) {
@@ -143,9 +143,8 @@ export default function AdminDashboard() {
     setActionLoading(memberId);
 
     try {
-      const response = await fetch('/api/admin/members', {
+      const response = await authFetch('/api/admin/members', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ memberId, action }),
       });
 
@@ -168,9 +167,8 @@ export default function AdminDashboard() {
     setSavingSettings(true);
 
     try {
-      const response = await fetch('/api/admin/team', {
+      const response = await authFetch('/api/admin/team', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: teamName,
           description: teamDescription,

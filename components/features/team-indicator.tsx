@@ -4,6 +4,7 @@ import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader2, Settings, UserP
 import { useTeam } from '@/contexts/team-context';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
+import { authFetch } from '@/lib/auth-fetch';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -24,9 +25,8 @@ export function TeamIndicator() {
 
     setIsGenerating(true);
     try {
-      const response = await fetch('/api/teams/invitations', {
+      const response = await authFetch('/api/teams/invitations', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ expiresIn: '7d' }),
       });
 

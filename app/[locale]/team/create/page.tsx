@@ -10,8 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { authFetch } from '@/lib/auth-fetch';
 import { toast } from 'sonner';
-
 export default function CreateTeamPage() {
   const { user } = useAuth();
   const [teamName, setTeamName] = useState('');
@@ -35,9 +35,8 @@ export default function CreateTeamPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/teams', {
+      const response = await authFetch('/api/teams', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: teamName,
           settings: {

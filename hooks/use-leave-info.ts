@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 
 /** Données de congés d'un membre */
 interface LeaveInfo {
@@ -39,7 +40,7 @@ export function useLeaveInfo() {
     setError(null);
 
     try {
-      const response = await fetch('/api/teams/leave-info');
+      const response = await authFetch('/api/teams/leave-info');
 
       if (!response.ok) {
         const data = await response.json();

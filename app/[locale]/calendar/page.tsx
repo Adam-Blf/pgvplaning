@@ -11,6 +11,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { AnimatedBlueprintIcon } from '@/components/ui/animated-blueprint-icon';
+import { authFetch } from '@/lib/auth-fetch';
 
 type Tool = DayStatus | 'ERASER';
 
@@ -139,7 +140,7 @@ export default function CalendarPage() {
   useEffect(() => {
     const fetchBirthdays = async () => {
       try {
-        const response = await fetch('/api/teams/birthdays');
+        const response = await authFetch('/api/teams/birthdays');
         if (response.ok) {
           const data = await response.json();
           setBirthdays(data.birthdays || []);
