@@ -130,3 +130,9 @@ nul
 # Delivery Reports
 migration_report.pdf
 generate_pdf.py
+
+# PWA
+/public/sw.js
+/public/workbox-*.js
+/public/sw.js.map
+/public/workbox-*.js.map

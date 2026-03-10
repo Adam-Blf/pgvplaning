@@ -97,7 +97,12 @@ export default async function RootLayout(props: {
     <html lang={locale} className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="theme-color" content="#0c1222" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Absencia" />
       </head>
       <body
         className={`${geist.variable} ${firaCode.variable} antialiased font-sans`}

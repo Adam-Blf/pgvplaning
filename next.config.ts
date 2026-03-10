@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
+import withPWAInit from 'next-pwa';
 
 const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
+const withPWA = withPWAInit({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+});
 
 // ─── Security Headers ────────────────────────────────────────────────────────
 // Applied on every response. This covers the OWASP Top 10 header recommendations.
@@ -79,4 +86,4 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
 };
 
-export default withNextIntl(nextConfig);
+export default withPWA(withNextIntl(nextConfig));
