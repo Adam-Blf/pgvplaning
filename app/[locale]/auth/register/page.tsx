@@ -70,15 +70,19 @@ export default function RegisterPage() {
                 updatedAt: Timestamp.now(),
             };
 
-            // 3. Perform profile update, Firestore doc creation, and email verification in parallel
+            // 3. Update Firebase Profile and Firestore Profile in parallel
+            // We keep these two in parallel for speed
             await Promise.all([
                 updateProfile(user, { displayName }),
                 setDoc(doc(db!, 'profiles', user.uid), profileData),
-                sendEmailVerification(user, {
-                    url: `${window.location.origin}/fr/auth/login?verified=1`,
-                    handleCodeInApp: false,
-                })
             ]);
+
+            // 4. Send verification email separately after profile is ready
+            // Doing this sequentially avoids some "Internal Error -26" caused by concurrent Auth state updates
+            await sendEmailVerification(user, {
+                url: `${window.location.origin}/fr/auth/login?verified=1`,
+                handleCodeInApp: false,
+            });
 
             toast.success('Compte créé ! Vérifiez votre boîte mail pour activer votre compte.');
             router.push('/auth/verify-email');
