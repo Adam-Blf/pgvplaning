@@ -41,17 +41,27 @@ async function purge() {
 
     const collections = ['profiles', 'teams', 'team_members', 'absences', 'notifications', 'transfers', 'transfers_v2', 'super_admins', 'settings'];
     for (const c of collections) {
-        const snap = await db.collection(c).get();
-        const batch = db.batch();
-        snap.forEach(d => batch.delete(d.ref));
-        await batch.commit();
-        if (!snap.empty) console.log(`- Firestore [${c}] vidé`);
+        try {
+            const snap = await db.collection(c).get();
+            if (!snap.empty) {
+                const batch = db.batch();
+                snap.forEach(d => batch.delete(d.ref));
+                await batch.commit();
+                console.log(`- Firestore [${c}] vidé (${snap.size} docs)`);
+            }
+        } catch (e) {
+            console.warn(`- Firestore [${c}] ignoré (${e.code || e.message})`);
+        }
     }
 
     const tables = ['leave_history', 'audit_log', 'team_monthly_stats'];
     for (const t of tables) {
-        await supabase.from(t).delete().neq('id', '00000000-0000-0000-0000-000000000000');
-        console.log(`- Supabase [${t}] vidé`);
+        try {
+            await supabase.from(t).delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            console.log(`- Supabase [${t}] vidé`);
+        } catch (e) {
+            console.warn(`- Supabase [${t}] ignoré (${e.message})`);
+        }
     }
 
     console.log("✨ NETTOYAGE TERMINÉ.");
