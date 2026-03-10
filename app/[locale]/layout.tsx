@@ -21,15 +21,55 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Absencia - Gestion des Absences d'Équipe",
-  description: "Solution professionnelle de gestion des absences pour équipes et organisations. Gérez congés, présences, télétravail et formations. Export ICS compatible tous calendriers.",
-  keywords: ["absences", "équipe", "ICS", "calendrier", "congés", "planning", "télétravail", "organisation", "RH", "gestion"],
-  authors: [{ name: "Blackout Prod" }],
+  metadataBase: new URL('https://absencia.beloucif.com'),
+  title: {
+    default: "Absencia - Gestion des Absences d'Équipe",
+    template: "%s | Absencia"
+  },
+  description: "Absencia est la solution SaaS premium pour gérer les absences, congés, télétravail et plannings de vos équipes. Optimisez votre gestion RH avec un outil moderne, rapide et sécurisé.",
+  keywords: ["absences", "gestion de planning", "RH SaaS", "congés payés", "télétravail", "Absencia", "Adam Beloucif", "calendrier d'équipe", "export ICS"],
+  authors: [{ name: "Adam Beloucif", url: "https://beloucif.com" }],
+  creator: "Adam Beloucif",
   openGraph: {
     title: "Absencia - Gestion des Absences d'Équipe",
-    description: "Solution professionnelle de gestion des absences pour équipes et organisations",
+    description: "Gérez vos équipes comme un pro avec Absencia. Congés, télétravail et plannings en un seul endroit.",
+    url: 'https://absencia.beloucif.com',
+    siteName: 'Absencia',
     locale: "fr_FR",
     type: "website",
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Absencia Dashboard Preview',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Absencia - Gestion des Absences d'Équipe",
+    description: "La gestion RH simplifiée pour les équipes modernes.",
+    creator: "@BlackoutProd",
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://absencia.beloucif.com',
+    languages: {
+      'fr-FR': '/fr',
+      'en-US': '/en',
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: [

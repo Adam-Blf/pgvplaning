@@ -53,12 +53,16 @@ export function DashboardShell({ children }: DashboardShellProps) {
 
   // Filter navigation based on auth state and role
   const navigation = useMemo(() => {
+    // Si on charge encore l'auth, on montre les items de base non protégés
+    if (loading) {
+      return baseNavigation.filter(item => !item.requiresAuth);
+    }
     return baseNavigation.filter(item => {
       if (item.requiresAuth && !isAuthenticated) return false;
       if ((item as any).requiresLeader && !isLeader) return false;
       return true;
     });
-  }, [isAuthenticated, isLeader]);
+  }, [isAuthenticated, isLeader, loading]);
 
   // Handle scroll to show/hide navbar
   useEffect(() => {

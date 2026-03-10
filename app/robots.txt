@@ -1,0 +1,9 @@
+# User-agent: *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /team/validation/
+
+Sitemap: https://absencia.beloucif.com/sitemap.xml
