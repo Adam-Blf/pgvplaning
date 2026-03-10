@@ -1,7 +1,9 @@
 'use client';
 
-import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader2, Settings, UserPlus } from 'lucide-react';
+import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader2, Settings, UserPlus, LogOut } from 'lucide-react';
 import { useTeam } from '@/contexts/team-context';
+import { auth } from '@/lib/firebase/client';
+import { signOut } from 'firebase/auth';
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
@@ -204,8 +206,7 @@ export function TeamIndicator() {
             {/* Divider */}
             <div className="divider mx-4" />
 
-            {/* Invitation Section */}
-            <div className="p-4 space-y-3">
+            {/* Invitation Section */}            <div className="p-4 space-y-3">
               {/* Code d'invitation */}
               <div>
                 <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">
@@ -286,6 +287,24 @@ export function TeamIndicator() {
                   </p>
                 </div>
               )}
+            </div>
+
+            {/* Logout */}
+            <div className="divider mx-4" />
+            <div className="p-2">
+              <button
+                onClick={async () => {
+                  setShowDropdown(false);
+                  if (auth) await signOut(auth);
+                  window.location.href = '/login';
+                }}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 group w-full"
+              >
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:border-red-500/30 transition-colors">
+                  <LogOut className="w-4 h-4" />
+                </div>
+                <span>Se déconnecter</span>
+              </button>
             </div>
           </motion.div>
         )}

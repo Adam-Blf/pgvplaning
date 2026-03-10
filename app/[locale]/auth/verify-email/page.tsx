@@ -10,25 +10,30 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { auth } from '@/lib/firebase/client';
-import { sendEmailVerification, onAuthStateChanged } from 'firebase/auth';
+import { sendEmailVerification } from 'firebase/auth';
 import { useEffect } from 'react';
 
 export default function VerifyEmailPage() {
     const [resending, setResending] = useState(false);
     const [verified, setVerified] = useState(false);
 
-    // Poll every 3s to detect when the user clicks the link in their email
+    // Poll every 3s to detect when the email is verified
+    // (onAuthStateChanged alone doesn't fire on emailVerified change)
     useEffect(() => {
         if (!auth) return;
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+
+        const interval = setInterval(async () => {
+            const user = auth?.currentUser;
             if (user) {
-                await user.reload(); // Force refresh of emailVerified status from Firebase
+                await user.reload();
                 if (user.emailVerified) {
                     setVerified(true);
+                    clearInterval(interval);
                 }
             }
-        });
-        return () => unsubscribe();
+        }, 3000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const resendEmail = async () => {
@@ -87,6 +92,8 @@ export default function VerifyEmailPage() {
                             </p>
                             <p className="text-xs text-[var(--text-muted)] mb-8">
                                 Vérifiez également vos spams si vous ne trouvez pas l&apos;email.
+                                <br />
+                                Si le lien affiche &quot;déjà utilisé&quot;, pas de panique : votre email est probablement déjà vérifié. Cette page se mettra à jour automatiquement.
                             </p>
 
                             <div className="space-y-3">

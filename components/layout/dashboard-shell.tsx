@@ -13,6 +13,7 @@ import {
   LogIn,
   BookOpen,
   ShieldCheck,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -22,6 +23,8 @@ import { TeamIndicator } from '@/components/features/team-indicator';
 import { ChristmasCountdown } from '@/components/features/christmas-countdown';
 import { OnboardingTutorial } from '@/components/features/onboarding-tutorial';
 import { useAuth } from '@/hooks/use-auth';
+import { auth } from '@/lib/firebase/client';
+import { signOut } from 'firebase/auth';
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -172,7 +175,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     {loading ? (
                       <div className="h-10 w-24 rounded-full bg-white/5 animate-shimmer" />
                     ) : isAuthenticated ? (
-                      <TeamIndicator />
+                      <div className="flex items-center gap-2">
+                        <TeamIndicator />
+                        <button
+                          onClick={async () => {
+                            if (auth) await signOut(auth);
+                            window.location.href = '/login';
+                          }}
+                          className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-all"
+                          title="Se déconnecter"
+                        >
+                          <LogOut className="w-4 h-4" />
+                        </button>
+                      </div>
                     ) : (
                       <Link
                         href="/login"
@@ -246,6 +261,21 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             <LogIn className="w-4 h-4" />
                             <span>Se connecter</span>
                           </Link>
+                        )}
+
+                        {/* Logout link for mobile if authenticated */}
+                        {isAuthenticated && (
+                          <button
+                            onClick={async () => {
+                              setMobileMenuOpen(false);
+                              if (auth) await signOut(auth);
+                              window.location.href = '/login';
+                            }}
+                            className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors w-full"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span>Se déconnecter</span>
+                          </button>
                         )}
                       </nav>
                     </div>
