@@ -47,8 +47,12 @@ export default function VerifyEmailPage() {
                 url: `${window.location.origin}/fr/auth/login?verified=1`,
             });
             toast.success('Email de vérification renvoyé !');
-        } catch {
-            toast.error('Erreur lors de l\'envoi. Réessayez dans quelques secondes.');
+        } catch (err: any) {
+            if (err?.code === 'auth/too-many-requests') {
+                toast.error('Trop de tentatives. Attendez quelques minutes.');
+            } else {
+                toast.error('Impossible d\'envoyer l\'email. Essayez de vous reconnecter.');
+            }
         } finally {
             setResending(false);
         }
