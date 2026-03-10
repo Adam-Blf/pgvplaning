@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { motion } from 'framer-motion';
 import { Settings, ArrowLeft, Save, Trash2, LogOut, Loader2, AlertTriangle, Copy, Check, Globe } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { useTeam } from '@/contexts/team-context';
 import { Checkbox } from '@/components/ui/checkbox';

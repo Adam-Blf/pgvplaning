@@ -4,7 +4,7 @@
 // Le type de contrat et le secteur sont définis par le chef d'équipe, pas ici.
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
@@ -13,7 +13,7 @@ import { Mail, Lock, User, UserPlus, AlertCircle, Loader2, Cake } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { UserProfile } from '@/types/firestore';
 

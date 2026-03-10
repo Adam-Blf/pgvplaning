@@ -5,7 +5,7 @@ import { useTeam } from '@/contexts/team-context';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
 import { authFetch } from '@/lib/auth-fetch';
-import Link from 'next/link';
+import { Link, useRouter } from '@/i18n/routing';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function TeamIndicator() {
   const { team, isLeader, loading } = useTeam();
+  const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -296,7 +297,7 @@ export function TeamIndicator() {
                 onClick={async () => {
                   setShowDropdown(false);
                   if (auth) await signOut(auth);
-                  window.location.href = '/login';
+                  router.push('/login');
                 }}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 group w-full"
               >

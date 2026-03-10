@@ -1,7 +1,7 @@
 'use client';
 
 import { Scale, Building2, Server, Shield, Mail } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 
 export default function MentionsLegalesPage() {
   return (

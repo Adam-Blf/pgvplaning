@@ -10,7 +10,7 @@ import {
   Users, Crown, User, Copy, Check, ChevronDown,
   Briefcase, Building2, Clock, Save, Loader2, Settings2
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { doc, updateDoc, Timestamp, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';

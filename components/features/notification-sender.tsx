@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Send, Calendar, AlertCircle, Check, Settings, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useCalendarData, DayStatus, isDayData, DayData } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 

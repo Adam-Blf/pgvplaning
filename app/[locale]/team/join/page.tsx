@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { motion } from 'framer-motion';
 import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut, Hash } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';

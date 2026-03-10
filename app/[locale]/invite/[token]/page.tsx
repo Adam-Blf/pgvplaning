@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users,
@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { auth } from '@/lib/firebase/client';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import confetti from 'canvas-confetti';
 
 interface InvitePageProps {

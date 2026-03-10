@@ -1,7 +1,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { motion } from 'framer-motion';
 import { Copy, Check, Shield, ArrowRight, Share2, Calendar, Loader2 } from 'lucide-react';
 import { useState } from 'react';

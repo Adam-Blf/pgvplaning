@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { useAuth } from '@/hooks/use-auth';
 import { motion } from 'framer-motion';
 import { Users, Shield, ArrowRight, Loader2, Globe, Lock } from 'lucide-react';

@@ -16,8 +16,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/routing';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TeamIndicator } from '@/components/features/team-indicator';
 import { ChristmasCountdown } from '@/components/features/christmas-countdown';
@@ -51,6 +50,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const lastScrollY = useRef(0);
   const pathname = usePathname();
+  const router = useRouter();
   const { isAuthenticated, loading, profile } = useAuth();
   const isLeader = profile?.role === 'leader';
 
@@ -180,7 +180,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         <button
                           onClick={async () => {
                             if (auth) await signOut(auth);
-                            window.location.href = '/login';
+                            router.push('/login');
                           }}
                           className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-all"
                           title="Se déconnecter"
@@ -269,7 +269,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             onClick={async () => {
                               setMobileMenuOpen(false);
                               if (auth) await signOut(auth);
-                              window.location.href = '/login';
+                              router.push('/login');
                             }}
                             className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors w-full"
                           >

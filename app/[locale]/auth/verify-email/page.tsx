@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { MailCheck, RefreshCw, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { auth } from '@/lib/firebase/client';
 import { sendEmailVerification } from 'firebase/auth';
 import { useEffect } from 'react';

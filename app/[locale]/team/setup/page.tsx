@@ -2,8 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Users, Plus, LogIn, Sparkles, LogOut } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/i18n/routing';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
 
