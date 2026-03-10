@@ -9,7 +9,7 @@ export interface UserProfile {
     id: string;
     email: string;
     displayName: string;
-    photoURL?: string;
+    photoURL: string | null;
     role: UserRole;
     employeeType: EmployeeType;
     workTimeCategory: WorkTimeCategory;
