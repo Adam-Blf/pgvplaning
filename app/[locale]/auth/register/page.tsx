@@ -18,19 +18,22 @@ import { toast } from 'sonner';
 import { UserProfile } from '@/types/firestore';
 
 export default function RegisterPage() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [displayName, setDisplayName] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email || !password || !displayName) {
+        if (!email || !password || !firstName || !lastName) {
             toast.error('Veuillez remplir tous les champs');
             return;
         }
+
+        const displayName = `${firstName} ${lastName}`.trim();
 
         setLoading(true);
         setError(null);
@@ -44,7 +47,26 @@ export default function RegisterPage() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // 2, 3, 4. Perform profile update, Firestore doc creation, and email verification in parallel
+            // 2. Prepare profile data
+            const profileData: UserProfile = {
+                id: user.uid,
+                email: user.email!,
+                displayName,
+                role: 'member',
+                employeeType: 'cdi',
+                workTimeCategory: 'temps-plein',
+                workTimePercentage: 100,
+                sector: 'prive',
+                leaveBalance: {
+                    total: 25,
+                    used: 0,
+                    remaining: 25,
+                },
+                createdAt: Timestamp.now(),
+                updatedAt: Timestamp.now(),
+            };
+
+            // 3. Perform profile update, Firestore doc creation, and email verification in parallel
             await Promise.all([
                 updateProfile(user, { displayName }),
                 setDoc(doc(db!, 'profiles', user.uid), profileData),
@@ -112,19 +134,37 @@ export default function RegisterPage() {
                     )}
 
                     <form onSubmit={handleRegister} className="space-y-5">
-                        {/* Nom complet */}
-                        <div className="space-y-2">
-                            <Label htmlFor="displayName">Nom complet</Label>
-                            <div className="relative group">
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
-                                <Input
-                                    id="displayName"
-                                    value={displayName}
-                                    onChange={(e) => setDisplayName(e.target.value)}
-                                    placeholder="Jean Dupont"
-                                    className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl"
-                                    required
-                                />
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Prénom */}
+                            <div className="space-y-2">
+                                <Label htmlFor="firstName">Prénom</Label>
+                                <div className="relative group">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
+                                    <Input
+                                        id="firstName"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        placeholder="Jean"
+                                        className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Nom */}
+                            <div className="space-y-2">
+                                <Label htmlFor="lastName">Nom</Label>
+                                <div className="relative group">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
+                                    <Input
+                                        id="lastName"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        placeholder="Dupont"
+                                        className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl"
+                                        required
+                                    />
+                                </div>
                             </div>
                         </div>
 
