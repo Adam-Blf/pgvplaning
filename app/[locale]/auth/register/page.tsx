@@ -36,8 +36,12 @@ export default function RegisterPage() {
         setError(null);
 
         try {
+            if (!auth || !db) {
+                throw new Error("L'application Firebase n'est pas correctement initialisée. Vérifiez vos variables d'environnement.");
+            }
+
             // 1. Create user in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(auth!, email, password);
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
             // 2. Update profile name
@@ -75,16 +79,24 @@ export default function RegisterPage() {
             toast.success('Compte créé ! Vérifiez votre boîte mail pour activer votre compte.');
             router.push('/auth/verify-email');
         } catch (err: unknown) {
-            const firebaseErr = err as { code?: string };
-            console.error(err);
+            const firebaseErr = err as { code?: string; message?: string };
+            console.error('Registration error detailed:', err);
+
             let message = "Erreur lors de l'inscription";
+
             if (firebaseErr.code === 'auth/email-already-in-use') {
                 message = "Cet email est déjà utilisé";
             } else if (firebaseErr.code === 'auth/weak-password') {
                 message = "Le mot de passe est trop faible (6 caractères min.)";
             } else if (firebaseErr.code === 'auth/configuration-not-found') {
                 message = "L'authentification n'est pas configurée. Contactez l'administrateur.";
+            } else if (firebaseErr.code === 'auth/operation-not-allowed') {
+                message = "L'inscription par email n'est pas activée dans la console Firebase.";
+            } else if (firebaseErr.message) {
+                // Show the specific error message to help debug
+                message = `Erreur : ${firebaseErr.message}`;
             }
+
             setError(message);
             toast.error(message);
         } finally {

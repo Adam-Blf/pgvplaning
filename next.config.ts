@@ -46,7 +46,7 @@ const securityHeaders = [
       // Images: allow self + data URIs + Firebase Storage
       "img-src 'self' data: blob: https://*.googleapis.com https://*.gstatic.com https://firebasestorage.googleapis.com",
       // API connections: Firebase, Supabase, Google APIs
-      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com",
+      "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.firebaseapp.com https://*.firebase.com",
       // Frames: deny all embedding
       "frame-ancestors 'none'",
       // Forms: only submit to same origin
