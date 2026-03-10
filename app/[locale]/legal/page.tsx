@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Shield, Scale, Gavel, UserCheck, Eye, Lock } from 'lucide-react';
+import { Shield, Scale, Gavel, Eye, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const containerVariants = {
@@ -99,7 +99,14 @@ export default function LegalPage() {
     );
 }
 
-function LegalSection({ icon: Icon, title, description, children }: any) {
+interface LegalSectionProps {
+    icon: React.ElementType;
+    title: string;
+    description: string;
+    children: React.ReactNode;
+}
+
+function LegalSection({ icon: Icon, title, description, children }: LegalSectionProps) {
     return (
         <motion.section variants={itemVariants}>
             <Card className="glass-elevated border-white/5 bg-white/[0.01] rounded-3xl overflow-hidden shadow-sm">

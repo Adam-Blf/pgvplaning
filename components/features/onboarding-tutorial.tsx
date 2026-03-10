@@ -11,7 +11,6 @@ import {
   Calendar,
   FileDown,
   Rocket,
-  CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -19,7 +18,7 @@ import { cn } from '@/lib/utils';
 interface Step {
   title: string;
   description: string;
-  icon: any;
+  icon: React.ElementType;
   color: string;
 }
 

@@ -1,7 +1,7 @@
 # Absencia
 
 ![Status](https://img.shields.io/badge/status-production-green)
-![Version](https://img.shields.io/badge/version-11.0.0-blue)
+![Version](https://img.shields.io/badge/version-12.0.0-blue)
 ![Auth](https://img.shields.io/badge/auth-Firebase-orange)
 ![Security](https://img.shields.io/badge/security-OWASP%20Compliant-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-E2E%20Playwright-orange)

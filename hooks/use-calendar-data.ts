@@ -15,6 +15,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './use-auth';
+import { db } from '@/lib/firebase/client';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { toast } from 'sonner';
 
 /** Statut possible pour une journée */
 export type DayStatus = 'WORK' | 'REMOTE' | 'SCHOOL' | 'TRAINER' | 'LEAVE' | 'HOLIDAY' | 'OFF';
@@ -118,30 +122,52 @@ function initializeHolidays(data: CalendarData, year: number): CalendarData {
 }
 
 export function useCalendarData() {
+  const { user, profile } = useAuth();
   const [data, setData] = useState<CalendarData>({});
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Charger les données au montage
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    let loadedData: CalendarData = {};
+    const loadData = async () => {
+      let loadedData: CalendarData = {};
 
-    if (saved) {
-      try {
-        loadedData = JSON.parse(saved);
-      } catch {
-        loadedData = {};
+      // 1. Essayer de charger depuis Firestore si utilisateur connecté
+      if (user && db) {
+        try {
+          const calendarRef = doc(db, 'calendars', user.uid);
+          const snap = await getDoc(calendarRef);
+          if (snap.exists()) {
+            loadedData = snap.data().data || {};
+          }
+        } catch (error) {
+          console.error('Error loading from Firestore:', error);
+        }
       }
-    }
 
-    // Initialiser les jours fériés pour l'année courante et suivante
-    const currentYear = new Date().getFullYear();
-    loadedData = initializeHolidays(loadedData, currentYear);
-    loadedData = initializeHolidays(loadedData, currentYear + 1);
+      // 2. Si vide, essayer localStorage
+      if (Object.keys(loadedData).length === 0) {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            loadedData = JSON.parse(saved);
+          } catch {
+            loadedData = {};
+          }
+        }
+      }
 
-    setData(loadedData);
-    setIsLoaded(true);
-  }, []);
+      // Initialiser les jours fériés
+      const currentYear = new Date().getFullYear();
+      loadedData = initializeHolidays(loadedData, currentYear);
+      loadedData = initializeHolidays(loadedData, currentYear + 1);
+
+      setData(loadedData);
+      setIsLoaded(true);
+    };
+
+    loadData();
+  }, [user]);
 
   // Sauvegarder les données à chaque modification
   useEffect(() => {
@@ -150,13 +176,15 @@ export function useCalendarData() {
     }
   }, [data, isLoaded]);
 
-  const setDayStatus = useCallback((date: string, status: DayStatus | null, halfDay: HalfDay = 'FULL') => {
+  const setDayStatus = useCallback(async (date: string, status: DayStatus | null, halfDay: HalfDay = 'FULL') => {
+    // Calculer le nouvel état localement
+    let nextData: CalendarData = {};
+
     setData((prev) => {
       const newData = { ...prev };
       const existing = newData[date];
 
       if (status === null) {
-        // Eraser mode
         if (halfDay === 'FULL') {
           delete newData[date];
         } else if (isDayData(existing)) {
@@ -170,11 +198,9 @@ export function useCalendarData() {
           }
         }
       } else {
-        // Set status
         if (halfDay === 'FULL') {
           newData[date] = status;
         } else {
-          // Half-day mode
           const currentData: DayData = isDayData(existing) ? { ...existing } : {};
           if (halfDay === 'AM') {
             currentData.am = status;
@@ -184,9 +210,28 @@ export function useCalendarData() {
           newData[date] = currentData;
         }
       }
+      nextData = newData;
       return newData;
     });
-  }, []);
+
+    // Synchroniser avec Firestore si possible
+    if (user && db) {
+      setIsSyncing(true);
+      try {
+        const calendarRef = doc(db, 'calendars', user.uid);
+        await setDoc(calendarRef, {
+          userId: user.uid,
+          data: nextData,
+          updatedAt: new Date(),
+        }, { merge: true });
+      } catch (error) {
+        console.error('Error syncing with Firestore:', error);
+        toast.error('Erreur de synchronisation Cloud');
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  }, [user]);
 
   const getDayStatus = useCallback((date: Date, halfDay: HalfDay = 'FULL'): DayStatus => {
     const key = formatDateKey(date);
@@ -306,5 +351,6 @@ export function useCalendarData() {
     loadDemoData,
     isHoliday,
     formatDateKey,
+    isSyncing,
   };
 }

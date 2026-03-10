@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Calendar, Info, Timer, TrendingUp, Briefcase } from 'lucide-react';
+import { Calendar, Info, Timer, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -12,7 +12,7 @@ interface LeaveBalanceCardProps {
   total: number;
   used: number;
   remaining: number;
-  icon: any;
+  icon: React.ElementType;
   color: string;
   description?: string;
 }

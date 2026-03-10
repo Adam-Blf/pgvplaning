@@ -22,6 +22,7 @@ import {
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { doc, updateDoc } from 'firebase/firestore';
+import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase/client';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,20 +37,30 @@ export default function SettingsPage() {
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
-    employeeType: 'non-cadre',
-    sector: 'prive',
+    employeeType: profile?.employeeType || 'cdi',
+    workTimeCategory: profile?.workTimeCategory || 'temps-plein',
+    workTimePercentage: profile?.workTimePercentage || 100,
+    sector: profile?.sector || 'prive',
+    color: profile?.color || '#3B82F6',
+    icalToken: profile?.icalToken || '',
   });
 
   useEffect(() => {
-    if (profile) {
+    if (profile && user) {
       setFormData({
         displayName: profile.displayName || '',
-        email: user?.email || '',
-        employeeType: profile.employeeType || 'non-cadre',
+        email: user.email || '',
+        employeeType: profile.employeeType || 'cdi',
+        workTimeCategory: profile.workTimeCategory || 'temps-plein',
+        workTimePercentage: profile.workTimePercentage || 100,
         sector: profile.sector || 'prive',
+        color: profile.color || '#3B82F6',
+        icalToken: profile.icalToken || '',
       });
     }
   }, [profile, user]);
+
+  const generateToken = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,11 +68,16 @@ export default function SettingsPage() {
 
     setLoading(true);
     try {
+      if (!db) throw new Error('Firestore not initialized');
       const userRef = doc(db, 'users', user.uid);
       await updateDoc(userRef, {
         displayName: formData.displayName,
         employeeType: formData.employeeType,
+        workTimeCategory: formData.workTimeCategory,
+        workTimePercentage: formData.workTimePercentage,
         sector: formData.sector,
+        color: formData.color,
+        icalToken: formData.icalToken || generateToken(),
         updatedAt: new Date(),
       });
 
@@ -142,12 +158,14 @@ export default function SettingsPage() {
                       <SelectValue placeholder="Choisir un type" />
                     </SelectTrigger>
                     <SelectContent className="bg-[var(--bg-surface)] border-white/10">
-                      <SelectItem value="cadre">Cadre</SelectItem>
-                      <SelectItem value="non-cadre">Non-cadre (CDI)</SelectItem>
+                      <SelectItem value="cdi">CDI</SelectItem>
                       <SelectItem value="cdd">CDD</SelectItem>
-                      <SelectItem value="alternant">Alternant / Apprenti</SelectItem>
-                      <SelectItem value="stagiaire">Stagiaire</SelectItem>
+                      <SelectItem value="apprentissage">Apprenti</SelectItem>
+                      <SelectItem value="professionnalisation">Contrat Pro</SelectItem>
+                      <SelectItem value="stage">Stagiaire</SelectItem>
                       <SelectItem value="interim">Intérimaire</SelectItem>
+                      <SelectItem value="freelance">Freelance</SelectItem>
+                      <SelectItem value="mandataire">Mandataire Social</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -166,6 +184,73 @@ export default function SettingsPage() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-white/5">
+                <div className="space-y-2">
+                  <Label>Catégorie de temps de travail</Label>
+                  <Select
+                    value={formData.workTimeCategory}
+                    onValueChange={(v: any) => setFormData({ ...formData, workTimeCategory: v })}
+                  >
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue placeholder="Choisir une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[var(--bg-surface)] border-white/10">
+                      <SelectItem value="temps-plein">Temps Plein (35h)</SelectItem>
+                      <SelectItem value="temps-partiel">Temps Partiel</SelectItem>
+                      <SelectItem value="forfait-jours">Forfait Jours</SelectItem>
+                      <SelectItem value="forfait-heures">Forfait Heures</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {formData.workTimeCategory === 'temps-partiel' && (
+                  <div className="space-y-2">
+                    <Label>Pourcentage du temps de travail (%)</Label>
+                    <Input
+                      type="number"
+                      min="10"
+                      max="100"
+                      value={formData.workTimePercentage}
+                      onChange={(e) => setFormData({ ...formData, workTimePercentage: parseInt(e.target.value) || 100 })}
+                      className="bg-white/5 border-white/10"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-white/5">
+                <Label className="text-base flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  Couleur sur le Calendrier d&apos;Équipe
+                </Label>
+                <div className="flex flex-wrap gap-3">
+                  {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#64748B'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, color: c })}
+                      className={cn(
+                        "w-10 h-10 rounded-xl border-2 transition-all hover:scale-110",
+                        formData.color === c ? "border-white scale-110 shadow-lg" : "border-transparent opacity-60 hover:opacity-100"
+                      )}
+                      style={{ backgroundColor: c }}
+                      title={c}
+                    />
+                  ))}
+                  <div className="flex items-center gap-2 ml-auto">
+                    <Input
+                      type="color"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      className="w-10 h-10 p-1 bg-white/5 border-white/10 rounded-xl cursor-pointer"
+                    />
+                    <span className="text-xs font-mono text-[var(--text-tertiary)] uppercase">{formData.color}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-[var(--text-tertiary)] italic">
+                  Cette couleur sera utilisée pour vous identifier sur le planning d&apos;équipe et les exports PDF.
+                </p>
               </div>
             </CardContent>
           </Card>

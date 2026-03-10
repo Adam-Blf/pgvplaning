@@ -14,14 +14,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { calculateInitialLeaveBalance } from '@/lib/firebase/balances';
-import { EmployeeType, SectorType, UserProfile } from '@/types/firestore';
+import { EmployeeType, SectorType, UserProfile, WorkTimeCategory } from '@/types/firestore';
 
 export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
-    const [employeeType, setEmployeeType] = useState<EmployeeType>('non-cadre');
+    const [employeeType, setEmployeeType] = useState<EmployeeType>('cdi');
     const [sector, setSector] = useState<SectorType>('prive');
+    const [workTimeCategory, setWorkTimeCategory] = useState<WorkTimeCategory>('temps-plein');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
@@ -45,7 +46,7 @@ export default function RegisterPage() {
             await updateProfile(user, { displayName });
 
             // 3. Create profile in Firestore
-            const initialBalance = calculateInitialLeaveBalance(employeeType, sector);
+            const initialBalance = calculateInitialLeaveBalance(employeeType, sector, workTimeCategory, 100);
 
             const profileData: UserProfile = {
                 id: user.uid,
@@ -54,6 +55,8 @@ export default function RegisterPage() {
                 role: 'member',
                 employeeType,
                 sector,
+                workTimeCategory,
+                workTimePercentage: 100,
                 leaveBalance: {
                     total: initialBalance,
                     used: 0,
@@ -170,12 +173,12 @@ export default function RegisterPage() {
                                         <SelectValue placeholder="Choisir un type" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-[var(--bg-surface)] border-white/10">
-                                        <SelectItem value="cadre">Cadre</SelectItem>
-                                        <SelectItem value="non-cadre">Non-cadre (CDI)</SelectItem>
+                                        <SelectItem value="cdi">CDI</SelectItem>
                                         <SelectItem value="cdd">CDD</SelectItem>
                                         <SelectItem value="alternant">Alternant / Apprenti</SelectItem>
                                         <SelectItem value="stagiaire">Stagiaire</SelectItem>
                                         <SelectItem value="interim">Intérimaire</SelectItem>
+                                        <SelectItem value="freelance">Freelance / Indépendant</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

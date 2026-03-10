@@ -30,6 +30,7 @@ export interface Team {
   description?: string; // Description optionnelle
   created_by: string;   // UID du créateur
   created_at: string;   // Date de création ISO
+  teamIcalToken?: string; // Token pour le flux iCal d'équipe
 }
 
 /** Membre d'une équipe avec son profil */

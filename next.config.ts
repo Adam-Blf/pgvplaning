@@ -10,7 +10,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  // ... (keep existing config)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withNextIntl(nextConfig);

@@ -5,10 +5,10 @@ import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import { TeamProvider } from "@/contexts/team-context";
 import { AuthProvider } from "@/contexts/auth-context";
-import "./globals.css";
+import "../globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const firaCode = Fira_Code({
   variable: "--font-mono",

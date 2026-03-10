@@ -9,9 +9,9 @@ import { checkRateLimit, RATE_LIMITS, getClientIdentifier, createRateLimitHeader
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const token = params.token;
+  const { token } = await params;
 
   const clientId = getClientIdentifier(request.headers);
   const rateLimitResult = checkRateLimit(`invite:${clientId}`, RATE_LIMITS.default);

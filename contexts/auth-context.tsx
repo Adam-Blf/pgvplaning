@@ -47,8 +47,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         console.error("Error getting token:", e);
                     }
 
-                    // Listen to profile
-                    const profileRef = doc(db, 'profiles', firebaseUser.uid);
+                    // Listen to profile (db! is safe because we checked above)
+                    const profileRef = doc(db!, 'profiles', firebaseUser.uid);
                     const unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
                         if (docSnap.exists()) {
                             setProfile({ id: docSnap.id, ...docSnap.data() } as UserProfile);
@@ -61,7 +61,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                                 displayName: firebaseUser.displayName || 'Utilisateur',
                                 photoURL: firebaseUser.photoURL || undefined,
                                 role: 'member',
-                                employeeType: 'non-cadre',
+                                employeeType: 'cdi',
+                                workTimeCategory: 'temps-plein',
                                 sector: 'prive',
                                 leaveBalance: { total: 25, used: 0, remaining: 25 },
                                 createdAt: Timestamp.now(),

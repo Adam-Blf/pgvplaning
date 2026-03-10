@@ -1,33 +1,35 @@
-import { UserProfile, EmployeeType, SectorType } from '@/types/firestore';
+import { EmployeeType, SectorType, WorkTimeCategory } from '@/types/firestore';
+import { CONTRACT_TYPES, WORK_TIME_CATEGORIES } from '@/constants/contracts';
 
 /**
- * Calcule le solde initial de congés en fonction du type d'employé et du secteur.
- * Standards Absencia : 25 jours par défaut, ajustable.
+ * Calcule le solde initial de congés en fonction du type de contrat et de la catégorie de temps de travail.
  */
 export function calculateInitialLeaveBalance(
     employeeType: EmployeeType,
-    sector: SectorType
+    sector: SectorType,
+    workTimeCategory: WorkTimeCategory,
+    workTimePercentage: number = 100
 ): number {
-    // Logique métier de base
-    let balance = 25; // Base légale française (5 semaines)
+    const contractDef = CONTRACT_TYPES.find(ct => ct.id === employeeType);
+    let balance = (contractDef?.defaultMonthlyAllowance || 2.08) * 12;
 
-    if (employeeType === 'cadre') {
-        balance += 2; // Bonus cadre
-    }
-
-    if (employeeType === 'stagiaire') {
-        balance = 25; // Stagiaires ont droit à 2.5j/mois si > 2 mois
-    }
-
-    if (employeeType === 'alternant') {
-        balance = 25; // Alternants ont les mêmes droits que les salariés
-    }
-
+    // Ajustement secteur public
     if (sector === 'public') {
-        balance += 2; // Spécificité secteur public (RTT/Congés suppl.)
+        balance += 2;
     }
 
-    return balance;
+    // Ajustement RTT pour forfait jours
+    const categoryDef = WORK_TIME_CATEGORIES.find(wtc => wtc.id === workTimeCategory);
+    if (categoryDef?.generatesRTT) {
+        balance += 10; // Moyenne standard RTT
+    }
+
+    // Ajustement temps partiel
+    if (workTimeCategory === 'temps-partiel') {
+        balance = (balance * workTimePercentage) / 100;
+    }
+
+    return Math.round(balance * 100) / 100;
 }
 
 /**

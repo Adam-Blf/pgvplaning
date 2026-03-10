@@ -1,4 +1,3 @@
-import { adminAuth, adminDb } from '@/lib/firebase/server';
 import { createAuditLog } from './audit';
 
 /**
@@ -6,7 +5,7 @@ import { createAuditLog } from './audit';
  * Enregistre l'erreur en base si elle est critique.
  */
 export async function logServerError(
-    error: any,
+    error: Error | unknown,
     context: string,
     userId?: string
 ) {

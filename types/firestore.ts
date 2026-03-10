@@ -1,7 +1,8 @@
 import { Timestamp } from 'firebase/firestore';
 
 export type UserRole = 'leader' | 'admin' | 'member';
-export type EmployeeType = 'cadre' | 'non-cadre' | 'stagiaire' | 'alternant' | 'cdd' | 'interim';
+export type EmployeeType = 'cdi' | 'cdd' | 'apprentissage' | 'professionnalisation' | 'stage' | 'interim' | 'freelance' | 'mandataire' | 'public' | 'vacataire';
+export type WorkTimeCategory = 'temps-plein' | 'temps-partiel' | 'forfait-jours' | 'forfait-heures';
 export type SectorType = 'public' | 'prive';
 
 export interface UserProfile {
@@ -11,6 +12,8 @@ export interface UserProfile {
     photoURL?: string;
     role: UserRole;
     employeeType: EmployeeType;
+    workTimeCategory: WorkTimeCategory;
+    workTimePercentage?: number; // Pour le temps partiel (ex: 80)
     sector: SectorType;
     teamId?: string;
     leaveBalance: {
@@ -18,6 +21,8 @@ export interface UserProfile {
         used: number;
         remaining: number;
     };
+    color?: string;
+    icalToken?: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }
@@ -33,6 +38,7 @@ export interface Team {
         allowMemberInvite: boolean;
         autoApproveAbsences: boolean;
     };
+    teamIcalToken?: string;
 }
 
 export type AbsenceStatus = 'bureau' | 'teletravail' | 'formation' | 'conges' | 'maladie' | 'autre';

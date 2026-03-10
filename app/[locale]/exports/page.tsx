@@ -20,9 +20,13 @@ import {
   ArrowRight,
   Calendar,
   Wand2,
+  Link2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCalendarData, DayStatus, isDayData } from '@/hooks/use-calendar-data';
+import { useAuth } from '@/hooks/use-auth';
+import { useTeam } from '@/contexts/team-context';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const exportCards = [
@@ -138,6 +142,8 @@ export default function ExportsPage() {
   const [aiResult, setAiResult] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeExport, setActiveExport] = useState<string | null>(null);
+  const { profile } = useAuth();
+  const { team } = useTeam();
 
   // Charger le nom utilisateur depuis localStorage
   useEffect(() => {
@@ -359,6 +365,23 @@ export default function ExportsPage() {
 
       {/* Section Exports ICS */}
       <motion.section variants={itemVariants}>
+        {/* [NEW] Section Abonnement Dynamique */}
+        <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <IcalSubscriptionCard
+            title="Mon Planning Personnel"
+            description="Abonnez-vous à vos propres absences dans votre calendrier."
+            token={profile?.icalToken}
+            type="user"
+          />
+          <IcalSubscriptionCard
+            title="Planning de l&apos;Équipe"
+            description="Flux regroupant les absences de tous vos collaborateurs."
+            token={team?.teamIcalToken}
+            type="team"
+            disabled={!profile?.teamId}
+          />
+        </div>
+
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
             <Calendar className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -679,5 +702,74 @@ export default function ExportsPage() {
         </div>
       </motion.div>
     </motion.div>
+  );
+}
+
+function IcalSubscriptionCard({
+  title,
+  description,
+  token,
+  type,
+  disabled
+}: {
+  title: string;
+  description: string;
+  token?: string;
+  type: 'user' | 'team';
+  disabled?: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const url = token ? `${baseUrl}/api/ical/${type}/${token}` : '';
+
+  const handleCopy = () => {
+    if (!url) return;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success('Lien d\'abonnement copié !');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className={cn(
+      "p-6 rounded-3xl border glass-elevated relative overflow-hidden group transition-all",
+      disabled ? "opacity-50 grayscale pointer-events-none" : "hover:border-amber-500/30"
+    )}>
+      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+        <Link2 className="w-16 h-16" />
+      </div>
+
+      <div className="relative space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-amber-500" />
+          </div>
+          <h3 className="font-bold text-[var(--text-primary)]">{title}</h3>
+        </div>
+
+        <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
+          {description}
+        </p>
+
+        {url ? (
+          <div className="flex gap-2">
+            <div className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 font-mono text-[10px] text-[var(--text-muted)] truncate flex items-center">
+              {url}
+            </div>
+            <Button
+              size="sm"
+              onClick={handleCopy}
+              className="bg-amber-500 hover:bg-amber-600 text-black font-bold h-9 px-4 rounded-xl shrink-0"
+            >
+              {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            </Button>
+          </div>
+        ) : (
+          <div className="py-2 px-3 rounded-xl bg-amber-500/5 border border-amber-500/10 text-[10px] text-amber-500/60 italic">
+            Configurez votre profil pour activer l&apos;abonnement.
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
