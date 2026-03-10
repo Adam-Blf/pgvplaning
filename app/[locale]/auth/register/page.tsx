@@ -53,6 +53,9 @@ export default function RegisterPage() {
                 id: user.uid,
                 email: user.email!,
                 displayName,
+                first_name: firstName,
+                last_name: lastName,
+                birth_date: birthDate,
                 role: 'member',
                 employeeType: 'cdi',
                 workTimeCategory: 'temps-plein',
@@ -63,7 +66,6 @@ export default function RegisterPage() {
                     used: 0,
                     remaining: 25,
                 },
-                birthDate,
                 createdAt: Timestamp.now(),
                 updatedAt: Timestamp.now(),
             };
@@ -124,7 +126,7 @@ export default function RegisterPage() {
                         </div>
                         <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Créer un profil</h1>
                         <p className="text-[var(--text-tertiary)] text-center text-sm">
-                            Rejoignez Absencia — votre chef d&apos;équipe configurera votre contrat
+                            Rejoignez Absencia. Votre chef d&apos;équipe configurera votre contrat.
                         </p>
                     </div>
 
