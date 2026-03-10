@@ -207,6 +207,7 @@ export async function POST(request: NextRequest) {
       annual_leave_days: annualLeaveDays,
       leave_balance: annualLeaveDays,
       leave_balance_year: new Date().getFullYear(),
+      status: 'pending',
       joined_at: new Date().toISOString()
     };
 

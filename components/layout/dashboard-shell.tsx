@@ -12,6 +12,7 @@ import {
   Users,
   LogIn,
   BookOpen,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -31,6 +32,8 @@ const baseNavigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard, requiresAuth: false },
   { name: 'Calendrier', href: '/calendar', icon: Calendar, requiresAuth: false },
   { name: 'Team Planner', href: '/team-planner', icon: Users, requiresAuth: true },
+  { name: 'Validation SaaS', href: '/team/validation', icon: ShieldCheck, requiresAuth: true, requiresLeader: true },
+  { name: 'Setup', href: '/team/setup', icon: LogIn, requiresAuth: true },
   { name: 'Exporter', href: '/exports', icon: FileDown, requiresAuth: false },
   { name: 'Guide', href: '/guide', icon: BookOpen, requiresAuth: false },
   { name: 'Paramètres', href: '/settings', icon: Settings, requiresAuth: false },

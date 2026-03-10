@@ -1,0 +1,165 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Users,
+    UserCheck,
+    UserX,
+    ShieldCheck,
+    Clock,
+    Search,
+    CheckCircle2,
+    XCircle,
+    Loader2
+} from 'lucide-react';
+import { useTeam } from '@/contexts/team-context';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { useState, useMemo } from 'react';
+
+export default function MemberValidationPage() {
+    const { members, isLeader, approveMember, loading } = useTeam();
+    const [processingId, setProcessingId] = useState<string | null>(null);
+
+    const pendingMembers = useMemo(() => {
+        return members.filter(m => m.status === 'pending');
+    }, [members]);
+
+    const handleApprove = async (id: string, name: string) => {
+        setProcessingId(id);
+        try {
+            await approveMember(id);
+            toast.success(`${name} est maintenant membre de l'équipe.`);
+        } catch (error) {
+            toast.error("Erreur lors de la validation.");
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    if (!isLeader && !loading) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <Card className="max-w-md border-rose-500/20 bg-rose-500/5">
+                    <CardContent className="p-8 text-center space-y-4">
+                        <XCircle className="w-12 h-12 text-rose-500 mx-auto" />
+                        <h2 className="text-xl font-bold">Accès Refusé</h2>
+                        <p className="text-muted-foreground">Seuls les leaders d'équipe peuvent valider les nouveaux membres.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-5xl mx-auto space-y-8 p-4 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+                        <ShieldCheck className="w-8 h-8 text-amber-500" />
+                    </div>
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight">Validation SaaS</h1>
+                        <p className="text-muted-foreground">Gérez les accès à votre organisation</p>
+                    </div>
+                </div>
+
+                <div className="bg-white/5 border border-white/10 rounded-full px-4 py-2 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-sm font-medium">{pendingMembers.length} demande(s) en attente</span>
+                </div>
+            </div>
+
+            <div className="grid gap-6">
+                <AnimatePresence mode="popLayout">
+                    {pendingMembers.length === 0 ? (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-center py-20 bg-white/5 border border-dashed border-white/10 rounded-3xl"
+                        >
+                            <CheckCircle2 className="w-12 h-12 text-emerald-500/50 mx-auto mb-4" />
+                            <h2 className="text-xl font-semibold opacity-50">Aucune demande en attente</h2>
+                            <p className="text-muted-foreground">Votre équipe est à jour.</p>
+                        </motion.div>
+                    ) : (
+                        pendingMembers.map((member) => (
+                            <motion.div
+                                key={member.id}
+                                layout
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="group"
+                            >
+                                <Card className="glass-elevated border-white/10 hover:border-amber-500/30 transition-all rounded-2xl overflow-hidden">
+                                    <CardContent className="p-6">
+                                        <div className="flex items-center justify-between flex-wrap gap-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex items-center justify-center text-xl font-bold text-white uppercase">
+                                                    {member.profile?.displayName?.[0] || '?'}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold text-white">
+                                                        {member.profile?.displayName || 'Nouvel Utilisateur'}
+                                                    </h3>
+                                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                        <Clock className="w-3.5 h-3.5" />
+                                                        Inscrit le {new Date(member.joined_at).toLocaleDateString()}
+                                                    </div>
+                                                    <p className="text-xs font-mono text-amber-500 uppercase tracking-widest mt-1">
+                                                        {member.profile?.email}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-3">
+                                                <Button
+                                                    variant="outline"
+                                                    className="rounded-xl border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white"
+                                                >
+                                                    <UserX className="w-4 h-4 mr-2" />
+                                                    Rejeter
+                                                </Button>
+                                                <Button
+                                                    onClick={() => handleApprove(member.id, member.profile?.displayName || '')}
+                                                    disabled={processingId === member.id}
+                                                    className="rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-lg shadow-amber-500/20"
+                                                >
+                                                    {processingId === member.id ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : (
+                                                        <>
+                                                            <UserCheck className="w-4 h-4 mr-2" />
+                                                            Approuver
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))
+                    )}
+                </AnimatePresence>
+            </div>
+
+            <div className="rounded-3xl bg-amber-500/5 border border-amber-500/10 p-6">
+                <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-5 h-5 text-amber-500" />
+                    </div>
+                    <div className="space-y-1">
+                        <h4 className="font-bold text-white">Sécurité Premium</h4>
+                        <p className="text-sm text-muted-foreground">
+                            Cette zone permet de prévenir les attaques par brute-force sur les codes d'invitation.
+                            Même avec un code valide, une approbation humaine est requise.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

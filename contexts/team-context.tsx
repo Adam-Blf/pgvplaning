@@ -42,10 +42,13 @@ export interface TeamMember {
   user_id: string;  // UID Firebase de l'utilisateur
   team_id: string;  // ID de l'équipe
   role: 'leader' | 'member'; // Rôle dans l'équipe
+  status: 'pending' | 'approved'; // Statut SaaS d'adhésion
   joined_at: string;          // Date d'arrivée
   profile?: {                 // Profil utilisateur joint
     id: string;
     email: string;
+    displayName?: string;
+    color?: string;
     first_name?: string;
     last_name?: string;
     full_name?: string;
@@ -62,6 +65,7 @@ export interface TeamContextValue {
   error: string | null;           // Message d'erreur éventuel
   refreshTeam: () => Promise<void>; // Rafraîchir les données
   leaveTeam: () => Promise<void>;   // Quitter l'équipe
+  approveMember: (memberId: string) => Promise<void>; // Approuver un membre (Leader uniquement)
 }
 
 const TeamContext = createContext<TeamContextValue | undefined>(undefined);
@@ -121,10 +125,13 @@ export function TeamProvider({ children }: TeamProviderProps) {
         // Fetch all team members
         const teamMembersQuery = query(membershipsRef, where('team_id', '==', teamData.id));
         const teamMembersSnapshot = await getDocs(teamMembersQuery);
-
         const membersList: TeamMember[] = [];
+
         for (const mDoc of teamMembersSnapshot.docs) {
-          const mData = mDoc.data() as Omit<TeamMember, 'id' | 'profile'>;
+          const mData = mDoc.data();
+
+          // Vérifier si le membre est approuvé (le leader est toujours approuvé)
+          const status = mData.status || (mData.role === 'leader' ? 'approved' : 'pending');
 
           // Fetch profile for each member
           let profile = undefined;
@@ -137,7 +144,11 @@ export function TeamProvider({ children }: TeamProviderProps) {
 
           membersList.push({
             id: mDoc.id,
-            ...mData,
+            user_id: mData.user_id,
+            team_id: mData.team_id,
+            role: mData.role,
+            status: status as 'pending' | 'approved',
+            joined_at: mData.joined_at,
             profile
           });
         }
@@ -172,6 +183,23 @@ export function TeamProvider({ children }: TeamProviderProps) {
     }
   }, [membership]);
 
+  const approveMember = useCallback(async (memberId: string) => {
+    if (!db || !membership || membership.role !== 'leader') return;
+
+    try {
+      const memberRef = doc(db, 'team_members', memberId);
+      const { updateDoc } = await import('firebase/firestore');
+      await updateDoc(memberRef, {
+        status: 'approved',
+        updated_at: new Date().toISOString()
+      });
+      await fetchTeamData();
+    } catch (err) {
+      console.error('Error approving member:', err);
+      throw err;
+    }
+  }, [membership, fetchTeamData]);
+
   useEffect(() => {
     if (!auth) return;
 
@@ -199,6 +227,7 @@ export function TeamProvider({ children }: TeamProviderProps) {
     error,
     refreshTeam: fetchTeamData,
     leaveTeam,
+    approveMember,
   };
 
   return (

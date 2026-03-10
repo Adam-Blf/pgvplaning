@@ -69,7 +69,7 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       if (!db) throw new Error('Firestore not initialized');
-      const userRef = doc(db, 'users', user.uid);
+      const userRef = doc(db, 'profiles', user.uid);
       await updateDoc(userRef, {
         displayName: formData.displayName,
         employeeType: formData.employeeType,

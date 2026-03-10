@@ -76,55 +76,56 @@ const itemVariants = {
 
 // ============ MAIN COMPONENT ============
 export default function TeamPlannerPage() {
-  const { profile } = useAuth();
-  const { team } = useTeam();
+  const { team, members: contextMembers, loading: teamLoading } = useTeam();
   const [activeTab, setActiveTab] = useState<'weekly' | 'semester'>('weekly');
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [teamSchedules, setTeamSchedules] = useState<Record<string, any>>({});
   const [semesterStart, setSemesterStart] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
 
-  // Charger les membres et leurs calendriers
+  // Mapper les membres du contexte vers le format attendu par le Planner
+  const teamMembers = useMemo(() => {
+    return contextMembers
+      .filter(m => m.status === 'approved') // Ne montrer que les membres approuvés
+      .map(m => ({
+        id: m.user_id,
+        name: m.profile?.full_name || m.profile?.displayName || 'Sans nom',
+        color: (m.profile as any)?.color || '#3B82F6',
+        isExcludedFromDuty: false,
+        canTakeCallsRemote: false,
+        role: m.role === 'leader' ? 'Leader' : (m.profile as any)?.employeeType || 'Membre',
+        initials: (m.profile?.full_name || m.profile?.displayName || '??')
+          .split(' ')
+          .map((n: string) => n[0])
+          .join('')
+          .toUpperCase()
+      }));
+  }, [contextMembers]);
+
+  // Charger les calendriers des membres approuvés
   useEffect(() => {
-    const loadTeamData = async () => {
-      if (!team?.id || !db) return;
+    const loadSchedules = async () => {
+      if (!db || teamMembers.length === 0) return;
 
       try {
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('teamId', '==', team.id));
-        const snap = await getDocs(q);
-        const members = snap.docs.map(doc => {
-          const d = doc.data();
-          return {
-            id: doc.id,
-            name: d.displayName || 'Sans nom',
-            color: d.color || '#3B82F6',
-            isExcludedFromDuty: false,
-            canTakeCallsRemote: false,
-            role: d.employeeType || 'Membre',
-            initials: (d.displayName || '??').split(' ').map((n: string) => n[0]).join('').toUpperCase()
-          } as TeamMember;
-        });
-        setTeamMembers(members);
-
         const schedules: Record<string, any> = {};
-        for (const m of members) {
+        for (const m of teamMembers) {
           const calRef = collection(db, 'calendars');
-          const calSnap = await getDocs(query(calRef, where('userId', '==', m.id)));
+          const q = query(calRef, where('userId', '==', m.id));
+          const calSnap = await getDocs(q);
           if (!calSnap.empty) {
             schedules[m.id] = calSnap.docs[0].data().data || {};
           }
         }
         setTeamSchedules(schedules);
       } catch (error) {
-        console.error("Error loading team planner data:", error);
+        console.error("Error loading schedules:", error);
       }
     };
 
-    loadTeamData();
-  }, [team]);
+    loadSchedules();
+  }, [teamMembers]);
 
   // Calculate statistics (Simplified for now)
   const stats = useMemo(() => {
