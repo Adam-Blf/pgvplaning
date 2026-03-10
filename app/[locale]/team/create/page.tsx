@@ -109,8 +109,7 @@ export default function CreateTeamPage() {
                 </h3>
 
                 <div className="grid gap-4">
-                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                    onClick={() => setAllowMemberInvite(!allowMemberInvite)}>
+                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
                     <Checkbox
                       id="allowMemberInvite"
                       checked={allowMemberInvite}
@@ -127,8 +126,7 @@ export default function CreateTeamPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                    onClick={() => setAutoApproveAbsences(!autoApproveAbsences)}>
+                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
                     <Checkbox
                       id="autoApproveAbsences"
                       checked={autoApproveAbsences}

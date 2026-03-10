@@ -33,6 +33,8 @@ export interface Team {
   teamIcalToken?: string; // Token pour le flux iCal d'équipe
   settings?: {
     minPresenceRequired?: number;
+    allowMemberInvite?: boolean;
+    autoApproveAbsences?: boolean;
   };
 }
 

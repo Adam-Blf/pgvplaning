@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Settings, ArrowLeft, Save, Trash2, LogOut, Loader2, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Settings, ArrowLeft, Save, Trash2, LogOut, Loader2, AlertTriangle, Copy, Check, Globe } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { useTeam } from '@/contexts/team-context';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 export default function TeamSettingsPage() {
   const router = useRouter();
@@ -15,6 +17,8 @@ export default function TeamSettingsPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [minPresence, setMinPresence] = useState(0);
+  const [allowMemberInvite, setAllowMemberInvite] = useState(true);
+  const [autoApproveAbsences, setAutoApproveAbsences] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -27,6 +31,8 @@ export default function TeamSettingsPage() {
       setName(team.name);
       setDescription(team.description || '');
       setMinPresence(team.settings?.minPresenceRequired || 0);
+      setAllowMemberInvite(team.settings?.allowMemberInvite ?? true);
+      setAutoApproveAbsences(team.settings?.autoApproveAbsences ?? false);
     }
   }, [team]);
 
@@ -62,7 +68,9 @@ export default function TeamSettingsPage() {
           description: description.trim(),
           settings: {
             ...team.settings,
-            minPresenceRequired: minPresence
+            minPresenceRequired: minPresence,
+            allowMemberInvite,
+            autoApproveAbsences
           }
         }),
       });
@@ -224,6 +232,49 @@ export default function TeamSettingsPage() {
               onChange={(e) => setMinPresence(parseInt(e.target.value) || 0)}
               className="input w-32"
             />
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-[var(--border-default)]">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Paramètres de collaboration
+            </h3>
+
+            <div className="grid gap-4">
+              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer">
+                <Checkbox
+                  id="allowMemberInvite"
+                  checked={allowMemberInvite}
+                  onCheckedChange={(checked) => setAllowMemberInvite(!!checked)}
+                  className="mt-1"
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <Label htmlFor="allowMemberInvite" className="text-sm font-bold text-[var(--text-primary)] cursor-pointer">
+                    Autoriser les membres à inviter
+                  </Label>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Les membres pourront générer des liens d&apos;invitation
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer">
+                <Checkbox
+                  id="autoApproveAbsences"
+                  checked={autoApproveAbsences}
+                  onCheckedChange={(checked) => setAutoApproveAbsences(!!checked)}
+                  className="mt-1"
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <Label htmlFor="autoApproveAbsences" className="text-sm font-bold text-[var(--text-primary)] cursor-pointer">
+                    Approuver automatiquement
+                  </Label>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Les télétravails et présences sont validés sans revue
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <button

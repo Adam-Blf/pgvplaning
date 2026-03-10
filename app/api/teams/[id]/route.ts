@@ -6,6 +6,11 @@ import { z } from 'zod';
 const updateTeamSchema = z.object({
   name: z.string().min(2).max(50).optional(),
   description: z.string().max(200).optional(),
+  settings: z.object({
+    minPresenceRequired: z.number().optional(),
+    allowMemberInvite: z.boolean().optional(),
+    autoApproveAbsences: z.boolean().optional(),
+  }).optional(),
 });
 
 // GET /api/teams/[id] - Get team details with members
