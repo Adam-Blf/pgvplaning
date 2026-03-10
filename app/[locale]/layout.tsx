@@ -51,7 +51,7 @@ export default async function RootLayout(props: {
     notFound();
   }
 
-  const messages = await getMessages();
+  const messages = await getMessages({ locale });
 
   return (
     <html lang={locale} className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
