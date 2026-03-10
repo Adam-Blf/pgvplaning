@@ -11,9 +11,12 @@ import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { authFetch } from '@/lib/auth-fetch';
+import { useTeam } from '@/contexts/team-context';
 import { toast } from 'sonner';
+
 export default function CreateTeamPage() {
   const { user } = useAuth();
+  const { refreshTeam } = useTeam();
   const [teamName, setTeamName] = useState('');
   const [allowMemberInvite, setAllowMemberInvite] = useState(true);
   const [autoApproveAbsences, setAutoApproveAbsences] = useState(false);
@@ -53,9 +56,8 @@ export default function CreateTeamPage() {
 
       const data = await response.json();
       toast.success(`Équipe "${teamName}" créée !`);
-
-      // Store team code in session for the success page if needed, or redirect
-      router.push(`/team/success?code=${data.code}`);
+      await refreshTeam();
+      router.push(`/team/success?code=${data.team.code}`);
     } catch (err: any) {
       console.error(err);
       toast.error(err.message);
