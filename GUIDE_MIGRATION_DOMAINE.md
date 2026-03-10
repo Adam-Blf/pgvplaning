@@ -26,8 +26,10 @@ J'ai déjà créé les fichiers nécessaires dans le code (`sitemap.xml` et `rob
 
 1. **Google Search Console** :
    - Va sur [Google Search Console](https://search.google.com/search-console).
-   - Ajoute une nouvelle propriété de type **Domaine** : `absencia.beloucif.com`.
-   - Valide la propriété via DNS (comme indiqué par Google).
+   - **IMPORTANT** : Choisis le type de propriété **Domaine** (à gauche).
+   - Entre : `absencia.beloucif.com`.
+   - **Pourquoi ce choix ?** Cela permet de valider automatiquement toutes les variantes (http, https, avec ou sans www) en une seule fois via tes DNS.
+   - Copie la valeur de l'enregistrement TXT fourni par Google et ajoute-la dans ta zone DNS (chez ton hébergeur de domaine).
 
 2. **Soumettre le Sitemap** :
    - Dans le menu de gauche, clique sur **Sitemaps**.
