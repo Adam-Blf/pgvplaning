@@ -1,7 +1,7 @@
 # Absencia
 
 ![Status](https://img.shields.io/badge/status-production-green)
-![Version](https://img.shields.io/badge/version-13.2.0-blue)
+![Version](https://img.shields.io/badge/version-18.0.0-blue)
 ![Auth](https://img.shields.io/badge/auth-Firebase-orange)
 ![Security](https://img.shields.io/badge/security-OWASP%20Compliant-brightgreen)
 ![Architecture](https://img.shields.io/badge/architecture-Hybrid%20Firestore--Supabase-blue)
@@ -148,7 +148,7 @@ supabase/             # Migrations SQL
 
 ## Changelog
 
-### v13.2.0 (2026-03-10) - Adam Beloucif
+### v18.0.0 (2026-03-10) - Adam Beloucif
 
 - **PWA** : Application installable avec Service Worker, manifest et icônes.
 - **Routing i18n** : Migration complète vers `next-intl/navigation` (Link, useRouter, usePathname).
