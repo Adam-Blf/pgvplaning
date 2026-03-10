@@ -23,6 +23,7 @@ export interface UserProfile {
     };
     color?: string;
     icalToken?: string;
+    birthDate?: string; // Format YYYY-MM-DD
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }

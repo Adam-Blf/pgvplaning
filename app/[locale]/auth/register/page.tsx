@@ -9,7 +9,7 @@ import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } 
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, UserPlus, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, AlertCircle, Loader2, Cake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,13 +22,14 @@ export default function RegisterPage() {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [birthDate, setBirthDate] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!email || !password || !firstName || !lastName) {
+        if (!email || !password || !firstName || !lastName || !birthDate) {
             toast.error('Veuillez remplir tous les champs');
             return;
         }
@@ -62,6 +63,7 @@ export default function RegisterPage() {
                     used: 0,
                     remaining: 25,
                 },
+                birthDate,
                 createdAt: Timestamp.now(),
                 updatedAt: Timestamp.now(),
             };
@@ -165,6 +167,22 @@ export default function RegisterPage() {
                                         required
                                     />
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Date de naissance */}
+                        <div className="space-y-2">
+                            <Label htmlFor="birthDate">Date de naissance</Label>
+                            <div className="relative group">
+                                <Cake className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
+                                <Input
+                                    id="birthDate"
+                                    type="date"
+                                    value={birthDate}
+                                    onChange={(e) => setBirthDate(e.target.value)}
+                                    className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl text-white"
+                                    required
+                                />
                             </div>
                         </div>
 
