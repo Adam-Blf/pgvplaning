@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 import { UserProfile } from '@/types/firestore';
 import Cookies from 'js-cookie';
@@ -52,34 +52,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     const unsubscribeProfile = onSnapshot(profileRef, (docSnap) => {
                         if (docSnap.exists()) {
                             setProfile({ id: docSnap.id, ...docSnap.data() } as UserProfile);
-                            setLoading(false);
                         } else {
-                            // Create default profile if missing
-                            const newProfile: UserProfile = {
-                                id: firebaseUser.uid,
-                                email: firebaseUser.email || '',
-                                displayName: firebaseUser.displayName || 'Utilisateur',
-                                photoURL: firebaseUser.photoURL || null,
-                                first_name: '',
-                                last_name: '',
-                                birth_date: '',
-                                role: 'member',
-                                employeeType: 'cdi',
-                                workTimeCategory: 'temps-plein',
-                                sector: 'prive',
-                                leaveBalance: { total: 25, used: 0, remaining: 25 },
-                                createdAt: Timestamp.now(),
-                                updatedAt: Timestamp.now(),
-                            };
-
-                            setDoc(profileRef, newProfile).catch(err => {
-                                console.error("Error creating profile:", err);
-                                setError("Erreur lors de la création du profil");
-                            });
-
-                            setProfile(newProfile);
-                            setLoading(false);
+                            // Profile not yet created — the API /api/auth/register handles creation.
+                            // onSnapshot will fire again once the profile is written.
+                            setProfile(null);
                         }
+                        setLoading(false);
                     }, (err) => {
                         console.error("Profile snapshot error:", err);
                         setError("Erreur lors de la récupération du profil");
