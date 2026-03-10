@@ -16,6 +16,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './use-auth';
+import { useTeam } from '@/contexts/team-context';
 import { db } from '@/lib/firebase/client';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
@@ -123,6 +124,7 @@ function initializeHolidays(data: CalendarData, year: number): CalendarData {
 
 export function useCalendarData() {
   const { user, profile } = useAuth();
+  const { team, members } = useTeam();
   const [data, setData] = useState<CalendarData>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -177,6 +179,57 @@ export function useCalendarData() {
   }, [data, isLoaded]);
 
   const setDayStatus = useCallback(async (date: string, status: DayStatus | null, halfDay: HalfDay = 'FULL') => {
+    // ----------------------------------------------------------------------
+    // VÉRIFICATION DE LA RÈGLE DE PRÉSENCE MINIMALE DE L'ÉQUIPE
+    // On ne vérifie que si c'est une perte de présence (passage à LEAVE, HOLIDAY, SCHOOL, MEDICAL...)
+    // WORK et REMOTE comptent comme "présent" (sauf mention contraire).
+    // HOLIDAY, LEAVE, OFF, SCHOOL, TRAINER sont des "absences" du bureau.
+    // ----------------------------------------------------------------------
+    const isAbsence = status !== null && status !== 'WORK' && status !== 'REMOTE';
+
+    // Si l'utilisateur tente de poser une absence et que l'équipe a une règle stricte
+    if (isAbsence && team && team.settings?.minPresenceRequired && team.settings.minPresenceRequired > 0) {
+      if (!db || !members || members.length === 0) return; // Sécurité
+
+      try {
+        let presentCount = 0;
+
+        // On compte les autres membres de l'équipe présents ce jour-là
+        for (const member of members) {
+          if (member.user_id === user?.uid) continue; // on ne se compte pas soi-même
+
+          const memberCalendarRef = doc(db, 'calendars', member.user_id);
+          const memberSnap = await getDoc(memberCalendarRef);
+
+          let memberStatus: DayStatus | DayData | undefined;
+          if (memberSnap.exists()) {
+            memberStatus = memberSnap.data().data[date];
+          }
+
+          // Règle de calcul simplifiée : s'il n'y a rien sur la base, il est par défaut au travail (ou OFF le weekend, mais on ne compte les présences qu'en semaine généralement).
+          // S'il a explicitly posé 'WORK' ou 'REMOTE', il est présent.
+          const isMemberAbsent =
+            memberStatus === 'LEAVE' ||
+            memberStatus === 'HOLIDAY' ||
+            memberStatus === 'SCHOOL' ||
+            memberStatus === 'TRAINER' ||
+            (memberStatus !== undefined && isDayData(memberStatus) && (memberStatus.am === 'LEAVE' || memberStatus.pm === 'LEAVE')); // Simplification demi-journée
+
+          if (!isMemberAbsent) {
+            presentCount++;
+          }
+        }
+
+        if (presentCount < team.settings.minPresenceRequired) {
+          toast.error(`Demande refusée : présence minimale de ${team.settings.minPresenceRequired} personne(s) requise. Seules ${presentCount} seront présentes.`);
+          return; // On bloque la mise à jour
+        }
+      } catch (err) {
+        console.error("Erreur lors de la vérification de la présence minimale", err);
+      }
+    }
+
+
     // Calculer le nouvel état localement
     let nextData: CalendarData = {};
 

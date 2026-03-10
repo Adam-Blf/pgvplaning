@@ -37,6 +37,7 @@ export interface Team {
     settings: {
         allowMemberInvite: boolean;
         autoApproveAbsences: boolean;
+        minPresenceRequired?: number; // Nombre minimum de personnes qui doivent être présentes (ex: 1)
     };
     teamIcalToken?: string;
 }

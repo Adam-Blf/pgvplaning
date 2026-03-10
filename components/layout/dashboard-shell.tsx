@@ -34,6 +34,7 @@ const baseNavigation = [
   { name: 'Exporter', href: '/exports', icon: FileDown, requiresAuth: false },
   { name: 'Guide', href: '/guide', icon: BookOpen, requiresAuth: false },
   { name: 'Paramètres', href: '/settings', icon: Settings, requiresAuth: false },
+  { name: 'Analytics', href: '/analytics', icon: Activity, requiresAuth: true, requiresLeader: true },
 ];
 
 // Routes that should not display the shell (auth and team setup pages)
@@ -44,12 +45,17 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const lastScrollY = useRef(0);
   const pathname = usePathname();
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, profile } = useAuth();
+  const isLeader = profile?.role === 'leader';
 
-  // Filter navigation based on auth state
+  // Filter navigation based on auth state and role
   const navigation = useMemo(() => {
-    return baseNavigation.filter(item => !item.requiresAuth || isAuthenticated);
-  }, [isAuthenticated]);
+    return baseNavigation.filter(item => {
+      if (item.requiresAuth && !isAuthenticated) return false;
+      if ((item as any).requiresLeader && !isLeader) return false;
+      return true;
+    });
+  }, [isAuthenticated, isLeader]);
 
   // Handle scroll to show/hide navbar
   useEffect(() => {

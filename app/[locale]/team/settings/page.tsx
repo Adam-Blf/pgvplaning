@@ -14,6 +14,7 @@ export default function TeamSettingsPage() {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [minPresence, setMinPresence] = useState(0);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -25,6 +26,7 @@ export default function TeamSettingsPage() {
     if (team) {
       setName(team.name);
       setDescription(team.description || '');
+      setMinPresence(team.settings?.minPresenceRequired || 0);
     }
   }, [team]);
 
@@ -55,7 +57,14 @@ export default function TeamSettingsPage() {
       const response = await fetch(`/api/teams/${team.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          description: description.trim(),
+          settings: {
+            ...team.settings,
+            minPresenceRequired: minPresence
+          }
+        }),
       });
 
       if (!response.ok) {
@@ -201,10 +210,26 @@ export default function TeamSettingsPage() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+              Présence minimale obligatoire
+            </label>
+            <p className="text-xs text-[var(--text-muted)] mb-3">
+              Nombre de membres qui doivent obligatoirement être présents. Les demandes de congés qui bloquent cette présence minimale seront bloquées ou marquées d'un avertissement.
+            </p>
+            <input
+              type="number"
+              min="0"
+              value={minPresence}
+              onChange={(e) => setMinPresence(parseInt(e.target.value) || 0)}
+              className="input w-32"
+            />
+          </div>
+
           <button
             onClick={handleSave}
             disabled={saving || !name.trim()}
-            className="btn btn-primary"
+            className="btn btn-primary mt-6"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
