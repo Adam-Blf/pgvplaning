@@ -49,12 +49,6 @@ export default function LoginPage() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth!, email, password);
 
-      // Vérification de l'email (Sécurité SaaS)
-      if (!userCredential.user.emailVerified) {
-        await auth!.signOut();
-        throw new Error('Veuillez vérifier votre email avant de vous connecter.');
-      }
-
       toast.success('Connexion réussie !');
       router.push('/');
     } catch (err: any) {

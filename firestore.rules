@@ -44,7 +44,7 @@ service cloud.firestore {
     // ─── Teams ─────────────────────────────────────────────────────────────
     match /teams/{teamId} {
       allow read: if isAuthenticated();
-      allow create: if isEmailVerified();
+      allow create: if isAuthenticated();
       allow update: if isTeamLeader(teamId);
       allow delete: if false;
     }
@@ -53,14 +53,14 @@ service cloud.firestore {
     match /team_members/{membershipId} {
       allow read: if isAuthenticated();
       allow update: if isTeamLeader(membershipId.split('_')[0]);
-      allow create: if isEmailVerified();
+      allow create: if isAuthenticated();
       allow delete: if isTeamLeader(membershipId.split('_')[0]);
     }
 
     // ─── Calendars ──────────────────────────────────────────────────────────
     match /calendars/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(userId) && isEmailVerified();
+      allow write: if isOwner(userId) && isAuthenticated();
     }
 
     // ─── Leave Balance — server-side write only ─────────────────────────────

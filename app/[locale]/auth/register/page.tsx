@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 import { motion } from 'framer-motion';
@@ -67,14 +67,8 @@ export default function RegisterPage() {
                 throw new Error(data.error || "Erreur lors de la configuration du profil");
             }
 
-            // 3. Send verification email (client-side)
-            await sendEmailVerification(user, {
-                url: `${window.location.origin}/fr/auth/login?verified=1`,
-                handleCodeInApp: false,
-            });
-
-            toast.success('Compte créé ! Vérifiez votre boîte mail pour activer votre compte.');
-            router.push('/auth/verify-email');
+            toast.success('Compte créé avec succès !');
+            router.push('/');
         } catch (err: unknown) {
             const firebaseErr = err as { code?: string; message?: string };
             console.error('Registration error detailed:', err);
