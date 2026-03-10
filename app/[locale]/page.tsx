@@ -17,15 +17,11 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 
 export default function HomePage() {
-  const t = useTranslations('Common');
-  const tAuth = useTranslations('Auth');
-  const tDash = useTranslations('Dashboard');
-
   const features = [
     {
       icon: Calendar,
-      title: tDash('teamCalendar'),
-      description: t('description'),
+      title: "Calendrier d'équipe",
+      description: "Gestion intelligente des absences",
       gradient: 'from-indigo-500 to-violet-600',
       glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]',
       href: '/calendar',
@@ -103,7 +99,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed"
           >
-            {t('description')}
+            Gestion intelligente des absences.
             <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
           </motion.p>
 
