@@ -48,37 +48,26 @@ export default function RegisterPage() {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // 2. Prepare profile data
-            const profileData: UserProfile = {
-                id: user.uid,
-                email: user.email!,
-                displayName,
-                first_name: firstName,
-                last_name: lastName,
-                birth_date: birthDate,
-                role: 'member',
-                employeeType: 'cdi',
-                workTimeCategory: 'temps-plein',
-                workTimePercentage: 100,
-                sector: 'prive',
-                leaveBalance: {
-                    total: 25,
-                    used: 0,
-                    remaining: 25,
-                },
-                createdAt: Timestamp.now(),
-                updatedAt: Timestamp.now(),
-            };
+            // 2. Setup profile and display name via Server API (much faster)
+            // We pass the token to identify the user if needed, but here UID is enough since we just created it.
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: user.uid,
+                    email,
+                    firstName,
+                    lastName,
+                    birthDate
+                })
+            });
 
-            // 3. Update Firebase Profile and Firestore Profile in parallel
-            // We keep these two in parallel for speed
-            await Promise.all([
-                updateProfile(user, { displayName }),
-                setDoc(doc(db!, 'profiles', user.uid), profileData),
-            ]);
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || "Erreur lors de la configuration du profil");
+            }
 
-            // 4. Send verification email separately after profile is ready
-            // Doing this sequentially avoids some "Internal Error -26" caused by concurrent Auth state updates
+            // 3. Send verification email (client-side)
             await sendEmailVerification(user, {
                 url: `${window.location.origin}/fr/auth/login?verified=1`,
                 handleCodeInApp: false,
