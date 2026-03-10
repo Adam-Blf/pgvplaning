@@ -5,6 +5,10 @@ import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
 import { TeamProvider } from "@/contexts/team-context";
 import { AuthProvider } from "@/contexts/auth-context";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { routing } from "@/i18n/routing";
+import { notFound } from "next/navigation";
 import "../globals.css";
 import { cn } from "@/lib/utils";
 
@@ -35,13 +39,22 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
+export default async function RootLayout(props: {
   children: React.ReactNode;
-}>) {
+  params: Promise<{ locale: string }>;
+}) {
+  const params = await props.params;
+  const locale = params.locale;
+  const children = props.children;
+
+  if (!routing.locales.includes(locale as any)) {
+    notFound();
+  }
+
+  const messages = await getMessages();
+
   return (
-    <html lang="fr" className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang={locale} className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <meta name="theme-color" content="#0c1222" />
@@ -57,12 +70,14 @@ export default function RootLayout({
           Aller au contenu principal
         </a>
         <AuthProvider>
-          <TeamProvider>
-            <DashboardShell>
-              {children}
-            </DashboardShell>
-            <OnboardingTutorial />
-          </TeamProvider>
+          <NextIntlClientProvider messages={messages} locale={locale}>
+            <TeamProvider>
+              <DashboardShell>
+                {children}
+              </DashboardShell>
+              <OnboardingTutorial />
+            </TeamProvider>
+          </NextIntlClientProvider>
         </AuthProvider>
         <Toaster
           position="bottom-right"

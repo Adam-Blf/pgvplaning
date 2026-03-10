@@ -1,48 +1,37 @@
 # Absencia
 
 ![Status](https://img.shields.io/badge/status-production-green)
-![Version](https://img.shields.io/badge/version-12.0.0-blue)
+![Version](https://img.shields.io/badge/version-13.1.0-blue)
 ![Auth](https://img.shields.io/badge/auth-Firebase-orange)
 ![Security](https://img.shields.io/badge/security-OWASP%20Compliant-brightgreen)
-![Tests](https://img.shields.io/badge/tests-E2E%20Playwright-orange)
+![Architecture](https://img.shields.io/badge/architecture-Hybrid%20Firestore--Supabase-blue)
 
-**Solution professionnelle de gestion des absences d'équipe**
+**Solution professionnelle de gestion des absences d'équipe avec Analytics Avancés**
 
-Application web moderne permettant de gérer les absences, congés et télétravail d'équipe avec authentification sécurisée, synchronisation temps réel et export ICS.
+Application web moderne permettant de gérer les absences, congés et télétravail d'équipe avec une architecture hybride Cloud (Firebase pour le temps réel, Supabase pour l'analytics et l'audit).
 
 ---
 
 ## Fonctionnalités
 
-### Gestion d'équipe
+### Gestion d'équipe & Sécurité
 
-- **Création d'équipe** : Créez une équipe avec un code unique à 8 caractères
-- **Liens d'invitation** : Partagez un lien pour rejoindre facilement
-- **Rôles hiérarchiques** : Leader / Admin / Membre
-- **Types d'employés** : Non-cadre / Cadre avec congés différenciés
-- **Secteurs** : Public / Privé
+- **Règles de Présence** : Configuration par le leader du nombre minimal de personnes requises.
+- **Rôles Hiérarchiques** : Leader (Chef de groupe), Admin et Membre avec permissions granulaires.
+- **Sécurité RLS** : Politiques de sécurité Supabase (Row Level Security) garantissant que seul le leader accède aux dashboards analytiques du groupe.
+- **Audit Log** : Traçabilité complète de toutes les modifications effectuées par les membres.
 
-### Gestion des congés
+### Gestion des congés & Présence
 
-- **Solde automatique** : Décompte et reset annuel automatique
-- **Configuration flexible** : Jours de congés par type d'employé
-- **Vue d'équipe** : Calendrier partagé entre membres
-- **Statistiques** : Dashboard analytique complet
+- **Calendrier Interactif** : Sélection intuitive (clic/glissé) pour Bureau, Télétravail, Formation, Congés.
+- **Types de Contrats** : Gestion différenciée CDI, CDD, Stagiaire, Alternant, Intérim.
+- **Reset Annuel** : Calcul automatique des reports et nouveaux soldes.
 
-### Calendrier interactif
+### Analytics & Rapports
 
-- **Sélection intuitive** : Cliquez ou glissez pour marquer les jours
-- **Demi-journées** : Support matin/après-midi/journée complète
-- **Statuts multiples** : Bureau, Télétravail, Formation, Congés, Maladie, etc.
-- **Synchronisation temps réel** : Via Firestore
-- **Mode invité** : Utilisation sans compte (localStorage)
-
-### Exports et Analytics
-
-- **Export ICS** : Compatible Google Calendar, Outlook, Apple Calendar
-- **Compteur intelligent** : Jours restants par catégorie
-- **Dashboard** : Graphiques et statistiques avec Recharts
-- **Générateur IA** : Messages d'absence automatiques
+- **Dashboard Supabase** : Analyses de données historiques, graphiques de répartition et metrics RH.
+- **Export ICS** : Synchronisation bidirectionnelle avec Google Calendar, Outlook et Apple.
+- **IA Génératrice** : Aide à la rédaction de mails d'absence via Google Gemini.
 
 ---
 
@@ -50,170 +39,59 @@ Application web moderne permettant de gérer les absences, congés et télétrav
 
 | Catégorie | Technologies |
 |-----------|-------------|
-| Framework | Next.js 15.1 (App Router) |
-| Langage | TypeScript 5.7 (strict mode) |
-| Auth/DB | Firebase (Auth + Firestore) |
-| Data | TanStack Query v5 |
-| Styles | Tailwind CSS 3.4 + Framer Motion 11 |
-| Documents | UploadThing & React Dropzone |
-| Emails | Resend & React Email |
-| IA | Gemini (Google Generative AI) |
-| Monitoring | Sentry |
-| iCal | ics (RFC 5545) |
+| Framework | Next.js 15.5 (App Router) |
+| Langage | TypeScript 5.7 |
+| Real-time DB | Firebase (Auth + Firestore) |
+| Analytics DB | Supabase (PostgreSQL + RLS) |
+| Styles | Tailwind CSS + Framer Motion |
+| Internationalisation | Next-intl (Multilingue) |
+| IA | Google Gemini API |
+| Tracking | Sentry |
 
 ---
 
-## Installation
+## Installation & Configuration
 
 ### Prérequis
 
 - Node.js 18+
-- npm ou yarn
-- Projet Firebase configuré
+- Projet Firebase (Web + Admin SDK)
+- Projet Supabase (Clés API + Service Role)
 
-### Étapes
-
-```bash
-# 1. Cloner le repository
-git clone https://github.com/Adam-Blf/absencia.git
-cd absencia
-
-# 2. Installer les dépendances
-npm install
-
-# 3. Copier les variables d'environnement
-cp .env.example .env.local
-
-# 4. Configurer les variables (voir section suivante)
-
-# 5. Lancer en développement
-npm run dev
-```
-
-### Variables d'environnement
+### Variables d'environnement (.env.local)
 
 ```bash
-# .env.local
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-# Admin SDK (Server-side)
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_CLIENT_EMAIL=your_client_email
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
-```
-
----
-
-## Configuration Firebase
-
-### 1. Créer un projet Firebase
-
-1. Allez sur [console.firebase.google.com](https://console.firebase.google.com)
-2. Créez un nouveau projet
-3. Activez **Authentication** (Email/Password)
-4. Activez **Cloud Firestore**
-
-### 2. Règles de sécurité Firestore
-
-Configurez les règles pour autoriser l'accès basé sur l'UID de l'utilisateur et l'ID de l'équipe (voir `firestore.rules`).
-
----
-
-## Scripts
-
-| Commande | Description |
-|----------|-------------|
-| `npm run dev` | Serveur de développement |
-| `npm run build` | Build production |
-| `npm run start` | Démarrer en production |
-| `npm run lint` | Vérification ESLint |
-| `npm run test` | Tests unitaires Jest |
-| `npm run test:e2e` | Tests E2E Playwright |
-
----
-
-## Sécurité
-
-### Mesures implémentées
-
-| Mesure | Description |
-|--------|-------------|
-| **Auth** | Firebase Auth avec JWT |
-| **Firestore Rules** | Sécurité robuste au niveau granulaire |
-| **Rate Limiting** | Protection contre le spam |
-| **Validation** | Zod sur toutes les entrées |
-| **Audit** | Logs automatiques sur actions critiques |
-| **Headers** | CSP, HSTS, X-Frame-Options, etc. |
-
----
-
-## Architecture
-
-```
-absencia/
-|-- app/                    # Pages Next.js (App Router)
-|   |-- api/               # API Routes
-|   |-- calendar/          # Page calendrier
-|   |-- team/              # Pages équipe
-|   +-- ...
-|-- components/
-|   |-- features/          # Composants métier
-|   +-- layout/            # Layout et navigation
-|-- hooks/                 # Custom React hooks
-|-- lib/
-|   |-- firebase/          # Clients Firebase (Client/Admin)
-|   |-- schemas/           # Schémas Zod
-|   +-- utils.ts           # Utilitaires
-|-- types/                 # Types TypeScript
-|-- e2e/                   # Tests E2E Playwright
-+-- __tests__/             # Tests unitaires
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
 ---
 
 ## Changelog
 
-### v10.0.119 (2026-03-09)
+### v13.1.0 (2026-03-10) - Adam Beloucif
 
-- **Versionnement dynamique** basé sur les commits (119)
-- **Intégration TanStack Query** pour la gestion d'état serveur
-- **Système d'UploadThing** pour les justificatifs PDF/Images
-- **Moteur IA Gemini** pour l'aide à la saisie et les messages
-- **Notifications Email** via Resend
-- **Nouveaux types de contrats** : Stagiaire, Alternant, CDD, Intérim
-- **Onboarding interactif** premium (React Joyride)
+- **Système Hybride** : Réintroduction de Supabase pour la gestion des Analytics et de l'Audit Log.
+- **Sécurité Leader** : Restriction du Dashboard Analytics au chef de groupe via RLS.
+- **Règles métier** : Ajout de la configuration du nombre minimal de présences.
+- **Fix UI** : Résolution du crash 500 sur la page d'accueil lié au contexte `next-intl`.
+- **Gitignore** : Renforcement de la protection des fichiers `.env`.
 
-### v10.0.0 (2026-03-05)
+### v13.0.0 (2026-03-09)
 
-- **Migration complète vers Firebase** (Auth + Firestore)
-- Suppression de la dépendance Supabase
-- Initialisation résiliente du SDK Admin pour les environnements de build
-- Correction des warnings de linting et optimisation du code
-- Mise à jour de la documentation technique
-
-### v9.0.0 (2026-01-22)
-
-- Tests E2E Playwright complets
-- Audit sécurité OWASP
-- Documentation finale
+- Transition vers Next.js 15.1 et React 19.
+- Optimisation des performances et refonte du Dashboard principal.
 
 ---
 
 ## Licence
 
-MIT - Licence ouverte
-
----
+MIT - Blackout Prod
 
 ## Auteur
 
-**Adam Beloucif**
-
----
-
-*Projet validé à 100% - Standards GEMINI Appliqués*
+**Adam Beloucif** - Ingénieur Senior & Designer Produit
