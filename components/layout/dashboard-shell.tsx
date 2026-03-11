@@ -60,18 +60,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const navigation = useMemo(() => {
     if (loading) {
       return (
-        <div className="min-h-screen flex flex-col bg-background">
+        <div className="min-h-screen flex flex-col bg-background w-full">
           <OnboardingTutorial />
           {/* Header - Floating Glassmorphic avec scroll hide */}
           <div
             className={cn(
-              "fixed top-4 left-0 right-0 z-50 px-4 md:px-6 transition-all duration-300",
+              "fixed top-0 left-0 right-0 z-50 px-2 md:px-4 transition-all duration-300 w-full",
               isNavbarVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
             )}
           >
-            <header className="mx-auto max-w-5xl rounded-2xl glass-elevated border-b border-[var(--border-default)] shadow-[0_1px_20px_-5px_rgba(14,165,233,0.15)] shadow-2xl">
-              <div className="px-4 md:px-6">
-                <div className="flex items-center justify-between h-14 md:h-16">
+            <header className="w-full rounded-none glass-elevated border-b border-[var(--border-default)] shadow-[0_1px_20px_-5px_rgba(14,165,233,0.15)] shadow-2xl">
+              <div className="px-2 md:px-4 w-full">
+                <div className="flex items-center justify-between h-14 md:h-16 w-full">
                   {/* Logo */}
                   <Link href="/" className="flex items-center gap-3 no-underline group">
                     <div className="relative">
@@ -108,12 +108,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
               {/* Adaptative Navigation (hamburger everywhere) */}
               <div
                 className={cn(
-                  "border-t border-white/5 overflow-hidden transition-all duration-200 glass-elevated",
+                  "border-t border-white/5 overflow-hidden transition-all duration-200 glass-elevated w-full",
                   mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 )}
                 style={{ overscrollBehavior: 'contain' }}
               >
-                <div className="px-4 py-3 pb-4">
+                <div className="px-2 py-3 pb-4 w-full">
                   {/* Christmas Countdown */}
                   <div className="flex justify-center mb-3">
                     <ChristmasCountdown />
@@ -218,18 +218,18 @@ export function DashboardShell({ children }: DashboardShellProps) {
       </div>
 
       {/* Spacer for fixed header */}
-      <div className="h-24" />
+      <div className="h-20" />
 
       {/* Main content */}
-      <main className="flex-1" id="contenu" role="main">
-        <div className="container max-w-6xl py-4 md:py-8">
+      <main className="flex-1 w-full" id="contenu" role="main">
+        <div className="w-full py-4 md:py-8 px-2 md:px-4">
           {children}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-white/5 bg-background/50">
-        <div className="container max-w-6xl py-8 md:py-12">
+      <footer className="mt-auto border-t border-white/5 bg-background/50 w-full">
+        <div className="w-full py-8 md:py-12 px-2 md:px-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group hover:border-[var(--blueprint-500)]/30 transition-all cursor-default">
               <Activity className="w-3.5 h-3.5 text-[var(--blueprint-500)] group-hover:animate-pulse" />
