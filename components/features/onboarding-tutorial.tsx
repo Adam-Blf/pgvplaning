@@ -24,32 +24,32 @@ interface Step {
 
 const steps: Step[] = [
   {
-    title: "Bienvenue sur Absencia",
-    description: "Votre nouvel outil de gestion de planning intelligent et collaboratif. Simple, fluide et ultra-rapide.",
+    title: "Bienvenue sur PGV Planning",
+    description: "Votre nouvel outil universel de gestion d'équipe et de planning. Simple, fluide et ultra-rapide.",
     icon: Sparkles,
     color: "from-blue-500 to-cyan-500",
   },
   {
     title: "Travaillez en Équipe",
-    description: "Créez votre propre équipe ou rejoignez-en une existante pour synchroniser vos agendas en temps réel.",
+    description: "Créez votre propre équipe ou rejoignez-en une existante : entreprise, association, collectivité, club, groupe projet... Synchronisation en temps réel.",
     icon: Users,
     color: "from-emerald-500 to-teal-500",
   },
   {
-    title: "Gérez vos Congés",
-    description: "Posez vos jours en quelques clics. Votre solde est calculé automatiquement selon votre contrat.",
+    title: "Gérez vos Plannings & Activités",
+    description: "Planifiez absences, événements, réunions, entraînements, bénévolat, interventions... Votre solde est calculé automatiquement selon vos règles.",
     icon: Calendar,
     color: "from-crimson-500 to-rose-500",
   },
   {
     title: "Exportez Partout",
-    description: "Générez des fichiers ICS pour intégrer votre planning Absencia dans Google Calendar ou Outlook.",
+    description: "Générez des fichiers ICS pour intégrer votre planning dans Google Calendar, Outlook ou Apple Calendar.",
     icon: FileDown,
     color: "from-gold-500 to-amber-500",
   },
   {
     title: "Prêt à décoller ?",
-    description: "Vous avez maintenant toutes les clés pour optimiser votre organisation. C'est parti !",
+    description: "Vous avez maintenant toutes les clés pour optimiser l'organisation de votre équipe, quel que soit votre secteur.",
     icon: Rocket,
     color: "from-indigo-500 to-purple-500",
   },
