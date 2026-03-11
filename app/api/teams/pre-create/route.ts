@@ -95,7 +95,11 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.headers.get('origin') || '';
+    let baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+    // Sécurise : jamais localhost
+    if (baseUrl.includes('localhost')) {
+      baseUrl = 'https://absencia.beloucif.com'; // fallback prod
+    }
     const inviteUrl = `${baseUrl}/invite/${token}`;
 
     return NextResponse.json({
