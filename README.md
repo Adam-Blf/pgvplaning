@@ -1,16 +1,24 @@
-# Absencia
+# PGV Planning
 
 ![Status](https://img.shields.io/badge/status-production-green)
 ![Version](https://img.shields.io/badge/version-18.0.0-blue)
 ![Auth](https://img.shields.io/badge/auth-Firebase-orange)
-![Security](https://img.shields.io/badge/security-OWASP%20Compliant-brightgreen)
+![Security](https://img.shields.io/badge/security-RGPD%20Cloud-brightgreen)
 ![Architecture](https://img.shields.io/badge/architecture-Hybrid%20Firestore--Supabase-blue)
 ![PWA](https://img.shields.io/badge/PWA-installable-purple)
 ![Design](https://img.shields.io/badge/design-Blueprint%20Dark-0ea5e9)
 
-**Solution professionnelle de gestion des absences d'équipe — Design Blueprint on Dark**
+**Solution universelle de gestion d'équipe — Design Blueprint on Dark**
 
-Application web moderne (PWA) permettant de gérer les absences, congés et télétravail d'équipe avec une architecture hybride Cloud (Firebase pour l'authentification et le temps réel, Supabase pour l'analytics et l'audit). Interface premium « Blueprint on Dark » avec typographie Outfit / JetBrains Mono et accents cyan/sky.
+Application web moderne (PWA) permettant de gérer les plannings, absences, congés, télétravail et activités de tout type d'équipe :
+- Entreprises
+- Associations
+- Collectivités
+- Groupes projet
+- Équipes sportives
+- Clubs étudiants
+
+Architecture cloud sécurisée (Firebase/Supabase, hébergement Vercel & OVHcloud), conformité RGPD, interface premium « Blueprint on Dark ».
 
 > 🌐 **Production** : [absencia.beloucif.com](https://absencia.beloucif.com)
 
@@ -29,51 +37,54 @@ Application web moderne (PWA) permettant de gérer les absences, congés et tél
 - **Pré-création de membres** : Le leader saisit nom/prénom/email → lien personnalisé envoyé → le membre finalise son inscription.
 - **Rejoindre une équipe** : Rejoignez via code d'invitation, lien partagé ou lien personnalisé.
 - **Validation des membres** : Le leader/modérateur approuve ou rejette les demandes d'adhésion.
-- **Gestion par membre** : Le leader définit pour chaque membre : heures/semaine, jours bonus (0-3), heures récup, solde CP, rôle.
+- **Gestion par membre** : Le leader définit pour chaque membre : heures/semaine, jours bonus, heures récup, solde CP, rôle.
 - **Couleur par membre** : Le leader attribue une couleur personnalisée à chaque membre.
-- **Règles de Présence** : Configuration par le leader du nombre minimal de personnes requises sur site.
+- **Règles de Présence** : Configuration par le leader du nombre minimal de personnes requises.
 - **Quitter / Supprimer** : Un membre peut quitter l'équipe ; le leader peut supprimer l'équipe.
 - **Sécurité RLS** : Politiques Supabase (Row Level Security) pour l'isolation des données.
-- **Firestore Security Rules** : Permissions granulaires par rôle (leader, moderator, super_admin).
+- **Firestore Security Rules** : Permissions granulaires par rôle.
 - **Audit Log** : Traçabilité complète de toutes les modifications.
 
-### Gestion des congés & Présence
+### Gestion des plannings & activités
 
-- **Calendrier Interactif** : Sélection intuitive (clic/glissé) pour Bureau, Télétravail, Formation, Congés.
+- **Calendrier Interactif** : Sélection intuitive (clic/glissé) pour toutes activités (présence, télétravail, formation, absence, événement).
 - **Demi-journées** : Support AM/PM pour des plannings précis.
 - **Soldes de congés** : CP annuels configurables par le leader pour chaque membre.
-- **Jours bonus** : Jusqu'à 3 jours optionnels attribués par le leader selon la pose des congés.
-- **Heures récup** : Compteur séparé pour les heures sup récupérées (non déduit des CP).
-- **Heures hebdo** : Le leader définit le taux horaire de chaque membre (ex: 38h, 35h).
-- **Jours fériés français** : Calcul automatique incluant Pâques, Ascension, Pentecôte.
+- **Jours bonus** : Jusqu'à 3 jours optionnels attribués par le leader.
+- **Heures récup** : Compteur séparé pour les heures sup récupérées.
+- **Heures hebdo** : Le leader définit le taux horaire de chaque membre.
+- **Jours fériés français** : Calcul automatique.
 - **Synchronisation Cloud** : Données calendrier sauvegardées en temps réel sur Firestore.
 
 ### Analytics & Rapports
 
-- **Dashboard Supabase** : Analyses de données historiques et metrics RH.
+- **Dashboard Supabase** : Analyses de données historiques et metrics.
 - **Export ICS** : Synchronisation avec Google Calendar, Outlook et Apple Calendar.
 - **IA Génératrice** : Aide à la rédaction de mails d'absence via Google Gemini.
 
 ### Notifications & Alertes
 
-- **Alertes d'équipe** : Notification quand un membre pose un congé.
-- **Notifications email** : Préférences configurables dans les réglages.
-- **Switches interactifs** : Activation/désactivation en temps réel avec sauvegarde Firestore.
+- **Alertes d'équipe** : Notification quand un membre pose un congé ou événement.
+- **Notifications email** : Préférences configurables.
 
-### Design & UX
+---
 
-- **Blueprint on Dark** : Thème sombre technique avec accents cyan/sky et grille blueprint en fond.
-- **Typographie distinctive** : Outfit (titres/UI) + JetBrains Mono (données/nombres).
-- **Animations WAAPI** : Transitions performantes via Web Animations API (zero framer-motion).
-- **Glow effects** : Lueur sur boutons actifs, navbar et éléments interactifs.
-- **Accessibilité** : Focus visible, aria-labels, rôles ARIA, navigation clavier, touch targets 44px+.
-- **Responsive** : Interface adaptée mobile, tablette et desktop.
+## Sécurité & RGPD
 
-### PWA & Mobile
+- **Stockage cloud sécurisé** : Hébergement Vercel & OVHcloud, isolation des données par équipe.
+- **Conformité RGPD** : Droits d'accès, rectification, suppression, portabilité, opposition.
+- **Aucune donnée sensible collectée sans consentement**.
+- **Contact DPO** : adam.beloucif@efrei.net
 
-- **Progressive Web App** : Installable sur mobile et desktop.
-- **Offline-ready** : Service Worker avec mise en cache automatique.
-- **Touch optimisé** : `touch-action: manipulation`, `overscroll-behavior: contain`.
+---
+
+## Cas d'usage
+
+- PME : gestion des plannings et absences
+- Association : organisation des bénévoles
+- Collectivité : suivi des équipes terrain
+- Club sportif : gestion des entraînements
+- Groupe projet : coordination des tâches
 
 ---
 
