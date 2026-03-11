@@ -27,8 +27,7 @@ import { signOut } from 'firebase/auth';
 
 interface DashboardShellProps {
   children: ReactNode;
-  }
-// Navigation items - some require authentication
+                    )}
 const baseNavigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard, requiresAuth: false },
   { name: 'Calendrier', href: '/calendar', icon: Calendar, requiresAuth: false },
