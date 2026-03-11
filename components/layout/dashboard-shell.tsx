@@ -151,7 +151,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         <span>Se connecter</span>
                       </Link>
                     )}
-                  )}
                 </div>
               </div>
 
