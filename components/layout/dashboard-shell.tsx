@@ -59,60 +59,16 @@ export function DashboardShell({ children }: DashboardShellProps) {
   // Filter navigation based on auth state and role
   const navigation = useMemo(() => {
     if (loading) {
-      return baseNavigation.filter(item => !item.requiresAuth);
-    }
-    return baseNavigation.filter(item => {
-      if (item.requiresAuth && !isAuthenticated) return false;
-      if ((item as any).requiresLeader && !isLeaderOrMod) return false;
-      return true;
-    });
-  }, [isAuthenticated, isLeaderOrMod, loading]);
-
-  // Handle scroll to show/hide navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollDelta = currentScrollY - lastScrollY.current;
-
-      // Show navbar when:
-      // - Scrolling up (delta < 0)
-      // - At the top of the page (scrollY < 50)
-      // - Mobile menu is open
-      if (scrollDelta < -5 || currentScrollY < 50 || mobileMenuOpen) {
-        setIsNavbarVisible(true);
-      }
-      // Hide navbar when scrolling down more than 5px
-      else if (scrollDelta > 5 && currentScrollY > 100) {
-        setIsNavbarVisible(false);
-        // Close mobile menu when hiding navbar
-        if (mobileMenuOpen) {
-          setMobileMenuOpen(false);
-        }
-      }
-
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [mobileMenuOpen]);
-
-  // If on an auth route, render children only
-  const isAuthRoute = authRoutes.some((route) => pathname?.startsWith(route));
-  if (isAuthRoute) {
-    return <>{children}</>;
-  }
-
-  return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <OnboardingTutorial />
-      {/* Header - Floating Glassmorphic with scroll hide */}
-      <div
-        className={cn(
-          "fixed top-4 left-0 right-0 z-50 px-4 md:px-6 transition-all duration-300",
-          isNavbarVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
-        )}
-      >
+      return (
+        <div className="min-h-screen flex flex-col bg-background">
+          <OnboardingTutorial />
+          {/* Header - Floating Glassmorphic avec scroll hide */}
+          <div
+            className={cn(
+              "fixed top-4 left-0 right-0 z-50 px-4 md:px-6 transition-all duration-300",
+              isNavbarVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+            )}
+          >
             <header className="mx-auto max-w-5xl rounded-2xl glass-elevated border-b border-[var(--border-default)] shadow-[0_1px_20px_-5px_rgba(14,165,233,0.15)] shadow-2xl">
               <div className="px-4 md:px-6">
                 <div className="flex items-center justify-between h-14 md:h-16">
@@ -134,76 +90,59 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     </div>
                   </Link>
 
-                  {/* Desktop Navigation - Pill Style */}
-                  <nav className="hidden md:flex items-center gap-1.5 p-1 bg-white/5 rounded-full border border-white/10 backdrop-blur-md">
-                    {navigation.map((item, i) => {
-                      const isActive = pathname === item.href;
-                      return (
-                        <div
-                          key={item.name}
-                          className="animate-fade-up"
-                          style={{ animationDelay: `${i * 50}ms` }}
-                        >
-                          <Link
-                            href={item.href}
-                            aria-current={isActive ? 'page' : undefined}
-                            className={cn(
-                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-[transform,color,background-color,box-shadow] duration-300 active:scale-90 cursor-pointer',
-                              isActive
-                                ? 'bg-[var(--blueprint-500)] text-white shadow-lg shadow-sky-500/30 scale-105'
-                                : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/10'
-                            )}
-                          >
-                            <item.icon className={cn("w-4 h-4", isActive ? "animate-pulse" : "")} />
-                            <span className="hidden lg:inline">{item.name}</span>
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </nav>
-
-                  {/* Christmas Countdown + Team Indicator or Login Button */}
-                  <div className="hidden md:flex items-center gap-4">
-                    <ChristmasCountdown />
-                    <div className="divider-vertical h-8" />
-                    {loading ? (
-                      <div className="h-10 w-24 rounded-full bg-white/5 animate-shimmer" />
-                    ) : isAuthenticated ? (
-                      <div className="flex items-center gap-2">
-                        <TeamIndicator />
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (auth) await signOut(auth);
-                            router.push('/login');
-                          }}
-                          className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-[color,background-color] duration-200"
-                          title="Se déconnecter"
-                          aria-label="Se déconnecter"
-                        >
-                          <LogOut className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <Link
-                        href="/login"
-                        className="btn-primary"
-                      >
-                        <LogIn className="w-4 h-4" />
-                        Connexion
-                      </Link>
-                    )}
-                  </div>
-
-                  {/* Mobile menu button */}
+                  {/* Hamburger menu button (always visible) */}
                   <button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="md:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors"
                     aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
                   >
                     {mobileMenuOpen ? (
                       <X className="w-5 h-5" />
                     ) : (
+                      <Menu className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Adaptative Navigation (hamburger everywhere) */}
+              <div
+                className={cn(
+                  "border-t border-white/5 overflow-hidden transition-all duration-200 glass-elevated",
+                  mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                )}
+                style={{ overscrollBehavior: 'contain' }}
+              >
+                <div className="px-4 py-3 pb-4">
+                  {/* Christmas Countdown */}
+                  <div className="flex justify-center mb-3">
+                    <ChristmasCountdown />
+                  </div>
+
+                  <nav className="flex flex-col gap-1">
+                    {navigation.map((item) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            'flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
+                            isActive
+                              ? 'bg-primary/10 text-primary font-medium'
+                              : 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+                          )}
+                        >
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.name}</span>
+                        </Link>
+                      );
+                    })}
+
+                    {/* Login link if not authenticated */}
+                    {!isAuthenticated && !loading && (
+                      <Link
                       <Menu className="w-5 h-5" />
                     )}
                   </button>
