@@ -103,12 +103,14 @@ export default function RegisterPage() {
             <div
                 className="w-full max-w-md z-10 animate-fade-up opacity-0"
             >
-                <div className="glass-elevated p-8 rounded-3xl border border-white/10 shadow-2xl">
+                <div className="glass-elevated p-8 rounded-2xl border border-white/10 border-t-2 border-t-[var(--blueprint-500)]/50 shadow-xl shadow-sky-500/5 relative">
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--blueprint-500)]/5 via-transparent to-transparent rounded-2xl" />
                     <div className="flex flex-col items-center mb-8">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--blueprint-500)] to-[var(--cyan-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
                             <UserPlus className="w-8 h-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Créer un profil</h1>
+                        <h1 className="text-2xl font-bold tracking-tight gradient-text-amber mb-2">Créer un profil</h1>
                         <p className="text-[var(--text-tertiary)] text-center text-sm">
                             Rejoignez Absencia. Votre chef d&apos;équipe configurera votre contrat.
                         </p>
@@ -125,7 +127,7 @@ export default function RegisterPage() {
                         <div className="grid grid-cols-2 gap-4">
                             {/* Prénom */}
                             <div className="space-y-2">
-                                <Label htmlFor="firstName">Prénom</Label>
+                                <Label htmlFor="firstName" className="text-sm font-medium text-[var(--text-secondary)]">Prénom</Label>
                                 <div className="relative group">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                     <Input
@@ -141,7 +143,7 @@ export default function RegisterPage() {
 
                             {/* Nom */}
                             <div className="space-y-2">
-                                <Label htmlFor="lastName">Nom</Label>
+                                <Label htmlFor="lastName" className="text-sm font-medium text-[var(--text-secondary)]">Nom</Label>
                                 <div className="relative group">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                     <Input
@@ -158,7 +160,7 @@ export default function RegisterPage() {
 
                         {/* Date de naissance */}
                         <div className="space-y-2">
-                            <Label htmlFor="birthDate">Date de naissance</Label>
+                            <Label htmlFor="birthDate" className="text-sm font-medium text-[var(--text-secondary)]">Date de naissance</Label>
                             <div className="relative group">
                                 <Cake className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                 <Input
@@ -174,7 +176,7 @@ export default function RegisterPage() {
 
                         {/* Email */}
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email professionnel</Label>
+                            <Label htmlFor="email" className="text-sm font-medium text-[var(--text-secondary)]">Email professionnel</Label>
                             <div className="relative group">
                                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                 <Input
@@ -193,7 +195,7 @@ export default function RegisterPage() {
 
                         {/* Mot de passe */}
                         <div className="space-y-2">
-                            <Label htmlFor="password">Mot de passe</Label>
+                            <Label htmlFor="password" className="text-sm font-medium text-[var(--text-secondary)]">Mot de passe</Label>
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                 <Input
@@ -214,7 +216,7 @@ export default function RegisterPage() {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full h-12 rounded-xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold shadow-lg shadow-blue-500/20"
+                            className="w-full btn-primary py-3 text-base font-semibold"
                         >
                             {loading ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -226,7 +228,7 @@ export default function RegisterPage() {
 
                     <div className="mt-8 text-center text-sm text-[var(--text-tertiary)]">
                         Vous avez déjà un compte ?{' '}
-                        <Link href="/login" className="text-[var(--blueprint-500)] font-bold hover:underline">
+                        <Link href="/login" className="text-[var(--blueprint-500)] hover:text-[var(--cyan-400)] font-bold hover:underline">
                             Se connecter
                         </Link>
                     </div>

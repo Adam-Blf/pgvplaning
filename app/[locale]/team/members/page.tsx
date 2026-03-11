@@ -133,11 +133,11 @@ export default function TeamMembersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center">
-            <Users className="w-6 h-6 text-[var(--accent)]" />
+          <div className="w-12 h-12 rounded-xl bg-[var(--blueprint-500)]/10 flex items-center justify-center">
+            <Users className="w-6 h-6 text-[var(--blueprint-500)]" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[var(--text-primary)]">{team.name}</h1>
+            <h1 className="text-xl font-bold gradient-text-amber">{team.name}</h1>
             <p className="text-sm text-[var(--text-muted)]">
               {members.length} membre{members.length > 1 ? 's' : ''}
               {isLeader && ' · Vous êtes chef d\'équipe'}
@@ -153,11 +153,11 @@ export default function TeamMembersPage() {
       </div>
 
       {/* Team Code */}
-      <div className="card p-4">
+      <div className="glass-elevated rounded-2xl p-4">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-[var(--text-muted)]">Code d&apos;invitation</p>
-            <p className="text-xl font-mono font-bold text-[var(--accent)] tracking-wider">{team.code}</p>
+            <p className="text-xl font-mono font-bold text-[var(--blueprint-500)] tracking-wider">{team.code}</p>
           </div>
           <button type="button" onClick={copyCode} className="btn btn-secondary">
             {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
@@ -171,8 +171,8 @@ export default function TeamMembersPage() {
 
       {/* Leader info banner */}
       {isLeader && (
-        <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 flex items-center gap-3">
-          <Crown className="w-5 h-5 text-amber-400 shrink-0" />
+        <div className="rounded-2xl border border-[var(--blueprint-500)]/20 bg-[var(--blueprint-500)]/5 p-4 flex items-center gap-3">
+          <Crown className="w-5 h-5 text-[var(--blueprint-500)] shrink-0" />
           <p className="text-sm text-[var(--text-secondary)]">
             En tant que chef d&apos;équipe, vous pouvez modifier le type de contrat et le secteur de chaque membre.
             Cela recalcule automatiquement leur solde de congés.
@@ -181,7 +181,7 @@ export default function TeamMembersPage() {
       )}
 
       {/* Members List */}
-      <div className="card divide-y divide-[var(--border-subtle)]">
+      <div className="glass-elevated rounded-2xl divide-y divide-[var(--border-subtle)]">
         <div className="p-4">
           <h2 className="font-semibold text-[var(--text-primary)]">Membres de l&apos;équipe</h2>
         </div>
@@ -197,12 +197,12 @@ export default function TeamMembersPage() {
               style={{ animationDelay: `${index * 80}ms` }}
             >
               {/* Member Row */}
-              <div className="p-4 flex items-center justify-between">
+              <div className="p-4 flex items-center justify-between hover:bg-[var(--bg-overlay)]/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${member.role === 'leader' ? 'bg-amber-500/10' : 'bg-[var(--bg-secondary)]'
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${member.role === 'leader' ? 'bg-[var(--blueprint-500)]/10' : 'bg-[var(--bg-secondary)]'
                     }`}>
                     {member.role === 'leader'
-                      ? <Crown className="w-5 h-5 text-amber-500" />
+                      ? <Crown className="w-5 h-5 text-[var(--blueprint-500)]" />
                       : <User className="w-5 h-5 text-[var(--text-muted)]" />
                     }
                   </div>
@@ -218,7 +218,7 @@ export default function TeamMembersPage() {
 
                 <div className="flex items-center gap-2">
                   <span className={`text-xs px-2 py-1 rounded-full ${member.role === 'leader'
-                      ? 'bg-amber-500/10 text-amber-600'
+                      ? 'bg-[var(--blueprint-500)]/10 text-[var(--blueprint-500)]'
                       : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
                     }`}>
                     {member.role === 'leader' ? 'Chef d\'équipe' : 'Membre'}
@@ -245,7 +245,7 @@ export default function TeamMembersPage() {
                   <div
                     className="overflow-hidden transition-all duration-200"
                   >
-                    <div className="px-4 pb-4 bg-[var(--bg-overlay)] mx-4 mb-4 rounded-2xl border border-white/5 space-y-4">
+                    <div className="px-4 pb-4 bg-[var(--bg-overlay)] mx-4 mb-4 rounded-2xl border border-[var(--border-default)] space-y-4">
                       <p className="text-xs text-[var(--text-muted)] pt-4 font-medium uppercase tracking-wide">
                         Configuration du contrat
                       </p>
@@ -259,7 +259,7 @@ export default function TeamMembersPage() {
                           <select
                             value={edit.employeeType}
                             onChange={e => updateContract(member.user_id, 'employeeType', e.target.value as EmployeeType)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface)] border border-white/10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                           >
                             {CONTRACT_TYPES.map(ct => (
                               <option key={ct.id} value={ct.id}>{ct.label}</option>
@@ -275,7 +275,7 @@ export default function TeamMembersPage() {
                           <select
                             value={edit.sector}
                             onChange={e => updateContract(member.user_id, 'sector', e.target.value as SectorType)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface)] border border-white/10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                           >
                             <option value="prive">Privé</option>
                             <option value="public">Public</option>
@@ -290,7 +290,7 @@ export default function TeamMembersPage() {
                           <select
                             value={edit.workTimeCategory}
                             onChange={e => updateContract(member.user_id, 'workTimeCategory', e.target.value as WorkTimeCategory)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface)] border border-white/10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                           >
                             {WORK_TIME_CATEGORIES.map(wt => (
                               <option key={wt.id} value={wt.id}>{wt.label}</option>
@@ -309,7 +309,7 @@ export default function TeamMembersPage() {
                               min={50} max={99} step={5}
                               value={edit.workTimePercentage}
                               onChange={e => updateContract(member.user_id, 'workTimePercentage', Number(e.target.value))}
-                              className="w-full px-3 py-2 rounded-xl bg-[var(--bg-surface)] border border-white/10 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)]"
+                              className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                             />
                           </div>
                         )}

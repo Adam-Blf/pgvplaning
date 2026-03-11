@@ -93,12 +93,12 @@ export function PaintingToolbar({
 }: PaintingToolbarProps) {
   return (
     <div
-      className="glass-elevated rounded-2xl overflow-hidden animate-fade-up"
+      className="glass-elevated rounded-2xl overflow-hidden animate-fade-up shadow-lg shadow-black/20"
     >
       {/* Header */}
       <div className="px-5 py-3 border-b border-[var(--border-subtle)] flex items-center gap-3">
-        <div className="p-2 rounded-xl bg-amber-500/10">
-          <Paintbrush className="w-4 h-4 text-amber-500" />
+        <div className="p-2 rounded-xl bg-sky-500/10">
+          <Paintbrush className="w-4 h-4 text-[var(--blueprint-500)]" />
         </div>
         <div>
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Barre d&apos;outils</h3>
@@ -133,6 +133,7 @@ export function PaintingToolbar({
                         'text-white',
                         'shadow-lg',
                         tool.glowColor,
+                        'border-b-2 border-current',
                       ] : [
                         'bg-[var(--bg-overlay)]',
                         'border border-[var(--border-subtle)]',
@@ -219,7 +220,7 @@ export function PaintingToolbar({
             Granularité
           </legend>
 
-          <div className="inline-flex p-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border-subtle)]">
+          <div className="inline-flex p-1 rounded-xl bg-sky-500/10 border border-sky-500/20">
             {halfDayOptions.map((option) => {
               const isActive = currentHalfDay === option.id;
               const Icon = option.icon;
@@ -248,7 +249,7 @@ export function PaintingToolbar({
 
                   <Icon className={cn(
                     'w-4 h-4 relative z-10 transition-colors duration-200',
-                    isActive && 'text-amber-500'
+                    isActive && 'text-[var(--blueprint-500)]'
                   )} />
                   <span className="relative z-10 hidden sm:inline">{option.label}</span>
                   <span className="relative z-10 sm:hidden">{option.shortLabel}</span>

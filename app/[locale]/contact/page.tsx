@@ -61,8 +61,8 @@ export default function ContactPage() {
           <Sparkles className="w-3 h-3" />
           Support & Contact
         </div>
-        <h1 className="text-5xl font-black text-white tracking-tighter sm:text-6xl">
-          Une question ? <span className="text-[var(--blueprint-500)]">Écrivez-nous.</span>
+        <h1 className="text-5xl font-black tracking-tighter sm:text-6xl">
+          <span className="gradient-text-amber">Une question ?</span> <span className="text-[var(--blueprint-500)]">Écrivez-nous.</span>
         </h1>
         <p className="text-[var(--text-tertiary)] text-lg max-w-2xl mx-auto">
           Notre équipe est là pour vous aider à optimiser la gestion de votre planning.
@@ -97,7 +97,7 @@ export default function ContactPage() {
               <div className="space-y-1">
                 <h4 className="font-bold text-white">Email Direct</h4>
                 <p className="text-sm text-[var(--text-tertiary)]">Général & Partenariats</p>
-                <a href="mailto:contact@blackoutprod.fr" className="text-[var(--blueprint-400)] text-sm font-medium hover:underline">
+                <a href="mailto:contact@blackoutprod.fr" className="text-[var(--blueprint-500)] hover:text-[var(--cyan-400)] text-sm font-medium hover:underline">
                   contact@blackoutprod.fr
                 </a>
               </div>
@@ -106,7 +106,7 @@ export default function ContactPage() {
 
           <Card className="glass-elevated border-white/5 bg-white/[0.02] rounded-3xl overflow-hidden group hover:border-[var(--blueprint-500)]/30 transition-all">
             <CardContent className="p-6 flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20 text-amber-400 shrink-0 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20 text-[var(--blueprint-500)] shrink-0 group-hover:scale-110 transition-transform">
                 <Clock className="w-6 h-6" />
               </div>
               <div className="space-y-1">

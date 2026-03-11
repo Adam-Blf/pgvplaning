@@ -26,8 +26,8 @@ export default function GuidePage() {
         <div className="mx-auto w-16 h-16 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center border border-[var(--blueprint-500)]/20 mb-6 shadow-glow-primary">
           <BookOpen className="w-8 h-8 text-[var(--blueprint-500)]" />
         </div>
-        <h1 className="text-5xl font-black text-white tracking-tighter sm:text-6xl">
-          Guide <span className="text-[var(--blueprint-500)]">Absencia.</span>
+        <h1 className="text-5xl font-black tracking-tighter sm:text-6xl">
+          <span className="gradient-text-amber">Guide</span> <span className="text-[var(--blueprint-500)]">Absencia.</span>
         </h1>
         <p className="text-[var(--text-tertiary)] text-lg max-w-xl mx-auto">
           Apprenez à maîtriser toutes les fonctionnalités d&apos;Absencia pour simplifier
@@ -63,7 +63,7 @@ export default function GuidePage() {
       {/* Detailed Sections */}
       <div className="space-y-8 animate-fade-up opacity-0" style={{ animationDelay: '80ms' }}>
         <div className="flex items-center gap-3 border-l-4 border-[var(--blueprint-500)] pl-6">
-          <h2 className="text-3xl font-black text-white tracking-tight">Questions Fréquentes</h2>
+          <h2 className="text-3xl font-black gradient-text-amber tracking-tight">Questions Fréquentes</h2>
         </div>
 
         <Accordion type="single" collapsible className="w-full space-y-4">
@@ -117,7 +117,7 @@ export default function GuidePage() {
               Commencez dès aujourd&apos;hui à organiser votre équipe avec les standards Absencia.
             </p>
           </div>
-          <button className="h-14 px-8 rounded-2xl bg-white text-black font-black hover:bg-zinc-200 transition-all flex items-center group">
+          <button className="h-14 px-8 rounded-2xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-black shadow-lg shadow-sky-500/20 transition-all flex items-center group">
             Aller au Dashboard
             <Rocket className="w-5 h-5 ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </button>

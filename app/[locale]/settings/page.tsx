@@ -113,7 +113,7 @@ export default function SettingsPage() {
           <Settings className="w-7 h-7 text-[var(--blueprint-500)]" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Paramètres</h1>
+          <h1 className="text-3xl font-bold gradient-text-amber tracking-tight">Paramètres</h1>
           <p className="text-[var(--text-tertiary)]">Gérez votre profil et vos préférences</p>
         </div>
       </div>
@@ -226,7 +226,7 @@ export default function SettingsPage() {
 
               <div className="space-y-4 pt-4 border-t border-white/5">
                 <Label className="text-base flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <Sparkles className="w-4 h-4 text-[var(--blueprint-500)]" />
                   Couleur sur le Calendrier d&apos;Équipe
                 </Label>
                 <div className="flex flex-wrap gap-3">

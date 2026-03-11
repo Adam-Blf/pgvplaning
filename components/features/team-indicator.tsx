@@ -193,7 +193,7 @@ export function TeamIndicator() {
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-all duration-200 group"
               >
                 <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:border-[var(--border-default)] transition-colors">
-                  <Users className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-amber-500 transition-colors" />
+                  <Users className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--blueprint-500)] transition-colors" />
                 </div>
                 <span>Voir les membres</span>
               </Link>
@@ -206,7 +206,7 @@ export function TeamIndicator() {
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-all duration-200 group"
                 >
                   <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:border-[var(--border-default)] transition-colors">
-                    <Settings className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-amber-500 transition-colors" />
+                    <Settings className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--blueprint-500)] transition-colors" />
                   </div>
                   <span>Parametres equipe</span>
                 </Link>
@@ -226,16 +226,16 @@ export function TeamIndicator() {
                   type="button"
                   aria-label="Copier le code"
                   onClick={() => copyToClipboard(team.code, 'code')}
-                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-amber-500/30 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
+                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-sky-500/30 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
                 >
                   <span className="font-mono text-sm font-semibold gradient-text-amber">
                     {team.code}
                   </span>
-                  <div className="w-7 h-7 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
+                  <div className="w-7 h-7 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center group-hover:bg-sky-500/10 transition-colors">
                     {copied ? (
                       <Check className="w-4 h-4 text-emerald-500 animate-scale-in" />
                     ) : (
-                      <Copy className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-amber-500 transition-colors" />
+                      <Copy className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--blueprint-500)] transition-colors" />
                     )}
                   </div>
                 </button>
@@ -252,19 +252,19 @@ export function TeamIndicator() {
                       type="button"
                       aria-label="Copier le lien"
                       onClick={() => copyToClipboard(inviteUrl, 'link')}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-amber-500/20 hover:border-amber-500/40 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-sky-500/20 hover:border-sky-500/40 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
-                        <Link2 className="w-4 h-4 text-amber-500" />
+                      <div className="w-7 h-7 rounded-lg bg-sky-500/20 flex items-center justify-center shrink-0">
+                        <Link2 className="w-4 h-4 text-[var(--blueprint-500)]" />
                       </div>
-                      <span className="text-xs text-amber-400 truncate flex-1 text-left font-medium">
+                      <span className="text-xs text-sky-400 truncate flex-1 text-left font-medium">
                         {inviteUrl.replace(/^https?:\/\//, '').slice(0, 28)}...
                       </span>
-                      <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-500/20 transition-colors">
+                      <div className="w-7 h-7 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0 group-hover:bg-sky-500/20 transition-colors">
                         {copied ? (
                           <Check className="w-4 h-4 text-emerald-500 animate-scale-in" />
                         ) : (
-                          <Copy className="w-4 h-4 text-amber-500/70 group-hover:text-amber-500" />
+                          <Copy className="w-4 h-4 text-[var(--blueprint-500)]/70 group-hover:text-[var(--blueprint-500)]" />
                         )}
                       </div>
                     </button>
@@ -275,8 +275,8 @@ export function TeamIndicator() {
                       disabled={isGenerating}
                       className={cn(
                         "w-full flex items-center justify-center gap-2 p-3 rounded-xl",
-                        "bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium text-sm",
-                        "shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30",
+                        "bg-gradient-to-r from-[var(--blueprint-500)] to-[var(--blueprint-600)] text-white font-medium text-sm",
+                        "shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30",
                         "hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200",
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}

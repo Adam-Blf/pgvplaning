@@ -19,7 +19,7 @@ export default function OnboardingPage() {
                         <div className="mx-auto w-20 h-20 rounded-3xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-500">
                             <ShieldCheck className="w-10 h-10 text-[var(--blueprint-500)]" />
                         </div>
-                        <CardTitle className="text-3xl font-bold text-white mb-3">Créer une équipe</CardTitle>
+                <CardTitle className="text-3xl font-bold gradient-text-amber mb-3">Créer une équipe</CardTitle>
                         <CardDescription className="text-[var(--text-tertiary)] text-lg">
                             Devenez l&apos;administrateur et invitez vos collaborateurs
                         </CardDescription>
@@ -52,7 +52,7 @@ export default function OnboardingPage() {
                         <div className="mx-auto w-20 h-20 rounded-3xl bg-cyan-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all duration-500">
                             <UserCheck className="w-10 h-10 text-[var(--cyan-400)]" />
                         </div>
-                        <CardTitle className="text-3xl font-bold text-white mb-3">Rejoindre une équipe</CardTitle>
+                <CardTitle className="text-3xl font-bold gradient-text-amber mb-3">Rejoindre une équipe</CardTitle>
                         <CardDescription className="text-[var(--text-tertiary)] text-lg">
                             Entrez le code fourni par votre responsable
                         </CardDescription>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fira_Sans, Fira_Code, Geist } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { OnboardingTutorial } from "@/components/features/onboarding-tutorial";
@@ -12,12 +12,17 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
 
-const firaCode = Fira_Code({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -94,7 +99,7 @@ export default async function RootLayout(props: {
   const messages = await getMessages({ locale });
 
   return (
-    <html lang={locale} className={cn("dark", "font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang={locale} className={cn("dark", outfit.variable, jetbrainsMono.variable)} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/manifest.json" />
@@ -105,7 +110,7 @@ export default async function RootLayout(props: {
         <meta name="apple-mobile-web-app-title" content="Absencia" />
       </head>
       <body
-        className={`${geist.variable} ${firaCode.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
         <a

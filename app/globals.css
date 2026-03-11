@@ -213,6 +213,7 @@
   body {
     @apply bg-[var(--bg-base)] text-[var(--text-primary)] antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: var(--font-sans), system-ui, sans-serif;
     letter-spacing: -0.01em;
   }
 

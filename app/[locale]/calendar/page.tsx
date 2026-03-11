@@ -20,22 +20,22 @@ function CalendarSkeleton() {
   return (
     <div className="card p-6 space-y-4" aria-busy="true" aria-label="Chargement…">
       <div className="flex items-center justify-between">
-        <div className="skeleton h-8 w-40 rounded-lg" />
+        <div className="h-8 w-40 rounded-lg bg-[var(--bg-overlay)] animate-shimmer" />
         <div className="flex gap-2">
-          <div className="skeleton h-10 w-10 rounded-xl" />
-          <div className="skeleton h-10 w-10 rounded-xl" />
+          <div className="h-10 w-10 rounded-xl bg-[var(--bg-overlay)] animate-shimmer" />
+          <div className="h-10 w-10 rounded-xl bg-[var(--bg-overlay)] animate-shimmer" />
         </div>
       </div>
       <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="skeleton h-8 rounded-lg" />
+          <div key={i} className="h-8 rounded-lg bg-[var(--bg-overlay)] animate-shimmer" />
         ))}
       </div>
       <div className="grid grid-cols-7 gap-2">
         {Array.from({ length: 35 }).map((_, i) => (
           <div
             key={i}
-            className="skeleton aspect-square rounded-xl"
+            className="aspect-square rounded-xl bg-[var(--bg-overlay)] animate-shimmer"
             style={{ animationDelay: `${i * 20}ms` }}
           />
         ))}
@@ -56,7 +56,7 @@ function QuickStats({ birthdays }: { birthdays: Birthday[] }) {
 
   return (
     <div
-      className="glass-elevated rounded-2xl p-4 hidden lg:block animate-scale-in"
+      className="glass rounded-xl p-4 hidden lg:block animate-scale-in"
       style={{ animationDelay: '150ms' }}
     >
       <div className="flex items-center gap-2 mb-3">
@@ -155,12 +155,12 @@ export default function CalendarPage() {
   return (
     <div className="space-y-6 pb-8 stagger-children">
       <header className="relative animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-40 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start gap-4">
             <div className="relative flex-shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
-              <div className="w-14 h-14 rounded-2xl gradient-amber flex items-center justify-center shadow-lg glow-amber overflow-hidden">
-                <AnimatedBlueprintIcon name="Office" className="text-white" size="lg" />
+              <div className="w-14 h-14 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center shadow-lg shadow-sky-500/20 overflow-hidden">
+                <AnimatedBlueprintIcon name="Office" className="text-sky-400" size="lg" />
               </div>
             </div>
             <div className="space-y-1">
@@ -225,7 +225,7 @@ export default function CalendarPage() {
             {tL('title')}
           </span>
           <div className={`transition-transform duration-200 ${showLegend ? 'rotate-180' : ''}`}>
-            <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
+            <ChevronDown className="w-4 h-4 text-[var(--blueprint-500)]" />
           </div>
         </button>
 
@@ -252,8 +252,8 @@ export default function CalendarPage() {
       <section className="hidden md:block animate-fade-up opacity-0" style={{ animationDelay: '400ms' }}>
         <div className="glass rounded-2xl p-4">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-              <Info className="w-4 h-4 text-amber-500" />
+            <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0">
+              <Info className="w-4 h-4 text-[var(--blueprint-500)]" />
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-[var(--text-secondary)]">

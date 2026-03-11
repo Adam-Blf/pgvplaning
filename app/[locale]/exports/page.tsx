@@ -278,8 +278,8 @@ export default function ExportsPage() {
       {/* Header avec titre gradient */}
       <header className="relative animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="flex items-center gap-4 mb-2">
-          <div className="w-12 h-12 rounded-2xl gradient-amber flex items-center justify-center shadow-lg shadow-amber-500/20">
-            <FileDown className="w-6 h-6 text-black" />
+          <div className="w-12 h-12 rounded-2xl bg-[var(--blueprint-500)]/10 border border-[var(--blueprint-500)]/20 flex items-center justify-center shadow-lg shadow-sky-500/20">
+            <FileDown className="w-6 h-6 text-[var(--blueprint-500)]" />
           </div>
           <div>
             <h1 className="text-3xl font-bold gradient-text-amber">
@@ -496,7 +496,7 @@ export default function ExportsPage() {
         </div>
 
         <div
-          className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden"
+          className="glass-elevated rounded-2xl overflow-hidden"
         >
           {/* Header de la carte */}
           <div className="p-6 border-b border-[var(--border-subtle)] bg-gradient-to-r from-violet-500/5 via-transparent to-transparent">
@@ -516,7 +516,7 @@ export default function ExportsPage() {
                   id="tone"
                   value={aiTone}
                   onChange={(e) => setAiTone(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 transition-all"
                 >
                   <option value="professionnel">Professionnel</option>
                   <option value="amical">Amical</option>
@@ -531,7 +531,7 @@ export default function ExportsPage() {
                   id="reason"
                   value={aiReason}
                   onChange={(e) => setAiReason(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 transition-all"
                 >
                   <option value="formation">Formation</option>
                   <option value="congés">Congés</option>
@@ -651,7 +651,7 @@ function IcalSubscriptionCard({
   return (
     <div className={cn(
       "p-6 rounded-3xl border glass-elevated relative overflow-hidden group transition-all",
-      disabled ? "opacity-50 grayscale pointer-events-none" : "hover:border-amber-500/30"
+      disabled ? "opacity-50 grayscale pointer-events-none" : "hover:border-sky-500/30"
     )}>
       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
         <Link2 className="w-16 h-16" />
@@ -659,8 +659,8 @@ function IcalSubscriptionCard({
 
       <div className="relative space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-            <Calendar className="w-5 h-5 text-amber-500" />
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+            <Calendar className="w-5 h-5 text-[var(--blueprint-500)]" />
           </div>
           <h3 className="font-bold text-[var(--text-primary)]">{title}</h3>
         </div>
@@ -677,13 +677,13 @@ function IcalSubscriptionCard({
             <Button
               size="sm"
               onClick={handleCopy}
-              className="bg-amber-500 hover:bg-amber-600 text-black font-bold h-9 px-4 rounded-xl shrink-0"
+              className="bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold h-9 px-4 rounded-xl shrink-0"
             >
               {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </Button>
           </div>
         ) : (
-          <div className="py-2 px-3 rounded-xl bg-amber-500/5 border border-amber-500/10 text-[10px] text-amber-500/60 italic">
+          <div className="py-2 px-3 rounded-xl bg-sky-500/5 border border-sky-500/10 text-[10px] text-sky-500/60 italic">
             Configurez votre profil pour activer l&apos;abonnement.
           </div>
         )}

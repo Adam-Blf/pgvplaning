@@ -139,7 +139,7 @@ export default function TeamSettingsPage() {
   if (teamLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--blueprint-500)]" />
       </div>
     );
   }
@@ -154,30 +154,30 @@ export default function TeamSettingsPage() {
       <div className="flex items-center gap-4">
         <Link
           href="/team/members"
-          className="p-2 rounded-lg hover:bg-[var(--bg-secondary)] transition-colors"
+          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-[var(--text-muted)]" />
         </Link>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/10 flex items-center justify-center">
-            <Settings className="w-5 h-5 text-[var(--accent)]" />
+          <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+            <Settings className="w-5 h-5 text-[var(--blueprint-500)]" />
           </div>
-          <h1 className="text-xl font-bold text-[var(--text-primary)]">
+          <h1 className="text-xl font-bold gradient-text-amber">
             Paramètres de l&apos;équipe
           </h1>
         </div>
       </div>
 
       {/* Team Code */}
-      <div className="card p-6">
+      <div className="glass-elevated rounded-2xl p-6">
         <h2 className="font-semibold text-[var(--text-primary)] mb-4">Code d&apos;invitation</h2>
         <div className="flex items-center gap-4">
-          <div className="flex-1 p-4 rounded-lg bg-[var(--bg-secondary)] border-2 border-dashed border-[var(--border-default)]">
-            <p className="text-2xl font-mono font-bold text-center text-[var(--accent)] tracking-[0.3em]">
+          <div className="flex-1 p-4 rounded-xl bg-white/5 border-2 border-dashed border-sky-500/20">
+            <p className="text-2xl font-mono font-bold text-center text-[var(--blueprint-500)] tracking-[0.3em]">
               {team.code}
             </p>
           </div>
-          <button onClick={copyCode} className="btn btn-secondary">
+          <button onClick={copyCode} className="btn btn-secondary rounded-xl">
             {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           </button>
         </div>
@@ -187,7 +187,7 @@ export default function TeamSettingsPage() {
       </div>
 
       {/* Team Info */}
-      <div className="card p-6">
+      <div className="glass-elevated rounded-2xl p-6">
         <h2 className="font-semibold text-[var(--text-primary)] mb-4">Informations de l&apos;équipe</h2>
 
         <div className="space-y-4">
@@ -199,7 +199,7 @@ export default function TeamSettingsPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="input w-full"
+              className="input w-full rounded-xl"
               maxLength={50}
             />
           </div>
@@ -211,7 +211,7 @@ export default function TeamSettingsPage() {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="input w-full resize-none"
+              className="input w-full resize-none rounded-xl"
               rows={3}
               maxLength={200}
             />
@@ -229,18 +229,18 @@ export default function TeamSettingsPage() {
               min="0"
               value={minPresence}
               onChange={(e) => setMinPresence(parseInt(e.target.value) || 0)}
-              className="input w-32"
+              className="input w-32 rounded-xl"
             />
           </div>
 
           <div className="space-y-4 pt-4 border-t border-[var(--border-default)]">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
-              <Globe className="w-4 h-4" />
+              <Globe className="w-4 h-4 text-[var(--blueprint-500)]" />
               Paramètres de collaboration
             </h3>
 
             <div className="grid gap-4">
-              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer">
+              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-[var(--border-default)] hover:border-sky-500/20 transition-colors cursor-pointer">
                 <Checkbox
                   id="allowMemberInvite"
                   checked={allowMemberInvite}
@@ -257,7 +257,7 @@ export default function TeamSettingsPage() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-default)] hover:bg-[var(--bg-tertiary)] transition-colors cursor-pointer">
+              <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-[var(--border-default)] hover:border-sky-500/20 transition-colors cursor-pointer">
                 <Checkbox
                   id="autoApproveAbsences"
                   checked={autoApproveAbsences}
@@ -279,7 +279,7 @@ export default function TeamSettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving || !name.trim()}
-            className="btn btn-primary mt-6"
+            className="btn bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold shadow-lg shadow-sky-500/20 rounded-xl mt-6"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -292,12 +292,12 @@ export default function TeamSettingsPage() {
       </div>
 
       {/* Danger Zone */}
-      <div className="card p-6 border-red-500/20">
+      <div className="glass-elevated rounded-2xl p-6 border-red-500/20">
         <h2 className="font-semibold text-red-500 mb-4">Zone de danger</h2>
 
         <div className="space-y-4">
           {/* Leave Team */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-[var(--bg-secondary)]">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-white/5">
             <div>
               <p className="font-medium text-[var(--text-primary)]">Quitter l&apos;équipe</p>
               <p className="text-sm text-[var(--text-muted)]">
@@ -314,7 +314,7 @@ export default function TeamSettingsPage() {
           </div>
 
           {/* Delete Team */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-red-500/5">
+          <div className="flex items-center justify-between p-4 rounded-xl bg-red-500/5">
             <div>
               <p className="font-medium text-[var(--text-primary)]">Supprimer l&apos;équipe</p>
               <p className="text-sm text-[var(--text-muted)]">

@@ -72,7 +72,9 @@ export default function LoginPage() {
       <div
         className="w-full max-w-md z-10 animate-fade-up opacity-0"
       >
-        <div className="glass-elevated p-8 rounded-3xl border border-white/10 shadow-2xl relative">
+        <div className="glass-elevated p-8 rounded-2xl border border-white/10 border-t-2 border-t-[var(--blueprint-500)]/50 shadow-xl shadow-sky-500/5 relative">
+          {/* Decorative gradient overlay */}
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--blueprint-500)]/5 via-transparent to-transparent rounded-2xl" />
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-8">
             <div
@@ -80,7 +82,7 @@ export default function LoginPage() {
             >
               <Activity className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Bienvenue</h1>
+            <h1 className="text-2xl font-bold tracking-tight gradient-text-amber mb-2">Bienvenue</h1>
             <p className="text-[var(--text-tertiary)] text-center">
               Connectez-vous pour accéder à votre espace Absencia
             </p>
@@ -97,7 +99,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2 animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
-              <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)] ml-1">
+              <label className="text-sm font-medium text-[var(--text-secondary)] ml-1">
                 Email
               </label>
               <div className="relative group">
@@ -109,14 +111,14 @@ export default function LoginPage() {
                   placeholder="nom@exemple.com"
                   autoComplete="email"
                   spellCheck={false}
-                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
+                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2 animate-fade-up opacity-0" style={{ animationDelay: '80ms' }}>
-              <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)] ml-1">
+              <label className="text-sm font-medium text-[var(--text-secondary)] ml-1">
                 Mot de passe
               </label>
               <div className="relative group">
@@ -127,7 +129,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   autoComplete="current-password"
-                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
+                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
                   required
                 />
               </div>
@@ -137,7 +139,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-2xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base shadow-lg shadow-blue-500/20 transition-[transform,color,background-color,border-color,box-shadow] duration-300"
+                className="w-full btn-primary py-3 text-base font-semibold"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -175,7 +177,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center text-sm text-[var(--text-tertiary)]">
             Vous n'avez pas de compte ?{' '}
-            <Link href="/auth/register" className="text-[var(--blueprint-500)] font-bold hover:underline">
+            <Link href="/auth/register" className="text-[var(--blueprint-500)] hover:text-[var(--cyan-400)] font-bold hover:underline">
               Créer un profil
             </Link>
           </div>

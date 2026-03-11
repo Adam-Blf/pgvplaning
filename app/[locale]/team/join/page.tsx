@@ -153,7 +153,7 @@ export default function TeamJoinPage() {
         className="w-full max-w-md relative z-10 animate-fade-up opacity-0"
       >
         <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
+          <div className="px-6 py-4 border-b border-[var(--border-default)] bg-[var(--bg-overlay)]/50 flex items-center justify-between">
             <Link
               href="/team/onboarding"
               className="inline-flex items-center gap-2 text-xs text-[var(--text-muted)] hover:text-[var(--blueprint-500)] transition-colors font-mono tracking-widest"
@@ -171,7 +171,7 @@ export default function TeamJoinPage() {
                 <Hash className="w-8 h-8 text-[var(--blueprint-500)]" />
               </div>
               <div className="text-center">
-                <CardTitle className="text-2xl font-bold text-white">
+                <CardTitle className="text-2xl font-bold gradient-text-amber">
                   Code d&apos;invitation
                 </CardTitle>
                 <CardDescription className="mt-1">
@@ -191,7 +191,7 @@ export default function TeamJoinPage() {
                     value={char}
                     onChange={(e) => handleInputChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-10 h-14 md:w-11 md:h-16 text-center text-2xl font-mono font-bold rounded-2xl border border-white/10 bg-white/5 text-[var(--blueprint-500)] focus:border-[var(--blueprint-500)]/50 focus:ring-4 focus:ring-[var(--blueprint-500)]/10 focus:outline-none transition-all animate-scale-in opacity-0"
+                    className="w-10 h-14 md:w-11 md:h-16 text-center text-2xl font-mono font-bold rounded-2xl border border-[var(--border-strong)] bg-[var(--bg-overlay)] text-[var(--blueprint-500)] focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all animate-scale-in opacity-0"
                     style={{ animationDelay: `${index * 50}ms` }}
                     maxLength={1}
                     autoComplete="off"
@@ -215,7 +215,7 @@ export default function TeamJoinPage() {
                   )}
                 </Button>
 
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                <div className="p-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-default)]">
                   <p className="text-[10px] text-[var(--text-muted)] text-center leading-relaxed uppercase tracking-wider font-semibold">
                     Un code est nécessaire pour accéder au planning partagé.
                   </p>

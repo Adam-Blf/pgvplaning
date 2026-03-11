@@ -36,14 +36,14 @@ export default function HomePage() {
       icon: FileDown,
       title: 'Export ICS',
       description: 'Compatible Google Calendar, Outlook et Apple',
-      gradient: 'from-amber-500 to-orange-600',
-      glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(245,158,11,0.4)]',
+      gradient: 'from-sky-500 to-cyan-600',
+      glow: 'group-hover:shadow-[0_0_40px_-10px_rgba(14,165,233,0.4)]',
       href: '/exports',
     },
   ];
 
   const stats = [
-    { value: '2min', label: 'Setup', icon: Clock, color: 'text-amber-500' },
+    { value: '2min', label: 'Setup', icon: Clock, color: 'text-[var(--blueprint-500)]' },
     { value: '100%', label: 'Sécurisé', icon: Shield, color: 'text-emerald-500' },
     { value: 'ICS', label: 'Export', icon: Zap, color: 'text-violet-500' },
   ];
@@ -52,7 +52,7 @@ export default function HomePage() {
     <div className="min-h-[calc(100vh-8rem)] flex flex-col">
       <section className="relative py-16 md:py-24">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-500/[0.07] rounded-full blur-[100px] -translate-y-1/2" />
+          <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-sky-500/[0.07] rounded-full blur-[100px] -translate-y-1/2" />
           <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-indigo-500/[0.05] rounded-full blur-[80px] translate-y-1/2" />
         </div>
 
@@ -63,15 +63,15 @@ export default function HomePage() {
           >
             <Link
               href="/calendar"
-              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 hover:border-amber-500/40 transition-all"
+              className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-500/20 hover:border-sky-500/40 transition-all"
             >
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span className="text-sm font-medium text-amber-500">
+              <Sparkles className="w-4 h-4 text-[var(--blueprint-500)]" />
+              <span className="text-sm font-medium text-[var(--blueprint-500)]">
                 Absencia Pro
               </span>
-              <ChevronRight className="w-4 h-4 text-amber-500/60 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-4 h-4 text-sky-500/60 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <div className="h-px flex-1 bg-gradient-to-r from-amber-500/30 to-transparent max-w-24" />
+            <div className="h-px flex-1 bg-gradient-to-r from-sky-500/30 to-transparent max-w-24" />
           </div>
 
           <div
@@ -80,10 +80,10 @@ export default function HomePage() {
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.95]">
               <span className="text-[var(--text-primary)]">Gérez vos </span>
-              <span className="text-gradient">absences</span>
+              <span className="gradient-text-amber">absences</span>
               <br />
               <span className="text-[var(--text-primary)]">comme un </span>
-              <span className="text-gradient">pro</span>
+              <span className="gradient-text-amber">pro</span>
             </h1>
           </div>
 
@@ -146,17 +146,17 @@ export default function HomePage() {
                 style={{ animationDelay: `${400 + index * 80}ms` }}
               >
                 <Link href={feature.href} className="block group">
-                  <div className={`card-interactive p-6 h-full ${feature.glow}`}>
+                  <div className={`card-interactive card-glow p-6 h-full ${feature.glow}`}>
                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-5 shadow-lg transition-transform group-hover:scale-105`}>
                       <feature.icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 group-hover:text-amber-500 transition-colors">
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2 group-hover:text-[var(--blueprint-500)] transition-colors">
                       {feature.title}
                     </h3>
                     <p className="text-sm text-[var(--text-tertiary)] leading-relaxed">
                       {feature.description}
                     </p>
-                    <div className="mt-4 flex items-center gap-2 text-[var(--text-muted)] group-hover:text-amber-500 transition-colors">
+                    <div className="mt-4 flex items-center gap-2 text-[var(--text-muted)] group-hover:text-[var(--blueprint-500)] transition-colors">
                       <span className="text-sm font-medium">Explorer</span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </div>
@@ -174,12 +174,12 @@ export default function HomePage() {
           style={{ animationDelay: '640ms' }}
         >
           <div className="card p-8 md:p-12 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="text-center md:text-left">
-                <h2 className="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-2">
+                <h2 className="text-2xl md:text-3xl font-bold gradient-text-amber mb-2">
                   Prêt à simplifier vos plannings ?
                 </h2>
                 <p className="text-[var(--text-secondary)]">

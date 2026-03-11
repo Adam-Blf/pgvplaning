@@ -77,7 +77,7 @@ export default function CreateTeamPage() {
             <div className="mx-auto w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4 border border-blue-500/20">
               <Shield className="w-8 h-8 text-[var(--blueprint-500)]" />
             </div>
-            <CardTitle className="text-3xl font-bold text-white">Créer une équipe</CardTitle>
+            <CardTitle className="text-3xl font-bold gradient-text-amber">Créer une équipe</CardTitle>
             <CardDescription className="text-[var(--text-tertiary)] pt-2">
               Devenez administrateur et configurez votre espace de gestion
             </CardDescription>
@@ -94,7 +94,7 @@ export default function CreateTeamPage() {
                     value={teamName}
                     onChange={(e) => setTeamName(e.target.value)}
                     placeholder="ex: Département Marketing, Team Dev..."
-                    className="pl-10 h-12 bg-[var(--bg-overlay)] border-white/5 rounded-xl focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50"
+                    className="pl-10 h-12 bg-[var(--bg-overlay)] border-[var(--border-strong)] rounded-xl focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
                     required
                   />
                 </div>
@@ -102,12 +102,12 @@ export default function CreateTeamPage() {
 
               <div className="space-y-4 pt-2">
                 <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
-                  <Globe className="w-4 h-4" />
+                  <Globe className="w-4 h-4 text-[var(--blueprint-500)]" />
                   Paramètres de collaboration
                 </h3>
 
                 <div className="grid gap-4">
-                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-default)] hover:border-[var(--blueprint-500)]/30 transition-colors cursor-pointer">
                     <Checkbox
                       id="allowMemberInvite"
                       checked={allowMemberInvite}
@@ -124,7 +124,7 @@ export default function CreateTeamPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+                  <div className="flex items-start space-x-3 p-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-default)] hover:border-[var(--blueprint-500)]/30 transition-colors cursor-pointer">
                     <Checkbox
                       id="autoApproveAbsences"
                       checked={autoApproveAbsences}
@@ -150,7 +150,7 @@ export default function CreateTeamPage() {
               type="submit"
               form="create-team-form"
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base transition-all"
+              className="w-full h-12 rounded-xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base transition-all shadow-lg shadow-sky-500/20"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

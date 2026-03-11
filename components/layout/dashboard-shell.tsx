@@ -112,19 +112,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
           isNavbarVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
         )}
       >
-            <header className="mx-auto max-w-5xl rounded-2xl glass border border-white/5 shadow-2xl shadow-black/20">
+            <header className="mx-auto max-w-5xl rounded-2xl glass-elevated border-b border-[var(--border-default)] shadow-[0_1px_20px_-5px_rgba(14,165,233,0.15)] shadow-2xl">
               <div className="px-4 md:px-6">
                 <div className="flex items-center justify-between h-14 md:h-16">
                   {/* Logo */}
                   <Link href="/" className="flex items-center gap-3 no-underline group">
                     <div className="relative">
-                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-[var(--crimson-500)] to-[var(--gold-500)] flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 shadow-glow-primary">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-[var(--blueprint-500)] to-cyan-400 flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 shadow-glow-primary">
                         <Activity className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
-                      <div className="absolute -inset-2 bg-[var(--crimson-500)] rounded-xl opacity-0 blur-lg group-hover:opacity-40 transition-opacity duration-700" />
+                      <div className="absolute -inset-2 bg-[var(--blueprint-500)] rounded-xl opacity-0 blur-lg group-hover:opacity-40 transition-opacity duration-700" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-sans font-bold text-[var(--text-primary)] text-sm md:text-xl tracking-tighter leading-none group-hover:text-[var(--crimson-500)] transition-colors duration-300">
+                      <span className="font-sans font-bold gradient-text-amber text-sm md:text-xl tracking-tighter leading-none transition-colors duration-300">
                         Absencia
                       </span>
                       <span className="text-[10px] text-[var(--text-tertiary)] font-medium uppercase tracking-[0.2em] leading-tight">
@@ -149,7 +149,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             className={cn(
                               'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-[transform,color,background-color,box-shadow] duration-300 active:scale-90 cursor-pointer',
                               isActive
-                                ? 'bg-[var(--crimson-500)] text-white shadow-lg shadow-crimson-500/30 scale-105'
+                                ? 'bg-[var(--blueprint-500)] text-white shadow-lg shadow-sky-500/30 scale-105'
                                 : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/10'
                             )}
                           >
@@ -212,7 +212,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               {/* Mobile Navigation */}
               <div
                 className={cn(
-                  "md:hidden border-t border-white/5 overflow-hidden transition-all duration-200",
+                  "md:hidden border-t border-white/5 overflow-hidden transition-all duration-200 glass-elevated",
                   mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 )}
                 style={{ overscrollBehavior: 'contain' }}
