@@ -151,7 +151,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         <span>Se connecter</span>
                       </Link>
                     )}
-                }
+                {/* Fin du bloc nav */}
                 </div>
               </div>
 
