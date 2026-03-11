@@ -32,7 +32,7 @@ export default function MentionsLegalesPage() {
         </div>
         <div className="space-y-3 text-[var(--text-secondary)]">
           <p><strong className="text-[var(--text-primary)]">Raison sociale :</strong> PGV Planning</p>
-          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Solution SaaS de gestion d'équipe</p>
+          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Solution SaaS de gestion d&apos;équipe</p>
           <p><strong className="text-[var(--text-primary)]">Directeur de la publication :</strong> Adam Beloucif</p>
           <p><strong className="text-[var(--text-primary)]">Email :</strong> adam.beloucif@efrei.net</p>
         </div>

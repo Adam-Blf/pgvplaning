@@ -11,7 +11,6 @@ import {
   MapPin,
   Clock,
   Sparkles,
-  ChevronRight,
   Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
