@@ -36,9 +36,9 @@ const tools: ToolConfig[] = [
     label: 'Bureau',
     shortLabel: 'Bureau',
     icon: PremiumIcons.Office,
-    color: 'text-indigo-400',
-    bgColor: 'bg-indigo-500',
-    glowColor: 'shadow-indigo-500/40',
+    color: 'text-blue-400',
+    bgColor: 'bg-blue-500',
+    glowColor: 'shadow-blue-500/40',
   },
   {
     id: 'REMOTE',

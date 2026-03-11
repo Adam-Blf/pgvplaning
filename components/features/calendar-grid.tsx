@@ -21,10 +21,10 @@ const STATUS_CONFIG: Record<DayStatus, {
   ring: string;
 }> = {
   WORK: {
-    base: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
-    glow: 'shadow-[0_0_25px_-5px_rgba(99,102,241,0.4)]',
-    dot: 'bg-indigo-500',
-    ring: 'ring-indigo-500/50',
+    base: 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(59,130,246,0.4)]',
+    dot: 'bg-blue-500',
+    ring: 'ring-blue-500/50',
   },
   REMOTE: {
     base: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',

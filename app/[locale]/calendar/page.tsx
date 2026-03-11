@@ -99,8 +99,8 @@ export default function CalendarPage() {
     {
       iconName: 'Office' as const,
       label: tL('office'),
-      colorClass: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400',
-      dotClass: 'bg-indigo-500'
+      colorClass: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
+      dotClass: 'bg-blue-500'
     },
     {
       iconName: 'Home' as const,
