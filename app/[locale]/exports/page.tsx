@@ -373,9 +373,9 @@ export default function ExportsPage() {
                     </h4>
                     <p className="text-sm text-[var(--text-secondary)]">
                       Configurez votre nom dans les{' '}
-                      <a href="/settings" className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
+                      <Link href="/settings" className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors">
                         paramètres
-                      </a>{' '}
+                      </Link>{' '}
                       pour personnaliser les exports équipe.
                     </p>
                   </div>
