@@ -240,14 +240,20 @@ export function useCalendarData() {
       if (status === null) {
         if (halfDay === 'FULL') {
           delete newData[date];
-        } else if (isDayData(existing)) {
-          const updated = { ...existing };
-          if (halfDay === 'AM') delete updated.am;
-          if (halfDay === 'PM') delete updated.pm;
-          if (!updated.am && !updated.pm) {
-            delete newData[date];
+        } else {
+          // Correction : ne pas supprimer l'autre demi-journée
+          if (isDayData(existing)) {
+            const updated = { ...existing };
+            if (halfDay === 'AM') updated.am = undefined;
+            if (halfDay === 'PM') updated.pm = undefined;
+            // On garde l'autre demi-journée si elle existe
+            if (updated.am === undefined && updated.pm === undefined) {
+              delete newData[date];
+            } else {
+              newData[date] = updated;
+            }
           } else {
-            newData[date] = updated;
+            // Si pas d'objet, rien à supprimer
           }
         }
       } else {
