@@ -3,17 +3,16 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 import psycopg2
-
-# Load env vars from .env.local
 from dotenv import load_dotenv
+
+# Charger .env.local
 load_dotenv(os.path.join(os.path.dirname(__file__), '../../.env.local'))
 
-# Firebase
-cred = credentials.Certificate({
-    "client_email": os.getenv("FIREBASE_CLIENT_EMAIL"),
-    "private_key": os.getenv("FIREBASE_PRIVATE_KEY").replace('\\n', '\n'),
-    "project_id": os.getenv("FIREBASE_PROJECT_ID"),
-})
+# Firebase : lire le fichier credentials
+CREDENTIALS_PATH = os.getenv('FIREBASE_CREDENTIALS_PATH', 'firebase-admin.json')
+if not os.path.exists(CREDENTIALS_PATH):
+    raise FileNotFoundError(f"Fichier credentials Firebase manquant : {CREDENTIALS_PATH}")
+cred = credentials.Certificate(CREDENTIALS_PATH)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
