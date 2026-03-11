@@ -218,7 +218,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         )}
                       </nav>
                     </div>
-              </div>
+                  </div>
             </header>
       </div>
 
