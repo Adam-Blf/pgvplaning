@@ -171,12 +171,28 @@ export function useCalendarData() {
     loadData();
   }, [user]);
 
-  // Sauvegarder les données à chaque modification
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+  // Fonction explicite pour valider et pousser
+  const validateAndPush = useCallback(async () => {
+    if (!isLoaded) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (user && db) {
+      setIsSyncing(true);
+      try {
+        const calendarRef = doc(db, 'calendars', user.uid);
+        await setDoc(calendarRef, {
+          userId: user.uid,
+          data,
+          updatedAt: new Date(),
+        }, { merge: true });
+      } catch (error) {
+        console.error('Error syncing with Firestore:', error);
+        toast.error('Erreur de synchronisation Cloud');
+      } finally {
+        setIsSyncing(false);
+      }
     }
-  }, [data, isLoaded]);
+  }, [data, user, db, isLoaded]);
 
   const setDayStatus = useCallback(async (date: string, status: DayStatus | null, halfDay: HalfDay = 'FULL') => {
     // ----------------------------------------------------------------------
@@ -411,5 +427,6 @@ export function useCalendarData() {
     isHoliday,
     formatDateKey,
     isSyncing,
+    validateAndPush,
   };
 }
