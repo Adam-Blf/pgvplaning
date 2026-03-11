@@ -43,9 +43,16 @@ export interface TeamMember {
   id: string;
   user_id: string;  // UID Firebase de l'utilisateur
   team_id: string;  // ID de l'équipe
-  role: 'leader' | 'member'; // Rôle dans l'équipe
+  role: 'leader' | 'moderator' | 'member'; // Rôle dans l'équipe
   status: 'pending' | 'approved'; // Statut SaaS d'adhésion
   joined_at: string;          // Date d'arrivée
+  weeklyHours?: number;       // Heures/semaine définies par le leader
+  bonusDays?: number;         // Jours bonus (0-3)
+  recoveryHours?: number;     // Heures récup (heures sup)
+  employee_type?: string;
+  work_time_category?: string;
+  annual_leave_days?: number;
+  leave_balance?: number;
   profile?: {                 // Profil utilisateur joint
     id: string;
     email: string;
@@ -59,15 +66,21 @@ export interface TeamMember {
 
 /** Valeur exposée par le contexte d'équipe */
 export interface TeamContextValue {
-  team: Team | null;              // Équipe actuelle (null si aucune)
-  membership: TeamMember | null;  // Adhésion de l'utilisateur
-  members: TeamMember[];          // Liste de tous les membres
-  isLeader: boolean;              // true si l'utilisateur est leader
-  loading: boolean;               // true pendant le chargement
-  error: string | null;           // Message d'erreur éventuel
-  refreshTeam: () => Promise<void>; // Rafraîchir les données
-  leaveTeam: () => Promise<void>;   // Quitter l'équipe
-  approveMember: (memberId: string) => Promise<void>; // Approuver un membre (Leader uniquement)
+  team: Team | null;
+  membership: TeamMember | null;
+  members: TeamMember[];
+  isLeader: boolean;
+  isModerator: boolean;
+  isLeaderOrMod: boolean;
+  isSuperAdmin: boolean;
+  loading: boolean;
+  error: string | null;
+  refreshTeam: () => Promise<void>;
+  leaveTeam: () => Promise<void>;
+  approveMember: (memberId: string) => Promise<void>;
+  updateMemberSettings: (memberId: string, data: Partial<TeamMember>) => Promise<void>;
+  removeMember: (memberId: string) => Promise<void>;
+  deleteTeam: () => Promise<void>;
 }
 
 const TeamContext = createContext<TeamContextValue | undefined>(undefined);
@@ -151,6 +164,13 @@ export function TeamProvider({ children }: TeamProviderProps) {
             role: mData.role,
             status: status as 'pending' | 'approved',
             joined_at: mData.joined_at,
+            weeklyHours: mData.weeklyHours,
+            bonusDays: mData.bonusDays,
+            recoveryHours: mData.recoveryHours,
+            employee_type: mData.employee_type,
+            work_time_category: mData.work_time_category,
+            annual_leave_days: mData.annual_leave_days,
+            leave_balance: mData.leave_balance,
             profile
           });
         }
@@ -186,7 +206,7 @@ export function TeamProvider({ children }: TeamProviderProps) {
   }, [membership]);
 
   const approveMember = useCallback(async (memberId: string) => {
-    if (!db || !membership || membership.role !== 'leader') return;
+    if (!db || !membership || !['leader', 'moderator'].includes(membership.role)) return;
 
     try {
       const memberRef = doc(db, 'team_members', memberId);
@@ -200,6 +220,53 @@ export function TeamProvider({ children }: TeamProviderProps) {
       throw err;
     }
   }, [membership, fetchTeamData]);
+
+  const updateMemberSettings = useCallback(async (memberId: string, data: Partial<TeamMember>) => {
+    if (!db || !membership || !['leader', 'moderator'].includes(membership.role)) return;
+
+    try {
+      const memberRef = doc(db, 'team_members', memberId);
+      await updateDoc(memberRef, {
+        ...data,
+        updated_at: new Date().toISOString()
+      });
+      await fetchTeamData();
+    } catch (err) {
+      console.error('Error updating member settings:', err);
+      throw err;
+    }
+  }, [membership, fetchTeamData]);
+
+  const removeMember = useCallback(async (memberId: string) => {
+    if (!db || !membership || membership.role !== 'leader') return;
+
+    try {
+      await deleteDoc(doc(db, 'team_members', memberId));
+      await fetchTeamData();
+    } catch (err) {
+      console.error('Error removing member:', err);
+      throw err;
+    }
+  }, [membership, fetchTeamData]);
+
+  const deleteTeam = useCallback(async () => {
+    if (!db || !membership || membership.role !== 'leader' || !team) return;
+
+    try {
+      // Delete all members
+      for (const m of members) {
+        await deleteDoc(doc(db, 'team_members', m.id));
+      }
+      // Delete team
+      await deleteDoc(doc(db, 'teams', team.id));
+      setTeam(null);
+      setMembership(null);
+      setMembers([]);
+    } catch (err) {
+      console.error('Error deleting team:', err);
+      throw err;
+    }
+  }, [membership, team, members]);
 
   useEffect(() => {
     if (!auth) return;
@@ -219,16 +286,44 @@ export function TeamProvider({ children }: TeamProviderProps) {
     return () => unsubscribe();
   }, [fetchTeamData]);
 
+  // Check super_admin status
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  useEffect(() => {
+    if (!auth || !db) return;
+    const firestore = db;
+    const firebaseAuth = auth;
+    const checkSuperAdmin = async () => {
+      const user = firebaseAuth.currentUser;
+      if (!user) { setIsSuperAdmin(false); return; }
+      try {
+        const saDoc = await getDoc(doc(firestore, 'super_admins', user.uid));
+        setIsSuperAdmin(saDoc.exists());
+      } catch { setIsSuperAdmin(false); }
+    };
+    const unsub = onAuthStateChanged(firebaseAuth, (u) => { if (u) checkSuperAdmin(); else setIsSuperAdmin(false); });
+    return () => unsub();
+  }, []);
+
+  const isLeader = membership?.role === 'leader';
+  const isModerator = membership?.role === 'moderator';
+  const isLeaderOrMod = isLeader || isModerator;
+
   const value: TeamContextValue = {
     team,
     membership,
     members,
-    isLeader: membership?.role === 'leader',
+    isLeader,
+    isModerator,
+    isLeaderOrMod,
+    isSuperAdmin,
     loading,
     error,
     refreshTeam: fetchTeamData,
     leaveTeam,
     approveMember,
+    updateMemberSettings,
+    removeMember,
+    deleteTeam,
   };
 
   return (

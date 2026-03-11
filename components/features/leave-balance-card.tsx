@@ -14,6 +14,9 @@ interface LeaveBalanceCardProps {
   icon: React.ElementType;
   color: string;
   description?: string;
+  bonusDays?: number;
+  recoveryHours?: number;
+  weeklyHours?: number;
 }
 
 export function LeaveBalanceCard({
@@ -24,6 +27,9 @@ export function LeaveBalanceCard({
   icon: Icon,
   color,
   description,
+  bonusDays,
+  recoveryHours,
+  weeklyHours,
 }: LeaveBalanceCardProps) {
   const percentage = total > 0 ? (used / total) * 100 : 0;
 
@@ -108,6 +114,29 @@ export function LeaveBalanceCard({
             </span>
           </div>
         </div>
+        {/* Bonus & Recovery counters */}
+        {(bonusDays !== undefined && bonusDays > 0) || (recoveryHours !== undefined && recoveryHours > 0) || weeklyHours ? (
+          <div className="flex items-center gap-3 pt-2 border-t border-white/5">
+            {weeklyHours ? (
+              <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                <Timer className="w-3 h-3" />
+                <span className="font-mono">{weeklyHours}h/sem</span>
+              </div>
+            ) : null}
+            {bonusDays !== undefined && bonusDays > 0 ? (
+              <div className="flex items-center gap-1 text-xs text-amber-400">
+                <TrendingUp className="w-3 h-3" />
+                <span className="font-mono">+{bonusDays}j bonus</span>
+              </div>
+            ) : null}
+            {recoveryHours !== undefined && recoveryHours > 0 ? (
+              <div className="flex items-center gap-1 text-xs text-violet-400">
+                <Calendar className="w-3 h-3" />
+                <span className="font-mono">{recoveryHours}h récup</span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </CardContent>
 
       {/* Decorative background element */}

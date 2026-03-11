@@ -34,7 +34,8 @@ const baseNavigation = [
   { name: 'Accueil', href: '/', icon: LayoutDashboard, requiresAuth: false },
   { name: 'Calendrier', href: '/calendar', icon: Calendar, requiresAuth: false },
   { name: 'Team Planner', href: '/team-planner', icon: Users, requiresAuth: true },
-  { name: 'Validation SaaS', href: '/team/validation', icon: ShieldCheck, requiresAuth: true, requiresLeader: true },
+  { name: 'Membres', href: '/team/members', icon: Users, requiresAuth: true },
+  { name: 'Validation', href: '/team/validation', icon: ShieldCheck, requiresAuth: true, requiresLeader: true },
   { name: 'Setup', href: '/team/setup', icon: LogIn, requiresAuth: true },
   { name: 'Exporter', href: '/exports', icon: FileDown, requiresAuth: false },
   { name: 'Guide', href: '/guide', icon: BookOpen, requiresAuth: false },
@@ -53,19 +54,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const router = useRouter();
   const { isAuthenticated, loading, profile } = useAuth();
   const isLeader = profile?.role === 'leader';
+  const isLeaderOrMod = profile?.role === 'leader' || profile?.role === 'moderator';
 
   // Filter navigation based on auth state and role
   const navigation = useMemo(() => {
-    // Si on charge encore l'auth, on montre les items de base non protégés
     if (loading) {
       return baseNavigation.filter(item => !item.requiresAuth);
     }
     return baseNavigation.filter(item => {
       if (item.requiresAuth && !isAuthenticated) return false;
-      if ((item as any).requiresLeader && !isLeader) return false;
+      if ((item as any).requiresLeader && !isLeaderOrMod) return false;
       return true;
     });
-  }, [isAuthenticated, isLeader, loading]);
+  }, [isAuthenticated, isLeaderOrMod, loading]);
 
   // Handle scroll to show/hide navbar
   useEffect(() => {

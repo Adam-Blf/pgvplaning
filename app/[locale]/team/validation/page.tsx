@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 
 export default function MemberValidationPage() {
-    const { members, isLeader, approveMember, loading, refreshTeam } = useTeam();
+    const { members, isLeader, isLeaderOrMod, approveMember, loading, refreshTeam } = useTeam();
     const [processingId, setProcessingId] = useState<string | null>(null);
     const [rejectingId, setRejectingId] = useState<string | null>(null);
 
@@ -54,7 +54,7 @@ export default function MemberValidationPage() {
         }
     };
 
-    if (!isLeader && !loading) {
+    if (!isLeaderOrMod && !loading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center">
                 <Card className="max-w-md border-rose-500/20 bg-rose-500/5 rounded-2xl">

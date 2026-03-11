@@ -39,7 +39,7 @@ async function purge() {
         }
     } catch (e) { console.error("Auth error"); }
 
-    const collections = ['profiles', 'teams', 'team_members', 'absences', 'notifications', 'transfers', 'transfers_v2', 'super_admins', 'settings'];
+    const collections = ['profiles', 'teams', 'team_members', 'team_invitations', 'pre_created_members', 'absences', 'notifications', 'transfers', 'transfers_v2', 'super_admins', 'settings', 'invitations'];
     for (const c of collections) {
         try {
             const snap = await db.collection(c).get();

@@ -20,22 +20,31 @@ Application web moderne (PWA) permettant de gérer les absences, congés et tél
 
 ### Gestion d'équipe & Sécurité
 
+- **4 Rôles hiérarchiques** :
+  - **Super Administrateur** : voit et corrige tout sur toutes les équipes.
+  - **Chef d'équipe (Leader)** : administre son équipe, crée/supprime, gère les membres.
+  - **Modérateur** : mêmes droits que le leader sauf supprimer l'équipe.
+  - **Membre** : accès standard au calendrier et ses propres données.
 - **Création d'équipe** : Créez votre équipe en un clic avec un code d'invitation unique (8 caractères).
-- **Rejoindre une équipe** : Rejoignez via code d'invitation ou lien partagé.
-- **Rôles Hiérarchiques** : Leader (Chef de groupe) et Membre avec permissions granulaires.
-- **Validation des membres** : Le leader approuve ou rejette les demandes d'adhésion.
+- **Pré-création de membres** : Le leader saisit nom/prénom/email → lien personnalisé envoyé → le membre finalise son inscription.
+- **Rejoindre une équipe** : Rejoignez via code d'invitation, lien partagé ou lien personnalisé.
+- **Validation des membres** : Le leader/modérateur approuve ou rejette les demandes d'adhésion.
+- **Gestion par membre** : Le leader définit pour chaque membre : heures/semaine, jours bonus (0-3), heures récup, solde CP, rôle.
 - **Couleur par membre** : Le leader attribue une couleur personnalisée à chaque membre.
-- **Types de contrat** : Cadre forfait jour, cadre forfait heure, employé — avec heures hebdo configurables par le leader.
-- **Règles de Présence** : Configuration par le leader du nombre minimal de personnes requises.
+- **Règles de Présence** : Configuration par le leader du nombre minimal de personnes requises sur site.
 - **Quitter / Supprimer** : Un membre peut quitter l'équipe ; le leader peut supprimer l'équipe.
 - **Sécurité RLS** : Politiques Supabase (Row Level Security) pour l'isolation des données.
+- **Firestore Security Rules** : Permissions granulaires par rôle (leader, moderator, super_admin).
 - **Audit Log** : Traçabilité complète de toutes les modifications.
 
 ### Gestion des congés & Présence
 
 - **Calendrier Interactif** : Sélection intuitive (clic/glissé) pour Bureau, Télétravail, Formation, Congés.
 - **Demi-journées** : Support AM/PM pour des plannings précis.
-- **Soldes de congés** : CP, RTT, RTJ et autres types selon le contrat.
+- **Soldes de congés** : CP annuels configurables par le leader pour chaque membre.
+- **Jours bonus** : Jusqu'à 3 jours optionnels attribués par le leader selon la pose des congés.
+- **Heures récup** : Compteur séparé pour les heures sup récupérées (non déduit des CP).
+- **Heures hebdo** : Le leader définit le taux horaire de chaque membre (ex: 38h, 35h).
 - **Jours fériés français** : Calcul automatique incluant Pâques, Ascension, Pentecôte.
 - **Synchronisation Cloud** : Données calendrier sauvegardées en temps réel sur Firestore.
 

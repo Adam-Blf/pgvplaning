@@ -1,116 +1,201 @@
 'use client';
 
-// Page de gestion des membres d'équipe (chef d'équipe uniquement pour les contrats).
-// Le chef peut modifier le type de contrat, secteur et temps de travail de chaque membre.
-// Ces paramètres impactent le calcul automatique des soldes de congés.
-
 import { useEffect, useState } from 'react';
 import {
-  Users, Crown, User, Copy, Check, ChevronDown,
-  Briefcase, Building2, Clock, Save, Loader2, Settings2
+  Users, UserPlus, Settings, Trash2, Shield, ShieldCheck, Crown,
+  Copy, ChevronDown, ChevronUp, Loader2, AlertTriangle, Clock, Gift, Save
 } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
-import { doc, updateDoc, Timestamp, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { auth } from '@/lib/firebase/client';
 import { useTeam } from '@/contexts/team-context';
-import { EmployeeType, WorkTimeCategory, SectorType } from '@/types/firestore';
-import { calculateInitialLeaveBalance } from '@/lib/firebase/balances';
-import { CONTRACT_TYPES, WORK_TIME_CATEGORIES } from '@/constants/contracts';
+import { cn } from '@/lib/utils';
 
 // ──────────────────────────────────────────────────────────────
-// Type for the editable contract panel
+// Local state types
 // ──────────────────────────────────────────────────────────────
-interface MemberContractEdit {
-  userId: string;
-  employeeType: EmployeeType;
-  workTimeCategory: WorkTimeCategory;
-  workTimePercentage: number;
-  sector: SectorType;
+interface PreCreateForm {
+  first_name: string;
+  last_name: string;
+  email: string;
+  weeklyHours: number;
+  role: 'member' | 'moderator';
 }
 
+interface MemberEdit {
+  weeklyHours: number;
+  bonusDays: number;
+  recoveryHours: number;
+  role: 'member' | 'moderator';
+  annual_leave_days: number;
+}
+
+const inputClass =
+  'w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20';
+
 export default function TeamMembersPage() {
-  const { team, members, isLeader, loading, refreshTeam } = useTeam();
-  const [copied, setCopied] = useState(false);
+  const {
+    team, members, isLeader, isLeaderOrMod, loading,
+    refreshTeam, updateMemberSettings, removeMember, approveMember, deleteTeam,
+  } = useTeam();
+
+  // Pre-create form
+  const [preCreateOpen, setPreCreateOpen] = useState(false);
+  const [preForm, setPreForm] = useState<PreCreateForm>({
+    first_name: '', last_name: '', email: '', weeklyHours: 38, role: 'member',
+  });
+  const [preCreating, setPreCreating] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+
+  // Member editing
   const [editingMember, setEditingMember] = useState<string | null>(null);
-  const [contractEdits, setContractEdits] = useState<Record<string, MemberContractEdit>>({});
+  const [memberEdits, setMemberEdits] = useState<Record<string, MemberEdit>>({});
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => { refreshTeam(); }, [refreshTeam]);
 
-  const copyCode = async () => {
-    if (!team?.code) return;
-    await navigator.clipboard.writeText(team.code);
-    setCopied(true);
-    toast.success('Code copié !');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Initialize edit values from the member's current profile in Firestore
-  const openContractPanel = async (userId: string) => {
-    if (!db) return;
-    if (editingMember === userId) {
-      setEditingMember(null);
+  // ── Pre-create ──────────────────────────────────────────────
+  const handlePreCreate = async () => {
+    if (!preForm.first_name || !preForm.last_name || !preForm.email) {
+      toast.error('Veuillez remplir tous les champs obligatoires');
       return;
     }
-    if (!contractEdits[userId]) {
-      const snap = await getDoc(doc(db, 'profiles', userId));
-      const data = snap.data();
-      setContractEdits(prev => ({
+    setPreCreating(true);
+    setGeneratedLink(null);
+    try {
+      const token = await auth?.currentUser?.getIdToken();
+      if (!token) { toast.error('Non authentifié'); return; }
+      const res = await fetch('/api/teams/pre-create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          first_name: preForm.first_name,
+          last_name: preForm.last_name,
+          email: preForm.email,
+          weeklyHours: preForm.weeklyHours,
+          role: preForm.role,
+        }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Erreur serveur');
+      const data = await res.json();
+      setGeneratedLink(data.link);
+      toast.success('Membre pré-créé — lien généré');
+      setPreForm({ first_name: '', last_name: '', email: '', weeklyHours: 38, role: 'member' });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur lors de la pré-création');
+    } finally {
+      setPreCreating(false);
+    }
+  };
+
+  const copyLink = async () => {
+    if (!generatedLink) return;
+    await navigator.clipboard.writeText(generatedLink);
+    toast.success('Lien copié !');
+  };
+
+  // ── Member editing helpers ──────────────────────────────────
+  const toggleEdit = (member: typeof members[0]) => {
+    const id = member.id;
+    if (editingMember === id) { setEditingMember(null); return; }
+    if (!memberEdits[id]) {
+      setMemberEdits(prev => ({
         ...prev,
-        [userId]: {
-          userId,
-          employeeType: data?.employeeType || 'cdi',
-          workTimeCategory: data?.workTimeCategory || 'temps-plein',
-          workTimePercentage: data?.workTimePercentage || 100,
-          sector: data?.sector || 'prive',
-        }
+        [id]: {
+          weeklyHours: member.weeklyHours ?? 38,
+          bonusDays: member.bonusDays ?? 0,
+          recoveryHours: member.recoveryHours ?? 0,
+          role: (member.role === 'leader' ? 'member' : member.role) as 'member' | 'moderator',
+          annual_leave_days: member.annual_leave_days ?? 0,
+        },
       }));
     }
-    setEditingMember(userId);
+    setEditingMember(id);
   };
 
-  const updateContract = (userId: string, field: keyof MemberContractEdit, value: unknown) => {
-    setContractEdits(prev => ({
-      ...prev,
-      [userId]: { ...prev[userId], [field]: value }
-    }));
+  const updateEdit = (id: string, field: keyof MemberEdit, value: number | string) => {
+    setMemberEdits(prev => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
   };
 
-  // Save contract changes + recalculate leave balance
-  const saveContract = async (userId: string) => {
-    if (!db) return;
-    const edit = contractEdits[userId];
+  const saveEdit = async (memberId: string) => {
+    const edit = memberEdits[memberId];
     if (!edit) return;
-    setSaving(userId);
-
+    setSaving(memberId);
     try {
-      const newBalance = calculateInitialLeaveBalance(
-        edit.employeeType,
-        edit.sector,
-        edit.workTimeCategory,
-        edit.workTimePercentage
-      );
-
-      await updateDoc(doc(db, 'profiles', userId), {
-        employeeType: edit.employeeType,
-        workTimeCategory: edit.workTimeCategory,
-        workTimePercentage: edit.workTimePercentage,
-        sector: edit.sector,
-        leaveBalance: { total: newBalance, used: 0, remaining: newBalance },
-        updatedAt: Timestamp.now(),
+      await updateMemberSettings(memberId, {
+        weeklyHours: edit.weeklyHours,
+        bonusDays: edit.bonusDays,
+        recoveryHours: edit.recoveryHours,
+        role: edit.role,
+        annual_leave_days: edit.annual_leave_days,
       });
-
-      toast.success('Contrat mis à jour — solde de congés recalculé');
+      toast.success('Paramètres du membre mis à jour');
       setEditingMember(null);
-      refreshTeam();
     } catch {
-      toast.error('Erreur lors de la mise à jour');
+      toast.error('Erreur lors de la sauvegarde');
     } finally {
       setSaving(null);
     }
   };
 
+  const handleRemoveMember = async (memberId: string, name: string) => {
+    if (!window.confirm(`Êtes-vous sûr de vouloir retirer ${name} de l'équipe ?`)) return;
+    try {
+      await removeMember(memberId);
+      toast.success('Membre retiré');
+    } catch {
+      toast.error('Erreur lors de la suppression');
+    }
+  };
+
+  const handleDeleteTeam = async () => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette équipe ? Cette action est irréversible.')) return;
+    if (!window.confirm('Confirmez une dernière fois : SUPPRIMER définitivement l\'équipe et tous ses membres ?')) return;
+    try {
+      await deleteTeam();
+      toast.success('Équipe supprimée');
+    } catch {
+      toast.error('Erreur lors de la suppression de l\'équipe');
+    }
+  };
+
+  // ── Derived data ────────────────────────────────────────────
+  const approvedMembers = members.filter(m => m.status === 'approved');
+  const pendingMembers = members.filter(m => m.status === 'pending');
+
+  const getMemberName = (m: typeof members[0]) =>
+    m.profile?.full_name ||
+    `${m.profile?.first_name || ''} ${m.profile?.last_name || ''}`.trim() ||
+    m.profile?.email || 'Utilisateur';
+
+  const roleBadge = (role: string) => {
+    switch (role) {
+      case 'leader':
+        return 'bg-blue-500/15 text-blue-400';
+      case 'moderator':
+        return 'bg-violet-500/15 text-violet-400';
+      default:
+        return 'bg-[var(--bg-secondary)] text-[var(--text-muted)]';
+    }
+  };
+
+  const roleLabel = (role: string) => {
+    switch (role) {
+      case 'leader': return 'Chef';
+      case 'moderator': return 'Modérateur';
+      default: return 'Membre';
+    }
+  };
+
+  const roleIcon = (role: string) => {
+    switch (role) {
+      case 'leader': return <Crown className="w-4 h-4" />;
+      case 'moderator': return <ShieldCheck className="w-4 h-4" />;
+      default: return <Shield className="w-4 h-4" />;
+    }
+  };
+
+  // ── Loading / empty states ──────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -130,65 +215,137 @@ export default function TeamMembersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-[var(--blueprint-500)]/10 flex items-center justify-center">
-            <Users className="w-6 h-6 text-[var(--blueprint-500)]" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold gradient-text-amber">{team.name}</h1>
-            <p className="text-sm text-[var(--text-muted)]">
-              {members.length} membre{members.length > 1 ? 's' : ''}
-              {isLeader && ' · Vous êtes chef d\'équipe'}
-            </p>
-          </div>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-xl bg-[var(--blueprint-500)]/10 flex items-center justify-center">
+          <Users className="w-6 h-6 text-[var(--blueprint-500)]" />
         </div>
-        {isLeader && (
-          <Link href="/team/settings" className="btn btn-secondary">
-            <Settings2 className="w-4 h-4" />
-            Paramètres
-          </Link>
-        )}
-      </div>
-
-      {/* Team Code */}
-      <div className="glass-elevated rounded-2xl p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-[var(--text-muted)]">Code d&apos;invitation</p>
-            <p className="text-xl font-mono font-bold text-[var(--blueprint-500)] tracking-wider">{team.code}</p>
-          </div>
-          <button type="button" onClick={copyCode} className="btn btn-secondary">
-            {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-            {copied ? 'Copié' : 'Copier'}
-          </button>
-        </div>
-        <p className="text-xs text-[var(--text-muted)] mt-2">
-          Partagez ce code pour inviter de nouveaux membres
-        </p>
-      </div>
-
-      {/* Leader info banner */}
-      {isLeader && (
-        <div className="rounded-2xl border border-[var(--blueprint-500)]/20 bg-[var(--blueprint-500)]/5 p-4 flex items-center gap-3">
-          <Crown className="w-5 h-5 text-[var(--blueprint-500)] shrink-0" />
-          <p className="text-sm text-[var(--text-secondary)]">
-            En tant que chef d&apos;équipe, vous pouvez modifier le type de contrat et le secteur de chaque membre.
-            Cela recalcule automatiquement leur solde de congés.
+        <div>
+          <h1 className="text-xl font-bold gradient-text-amber">{team.name} — Membres</h1>
+          <p className="text-sm text-[var(--text-muted)]">
+            {approvedMembers.length} membre{approvedMembers.length > 1 ? 's' : ''}
+            {pendingMembers.length > 0 && ` · ${pendingMembers.length} en attente`}
           </p>
+        </div>
+      </div>
+
+      {/* ── Pre-create form (leader / mod) ─────────────────── */}
+      {isLeaderOrMod && (
+        <div className="glass-elevated rounded-2xl">
+          <button
+            type="button"
+            onClick={() => { setPreCreateOpen(o => !o); setGeneratedLink(null); }}
+            className="w-full p-4 flex items-center justify-between text-left"
+          >
+            <span className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
+              <UserPlus className="w-5 h-5 text-[var(--blueprint-500)]" />
+              Pré-créer un membre
+            </span>
+            {preCreateOpen
+              ? <ChevronUp className="w-5 h-5 text-[var(--text-muted)]" />
+              : <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />}
+          </button>
+
+          {preCreateOpen && (
+            <div className="px-4 pb-4 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-[var(--text-secondary)]">Prénom</label>
+                  <input
+                    type="text"
+                    value={preForm.first_name}
+                    onChange={e => setPreForm(p => ({ ...p, first_name: e.target.value }))}
+                    className={inputClass}
+                    placeholder="Jean"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-[var(--text-secondary)]">Nom</label>
+                  <input
+                    type="text"
+                    value={preForm.last_name}
+                    onChange={e => setPreForm(p => ({ ...p, last_name: e.target.value }))}
+                    className={inputClass}
+                    placeholder="Dupont"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-[var(--text-secondary)]">Email</label>
+                  <input
+                    type="email"
+                    value={preForm.email}
+                    onChange={e => setPreForm(p => ({ ...p, email: e.target.value }))}
+                    className={inputClass}
+                    placeholder="jean@exemple.be"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Heures/semaine
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={preForm.weeklyHours}
+                    onChange={e => setPreForm(p => ({ ...p, weeklyHours: Number(e.target.value) }))}
+                    className={inputClass}
+                  />
+                </div>
+                <div className="space-y-1 col-span-2">
+                  <label className="text-xs text-[var(--text-secondary)]">Rôle</label>
+                  <select
+                    value={preForm.role}
+                    onChange={e => setPreForm(p => ({ ...p, role: e.target.value as 'member' | 'moderator' }))}
+                    className={inputClass}
+                  >
+                    <option value="member">Membre</option>
+                    <option value="moderator">Modérateur</option>
+                  </select>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handlePreCreate}
+                disabled={preCreating}
+                className="btn btn-primary w-full"
+              >
+                {preCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                Créer &amp; Envoyer lien
+              </button>
+
+              {generatedLink && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                  <input
+                    type="text"
+                    readOnly
+                    value={generatedLink}
+                    className="flex-1 bg-transparent text-sm text-emerald-300 outline-none truncate"
+                  />
+                  <button type="button" onClick={copyLink} className="btn btn-secondary shrink-0">
+                    <Copy className="w-4 h-4" /> Copier
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Members List */}
+      {/* ── Approved members list ──────────────────────────── */}
       <div className="glass-elevated rounded-2xl divide-y divide-[var(--border-subtle)]">
         <div className="p-4">
           <h2 className="font-semibold text-[var(--text-primary)]">Membres de l&apos;équipe</h2>
         </div>
 
-        {members.map((member, index) => {
-          const isEditing = editingMember === member.user_id;
-          const edit = contractEdits[member.user_id];
+        {approvedMembers.length === 0 && (
+          <p className="p-4 text-sm text-[var(--text-muted)]">Aucun membre approuvé.</p>
+        )}
+
+        {approvedMembers.map((member, index) => {
+          const isEditing = editingMember === member.id;
+          const edit = memberEdits[member.id];
+          const name = getMemberName(member);
 
           return (
             <div
@@ -196,145 +353,209 @@ export default function TeamMembersPage() {
               className="animate-fade-up opacity-0"
               style={{ animationDelay: `${index * 80}ms` }}
             >
-              {/* Member Row */}
+              {/* Row */}
               <div className="p-4 flex items-center justify-between hover:bg-[var(--bg-overlay)]/50 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${member.role === 'leader' ? 'bg-[var(--blueprint-500)]/10' : 'bg-[var(--bg-secondary)]'
-                    }`}>
-                    {member.role === 'leader'
-                      ? <Crown className="w-5 h-5 text-[var(--blueprint-500)]" />
-                      : <User className="w-5 h-5 text-[var(--text-muted)]" />
-                    }
-                  </div>
+                  {member.profile?.color && (
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ backgroundColor: member.profile.color }}
+                    />
+                  )}
                   <div>
-                    <p className="font-medium text-[var(--text-primary)]">
-                      {member.profile?.full_name ||
-                        `${member.profile?.first_name || ''} ${member.profile?.last_name || ''}`.trim() ||
-                        member.profile?.email || 'Utilisateur'}
-                    </p>
+                    <p className="font-medium text-[var(--text-primary)]">{name}</p>
                     <p className="text-sm text-[var(--text-muted)]">{member.profile?.email}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full ${member.role === 'leader'
-                      ? 'bg-[var(--blueprint-500)]/10 text-[var(--blueprint-500)]'
-                      : 'bg-[var(--bg-secondary)] text-[var(--text-muted)]'
-                    }`}>
-                    {member.role === 'leader' ? 'Chef d\'équipe' : 'Membre'}
+                  <span className={cn('text-xs px-2 py-1 rounded-full flex items-center gap-1', roleBadge(member.role))}>
+                    {roleIcon(member.role)} {roleLabel(member.role)}
                   </span>
 
-                  {/* Contract management button — only for leader, only for non-leader members */}
-                  {isLeader && member.role !== 'leader' && (
+                  {isLeaderOrMod && member.role !== 'leader' && (
                     <button
                       type="button"
-                      onClick={() => openContractPanel(member.user_id)}
+                      onClick={() => toggleEdit(member)}
                       className="btn btn-secondary text-xs"
-                      aria-label={`Modifier le contrat de ${member.profile?.full_name || member.profile?.email || 'membre'}`}
                     >
-                      <Briefcase className="w-3.5 h-3.5" />
-                      Contrat
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isEditing ? 'rotate-180' : ''}`} />
+                      <Settings className="w-3.5 h-3.5" />
+                      {isEditing ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Contract Edit Panel — visible only when expanded */}
+              {/* Edit panel */}
               {isEditing && edit && (
-                  <div
-                    className="overflow-hidden transition-all duration-200"
-                  >
-                    <div className="px-4 pb-4 bg-[var(--bg-overlay)] mx-4 mb-4 rounded-2xl border border-[var(--border-default)] space-y-4">
-                      <p className="text-xs text-[var(--text-muted)] pt-4 font-medium uppercase tracking-wide">
-                        Configuration du contrat
-                      </p>
+                <div className="px-4 pb-4">
+                  <div className="bg-[var(--bg-overlay)] p-4 rounded-2xl border border-[var(--border-default)] space-y-4">
+                    <p className="text-xs text-[var(--text-muted)] font-medium uppercase tracking-wide">
+                      Paramètres du membre
+                    </p>
 
-                      <div className="grid grid-cols-2 gap-3">
-                        {/* Type de contrat */}
-                        <div className="space-y-1">
-                          <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                            <Briefcase className="w-3 h-3" /> Type de contrat
-                          </label>
-                          <select
-                            value={edit.employeeType}
-                            onChange={e => updateContract(member.user_id, 'employeeType', e.target.value as EmployeeType)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
-                          >
-                            {CONTRACT_TYPES.map(ct => (
-                              <option key={ct.id} value={ct.id}>{ct.label}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* Secteur */}
-                        <div className="space-y-1">
-                          <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                            <Building2 className="w-3 h-3" /> Secteur
-                          </label>
-                          <select
-                            value={edit.sector}
-                            onChange={e => updateContract(member.user_id, 'sector', e.target.value as SectorType)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
-                          >
-                            <option value="prive">Privé</option>
-                            <option value="public">Public</option>
-                          </select>
-                        </div>
-
-                        {/* Catégorie de temps */}
-                        <div className="space-y-1">
-                          <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                            <Clock className="w-3 h-3" /> Temps de travail
-                          </label>
-                          <select
-                            value={edit.workTimeCategory}
-                            onChange={e => updateContract(member.user_id, 'workTimeCategory', e.target.value as WorkTimeCategory)}
-                            className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
-                          >
-                            {WORK_TIME_CATEGORIES.map(wt => (
-                              <option key={wt.id} value={wt.id}>{wt.label}</option>
-                            ))}
-                          </select>
-                        </div>
-
-                        {/* Pourcentage (temps partiel seulement) */}
-                        {edit.workTimeCategory === 'temps-partiel' && (
-                          <div className="space-y-1">
-                            <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
-                              <Clock className="w-3 h-3" /> Pourcentage
-                            </label>
-                            <input
-                              type="number"
-                              min={50} max={99} step={5}
-                              value={edit.workTimePercentage}
-                              onChange={e => updateContract(member.user_id, 'workTimePercentage', Number(e.target.value))}
-                              className="w-full px-3 py-2 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-strong)] text-sm text-[var(--text-primary)] focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20"
-                            />
-                          </div>
-                        )}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> Heures/semaine
+                        </label>
+                        <input
+                          type="number" min={0}
+                          value={edit.weeklyHours}
+                          onChange={e => updateEdit(member.id, 'weeklyHours', Number(e.target.value))}
+                          className={inputClass}
+                        />
                       </div>
 
-                      {/* Save button */}
+                      <div className="space-y-1">
+                        <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <Gift className="w-3 h-3" /> Jours bonus
+                        </label>
+                        <input
+                          type="number" min={0} max={3}
+                          value={edit.bonusDays}
+                          onChange={e => updateEdit(member.id, 'bonusDays', Number(e.target.value))}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> Heures récup
+                        </label>
+                        <input
+                          type="number" min={0}
+                          value={edit.recoveryHours}
+                          onChange={e => updateEdit(member.id, 'recoveryHours', Number(e.target.value))}
+                          className={inputClass}
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <Shield className="w-3 h-3" /> Rôle
+                        </label>
+                        <select
+                          value={edit.role}
+                          onChange={e => updateEdit(member.id, 'role', e.target.value)}
+                          className={inputClass}
+                        >
+                          <option value="member">Membre</option>
+                          <option value="moderator">Modérateur</option>
+                        </select>
+                      </div>
+
+                      <div className="space-y-1 col-span-2">
+                        <label className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
+                          <Gift className="w-3 h-3" /> Solde CP annuel
+                        </label>
+                        <input
+                          type="number" min={0}
+                          value={edit.annual_leave_days}
+                          onChange={e => updateEdit(member.id, 'annual_leave_days', Number(e.target.value))}
+                          className={inputClass}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => saveContract(member.user_id)}
-                        disabled={saving === member.user_id}
-                        className="btn btn-primary w-full"
+                        onClick={() => saveEdit(member.id)}
+                        disabled={saving === member.id}
+                        className="btn btn-primary flex-1"
                       >
-                        {saving === member.user_id
+                        {saving === member.id
                           ? <Loader2 className="w-4 h-4 animate-spin" />
-                          : <Save className="w-4 h-4" />
-                        }
-                        Enregistrer et recalculer les congés
+                          : <Save className="w-4 h-4" />}
+                        Enregistrer
                       </button>
+
+                      {isLeader && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(member.id, name)}
+                          className="btn bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
-                )}
+                </div>
+              )}
             </div>
           );
         })}
       </div>
+
+      {/* ── Pending members ────────────────────────────────── */}
+      {pendingMembers.length > 0 && (
+        <div className="glass-elevated rounded-2xl divide-y divide-[var(--border-subtle)]">
+          <div className="p-4 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+            <h2 className="font-semibold text-[var(--text-primary)]">
+              En attente d&apos;approbation ({pendingMembers.length})
+            </h2>
+          </div>
+
+          {pendingMembers.map(member => {
+            const name = getMemberName(member);
+            return (
+              <div key={member.id} className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {member.profile?.color && (
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ backgroundColor: member.profile.color }}
+                    />
+                  )}
+                  <div>
+                    <p className="font-medium text-[var(--text-primary)]">{name}</p>
+                    <p className="text-sm text-[var(--text-muted)]">{member.profile?.email}</p>
+                  </div>
+                </div>
+
+                {isLeaderOrMod && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try { await approveMember(member.id); toast.success(`${name} approuvé`); }
+                        catch { toast.error('Erreur lors de l\'approbation'); }
+                      }}
+                      className="btn btn-primary text-xs"
+                    >
+                      Approuver
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveMember(member.id, name)}
+                      className="btn bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 text-xs"
+                    >
+                      Rejeter
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Delete team (leader only) ──────────────────────── */}
+      {isLeader && (
+        <div className="glass-elevated rounded-2xl p-4">
+          <button
+            type="button"
+            onClick={handleDeleteTeam}
+            className="btn w-full bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20"
+          >
+            <Trash2 className="w-4 h-4" />
+            Supprimer l&apos;équipe
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -17,8 +17,9 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isEmailVerified() {
-      return isAuthenticated() && request.auth.token.email_verified == true;
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/super_admins/$(request.auth.uid));
     }
 
     function isTeamMember(teamId) {
@@ -31,13 +32,25 @@ service cloud.firestore {
         get(/databases/$(database)/documents/team_members/$(teamId + '_' + request.auth.uid)).data.role == 'leader';
     }
 
+    function isTeamLeaderOrMod(teamId) {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/team_members/$(teamId + '_' + request.auth.uid)).data.role in ['leader', 'moderator'];
+    }
+
+    // ─── Super Admins ────────────────────────────────────────────────────
+    match /super_admins/{userId} {
+      allow read: if isSuperAdmin();
+      allow write: if false;
+    }
+
     // ─── Profiles ──────────────────────────────────────────────────────────
     match /profiles/{userId} {
       allow read: if isAuthenticated();
       allow create: if isOwner(userId) && isAuthenticated();
-      // Users can update their own profile but NOT role or teamId (admin-controlled)
       allow update: if isOwner(userId) &&
         !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'teamId']);
+      // Super admin can update any profile
+      allow update: if isSuperAdmin();
       allow delete: if false;
     }
 
@@ -45,22 +58,30 @@ service cloud.firestore {
     match /teams/{teamId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
-      allow update: if isTeamLeader(teamId);
-      allow delete: if false;
+      allow update: if isTeamLeaderOrMod(teamId) || isSuperAdmin();
+      allow delete: if isTeamLeader(teamId) || isSuperAdmin();
     }
 
     // ─── Team Memberships ───────────────────────────────────────────────────
     match /team_members/{membershipId} {
       allow read: if isAuthenticated();
-      allow update: if isTeamLeader(membershipId.split('_')[0]);
       allow create: if isAuthenticated();
-      allow delete: if isTeamLeader(membershipId.split('_')[0]);
+      allow update: if isTeamLeaderOrMod(membershipId.split('_')[0]) || isSuperAdmin();
+      allow delete: if isTeamLeader(membershipId.split('_')[0]) || isSuperAdmin();
+    }
+
+    // ─── Pre-created members ────────────────────────────────────────────────
+    match /pre_created_members/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
     // ─── Calendars ──────────────────────────────────────────────────────────
     match /calendars/{userId} {
       allow read: if isAuthenticated();
-      allow write: if isOwner(userId) && isAuthenticated();
+      allow write: if isOwner(userId) || isSuperAdmin();
     }
 
     // ─── Leave Balance — server-side write only ─────────────────────────────
@@ -74,7 +95,15 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow delete: if isAuthenticated();
-      allow update: if false;
+      allow update: if isAuthenticated();
+    }
+
+    // ─── Team Invitations ───────────────────────────────────────────────────
+    match /team_invitations/{invitationId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
     // ─── Deny everything else by default ───────────────────────────────────

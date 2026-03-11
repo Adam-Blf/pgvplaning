@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type UserRole = 'leader' | 'admin' | 'member';
+export type UserRole = 'super_admin' | 'leader' | 'moderator' | 'member';
 export type EmployeeType = 'cdi' | 'cdd' | 'apprentissage' | 'professionnalisation' | 'stage' | 'interim' | 'freelance' | 'mandataire' | 'public' | 'vacataire';
 export type WorkTimeCategory = 'temps-plein' | 'temps-partiel' | 'forfait-jours' | 'forfait-heures';
 export type SectorType = 'public' | 'prive';
@@ -13,7 +13,8 @@ export interface UserProfile {
     role: UserRole;
     employeeType: EmployeeType;
     workTimeCategory: WorkTimeCategory;
-    workTimePercentage?: number; // Pour le temps partiel (ex: 80)
+    workTimePercentage?: number;
+    weeklyHours?: number; // Heures/semaine définies par le leader (ex: 38)
     sector: SectorType;
     teamId?: string;
     leaveBalance: {
@@ -21,9 +22,11 @@ export interface UserProfile {
         used: number;
         remaining: number;
     };
+    bonusDays?: number; // Jours bonus optionnels (0-3), attribués par le leader
+    recoveryHours?: number; // Heures récup (heures sup), compteur séparé non déduit des CP
     color?: string;
     icalToken?: string;
-    birth_date?: string; // Format YYYY-MM-DD
+    birth_date?: string;
     first_name?: string;
     last_name?: string;
     emailNotif?: boolean;
@@ -32,17 +35,50 @@ export interface UserProfile {
     updatedAt: Timestamp;
 }
 
+export interface TeamMember {
+    id: string; // format: {teamId}_{userId}
+    teamId: string;
+    userId: string;
+    role: UserRole;
+    status: 'pending' | 'approved' | 'rejected';
+    employee_type?: EmployeeType;
+    work_time_category?: WorkTimeCategory;
+    weeklyHours?: number;
+    bonusDays?: number;
+    recoveryHours?: number;
+    annual_leave_days?: number;
+    leave_balance?: number;
+    color?: string;
+    joinedAt: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export interface PreCreatedMember {
+    id: string; // token UUID
+    teamId: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: UserRole;
+    createdBy: string;
+    status: 'pending_registration' | 'registered';
+    weeklyHours?: number;
+    token: string;
+    createdAt: Timestamp;
+    expiresAt?: Timestamp;
+}
+
 export interface Team {
     id: string;
     name: string;
-    uniqueCode: string; // 8 chars
+    uniqueCode: string;
     leaderId: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
     settings: {
         allowMemberInvite: boolean;
         autoApproveAbsences: boolean;
-        minPresenceRequired?: number; // Nombre minimum de personnes qui doivent être présentes (ex: 1)
+        minPresenceRequired?: number;
     };
     teamIcalToken?: string;
 }
@@ -62,7 +98,7 @@ export interface CalendarEntry {
     approvedBy?: string;
     createdAt: Timestamp;
     updatedAt: Timestamp;
-    attachmentUrl?: string; // Pour les justificatifs
+    attachmentUrl?: string;
 }
 
 export interface AuditLog {
@@ -78,11 +114,15 @@ export interface AuditLog {
 }
 
 export interface TeamInvitation {
-    id: string; // token
+    id: string;
     teamId: string;
-    email?: string; // Optionnel
+    email?: string;
+    firstName?: string;
+    lastName?: string;
     role: UserRole;
+    type: 'code' | 'link' | 'pre-created';
     expiresAt: Timestamp;
     createdBy: string;
     used: boolean;
+    token: string;
 }

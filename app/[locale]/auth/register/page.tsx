@@ -3,8 +3,9 @@
 // Page d'inscription simplifiée.
 // Le type de contrat et le secteur sont définis par le chef d'équipe, pas ici.
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
+import { useSearchParams } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
@@ -17,6 +18,7 @@ import { toast } from 'sonner';
 import { UserProfile } from '@/types/firestore';
 
 export default function RegisterPage() {
+    const searchParams = useSearchParams();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -25,6 +27,16 @@ export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+
+    // Pre-fill from invite link query params
+    useEffect(() => {
+        const prefillEmail = searchParams.get('email');
+        const prefillFirst = searchParams.get('firstName');
+        const prefillLast = searchParams.get('lastName');
+        if (prefillEmail) setEmail(prefillEmail);
+        if (prefillFirst) setFirstName(prefillFirst);
+        if (prefillLast) setLastName(prefillLast);
+    }, [searchParams]);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,7 +79,8 @@ export default function RegisterPage() {
             }
 
             toast.success('Compte créé avec succès !');
-            router.push('/');
+            const redirect = searchParams.get('redirect');
+            router.push(redirect || '/');
         } catch (err: unknown) {
             const firebaseErr = err as { code?: string; message?: string };
             console.error('Registration error detailed:', err);

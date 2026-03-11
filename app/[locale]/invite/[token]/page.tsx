@@ -30,11 +30,18 @@ interface TeamInfo {
   code: string;
 }
 
+interface PreCreatedData {
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export default function InvitePage({ params }: InvitePageProps) {
   const { token } = use(params);
   const router = useRouter();
   const [state, setState] = useState<InviteState>('loading');
   const [team, setTeam] = useState<TeamInfo | null>(null);
+  const [preCreated, setPreCreated] = useState<PreCreatedData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
@@ -52,6 +59,9 @@ export default function InvitePage({ params }: InvitePageProps) {
       }
 
       setTeam(data.team);
+      if (data.preCreated && data.memberData) {
+        setPreCreated(data.memberData);
+      }
       setState(isAuthenticated ? 'valid' : 'need_auth');
     } catch (err) {
       console.error('Error validating invitation:', err);
@@ -85,8 +95,11 @@ export default function InvitePage({ params }: InvitePageProps) {
   const acceptInvitation = async () => {
     setState('joining');
     try {
+      const user = auth?.currentUser;
+      const idToken = user ? await user.getIdToken() : null;
       const response = await fetch(`/api/teams/invitations/${token}`, {
         method: 'POST',
+        headers: idToken ? { 'Authorization': `Bearer ${idToken}` } : {},
       });
       const data = await response.json();
 
@@ -169,27 +182,36 @@ export default function InvitePage({ params }: InvitePageProps) {
               <div
                 className="text-center animate-scale-in"
               >
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-amber-500" />
+                <div className="w-16 h-16 rounded-2xl bg-sky-500/10 flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-8 h-8 text-[var(--blueprint-500)]" />
                 </div>
                 <h1 className="text-xl font-bold text-[var(--text-primary)] mb-2">
                   Rejoindre {team.name}
                 </h1>
+                {preCreated && (
+                  <p className="text-[var(--text-secondary)] text-sm mb-2">
+                    Bienvenue <span className="font-semibold text-[var(--blueprint-500)]">{preCreated.firstName} {preCreated.lastName}</span>
+                  </p>
+                )}
                 <p className="text-[var(--text-secondary)] text-sm mb-6">
-                  Connectez-vous ou créez un compte pour rejoindre cette équipe.
+                  {preCreated
+                    ? 'Créez votre compte pour finaliser votre inscription à l\'équipe.'
+                    : 'Connectez-vous ou créez un compte pour rejoindre cette équipe.'}
                 </p>
 
                 <div className="space-y-3">
                   <Link
                     href={`/login?redirect=/invite/${token}`}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 transition-[transform,color,background-color,border-color,box-shadow]"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 btn-primary font-semibold rounded-xl"
                   >
                     <LogIn className="w-4 h-4" />
                     Se connecter
                   </Link>
                   <Link
-                    href={`/login?redirect=/invite/${token}&mode=signup`}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl font-medium transition-[transform,color,background-color,border-color,box-shadow]"
+                    href={preCreated
+                      ? `/auth/register?redirect=/invite/${token}&email=${encodeURIComponent(preCreated.email)}&firstName=${encodeURIComponent(preCreated.firstName)}&lastName=${encodeURIComponent(preCreated.lastName)}`
+                      : `/auth/register?redirect=/invite/${token}`}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[var(--bg-overlay)] hover:bg-[var(--bg-hover)] border border-[var(--border-default)] rounded-xl font-medium transition-colors"
                   >
                     <UserPlus className="w-4 h-4" />
                     Créer un compte

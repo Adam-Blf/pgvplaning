@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 
 export default function TeamSettingsPage() {
   const router = useRouter();
-  const { team, isLeader, loading: teamLoading, refreshTeam } = useTeam();
+  const { team, isLeader, isLeaderOrMod, loading: teamLoading, refreshTeam } = useTeam();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -36,11 +36,11 @@ export default function TeamSettingsPage() {
   }, [team]);
 
   useEffect(() => {
-    // Redirect non-leaders
-    if (!teamLoading && !isLeader && team) {
+    // Redirect non-leaders/mods
+    if (!teamLoading && !isLeaderOrMod && team) {
       router.push('/team/members');
     }
-  }, [teamLoading, isLeader, team, router]);
+  }, [teamLoading, isLeaderOrMod, team, router]);
 
   const copyCode = async () => {
     if (!team?.code) return;
@@ -144,7 +144,7 @@ export default function TeamSettingsPage() {
     );
   }
 
-  if (!team || !isLeader) {
+  if (!team || !isLeaderOrMod) {
     return null;
   }
 

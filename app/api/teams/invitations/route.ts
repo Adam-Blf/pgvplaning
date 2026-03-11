@@ -58,9 +58,9 @@ export async function POST(request: NextRequest) {
     }
     const membership = membershipQuery.docs[0].data();
 
-    if (membership.role !== 'leader') {
+    if (!['leader', 'moderator'].includes(membership.role)) {
       return NextResponse.json(
-        { error: 'Seuls les chefs d\'équipe peuvent créer des invitations' },
+        { error: 'Seuls les chefs d\'équipe et modérateurs peuvent créer des invitations' },
         { status: 403 }
       );
     }
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
       .limit(1)
       .get();
 
-    if (membershipQuery.empty || membershipQuery.docs[0].data().role !== 'leader') {
+    if (membershipQuery.empty || !['leader', 'moderator'].includes(membershipQuery.docs[0].data().role)) {
       return NextResponse.json(
         { error: 'Accès non autorisé' },
         { status: 403 }
