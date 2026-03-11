@@ -266,6 +266,15 @@ export default function CalendarPage() {
           </div>
         </div>
       </section>
+
+      <section className="hidden md:block animate-fade-up opacity-0" style={{ animationDelay: '500ms' }}>
+        <button
+          className="btn btn-primary mt-4"
+          onClick={() => window.open('/api/ical', '_blank')}
+        >
+          Exporter en Webcal (.ics)
+        </button>
+      </section>
     </div>
   );
 }
