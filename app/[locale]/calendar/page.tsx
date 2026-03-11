@@ -96,43 +96,43 @@ export default function CalendarPage() {
   const [showLegend, setShowLegend] = useState(false);
   const { getDayStatus, getHalfDayStatus, hasSplitDay, setDayStatus, formatDateKey } = useCalendarData();
 
-  // Configuration de la légende avec le design system
+  // Configuration de la légende harmonisée avec toolbar et calendrier
   const legendItems = [
     {
       iconName: 'Office' as const,
       label: tL('office'),
-      colorClass: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
-      dotClass: 'bg-blue-500'
+      colorClass: 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400',
+      dotClass: 'bg-indigo-500'
     },
     {
       iconName: 'Home' as const,
       label: tL('home'),
-      colorClass: 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400',
-      dotClass: 'bg-cyan-500'
+      colorClass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
+      dotClass: 'bg-emerald-500'
     },
     {
       iconName: 'Education' as const,
       label: tL('education'),
-      colorClass: 'bg-sky-500/10 border-sky-500/30 text-sky-400',
-      dotClass: 'bg-sky-500'
+      colorClass: 'bg-amber-500/10 border-amber-500/30 text-amber-400',
+      dotClass: 'bg-amber-500'
     },
     {
       iconName: 'Meeting' as const,
       label: tL('meeting'),
-      colorClass: 'bg-blue-400/10 border-blue-400/30 text-blue-300',
-      dotClass: 'bg-blue-400'
+      colorClass: 'bg-violet-500/10 border-violet-500/30 text-violet-400',
+      dotClass: 'bg-violet-500'
     },
     {
       iconName: 'Vacation' as const,
       label: tL('vacation'),
-      colorClass: 'bg-slate-500/10 border-slate-500/30 text-slate-400',
-      dotClass: 'bg-slate-500'
+      colorClass: 'bg-rose-500/10 border-rose-500/30 text-rose-400',
+      dotClass: 'bg-rose-500'
     },
     {
       iconName: 'Cake' as const,
       label: tL('birthday'),
-      colorClass: 'bg-sky-300/10 border-sky-300/30 text-sky-200',
-      dotClass: 'bg-sky-300'
+      colorClass: 'bg-pink-400/10 border-pink-400/30 text-pink-300',
+      dotClass: 'bg-pink-400'
     },
   ];
 

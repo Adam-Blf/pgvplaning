@@ -14,7 +14,7 @@ const MONTH_NAMES = [
 
 const DAY_NAMES = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-// Status configuration with vibrant colors and luxury glow effects
+// Status configuration with harmonized colors matching toolbar
 const STATUS_CONFIG: Record<DayStatus, {
   base: string;
   glow: string;
@@ -22,40 +22,40 @@ const STATUS_CONFIG: Record<DayStatus, {
   ring: string;
 }> = {
   WORK: {
-    base: 'bg-[var(--crimson-500)]/10 text-[var(--crimson-500)] border-[var(--crimson-500)]/30',
-    glow: 'shadow-[0_0_25px_-5px_rgba(220,38,38,0.4)]',
-    dot: 'bg-[var(--crimson-500)]',
-    ring: 'ring-[var(--crimson-500)]/50',
-  },
-  REMOTE: {
-    base: 'bg-[var(--gold-500)]/10 text-[var(--gold-500)] border-[var(--gold-500)]/30',
-    glow: 'shadow-[0_0_25px_-5px_rgba(245,158,11,0.4)]',
-    dot: 'bg-[var(--gold-500)]',
-    ring: 'ring-[var(--gold-500)]/50',
-  },
-  SCHOOL: {
-    base: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-    glow: 'shadow-[0_0_25px_-5px_rgba(16,185,129,0.3)]',
-    dot: 'bg-emerald-400',
-    ring: 'ring-emerald-500/50',
-  },
-  TRAINER: {
     base: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30',
-    glow: 'shadow-[0_0_25px_-5px_rgba(99,102,241,0.3)]',
-    dot: 'bg-indigo-400',
+    glow: 'shadow-[0_0_25px_-5px_rgba(99,102,241,0.4)]',
+    dot: 'bg-indigo-500',
     ring: 'ring-indigo-500/50',
   },
+  REMOTE: {
+    base: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(16,185,129,0.4)]',
+    dot: 'bg-emerald-500',
+    ring: 'ring-emerald-500/50',
+  },
+  SCHOOL: {
+    base: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(245,158,11,0.4)]',
+    dot: 'bg-amber-500',
+    ring: 'ring-amber-500/50',
+  },
+  TRAINER: {
+    base: 'bg-violet-500/10 text-violet-400 border-violet-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(139,92,246,0.4)]',
+    dot: 'bg-violet-500',
+    ring: 'ring-violet-500/50',
+  },
   LEAVE: {
-    base: 'bg-white/5 text-[var(--text-tertiary)] border-white/10',
-    glow: '',
-    dot: 'bg-white/20',
-    ring: 'ring-white/10',
+    base: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+    glow: 'shadow-[0_0_25px_-5px_rgba(244,63,94,0.3)]',
+    dot: 'bg-rose-500',
+    ring: 'ring-rose-500/50',
   },
   HOLIDAY: {
-    base: 'bg-rose-500/5 text-rose-400/60 border-rose-500/10',
+    base: 'bg-red-500/5 text-red-400/60 border-red-500/10',
     glow: '',
-    dot: 'bg-rose-500/40',
-    ring: 'ring-rose-500/20',
+    dot: 'bg-red-500/40',
+    ring: 'ring-red-500/20',
   },
   OFF: {
     base: 'bg-transparent text-[var(--text-tertiary)]',
