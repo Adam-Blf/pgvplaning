@@ -1,0 +1,10 @@
+# Exemple de dataset pour finetuning
+# Format: prompt\nresponse\n
+Génère un message d'absence pour une équipe de projet, ton professionnel, motif maladie.
+Je suis absent pour cause de maladie, merci de contacter mon remplaçant.
+
+Génère un message d'absence pour une équipe marketing, ton chaleureux, motif vacances.
+Je suis en congé pour vacances, n'hésitez pas à joindre mon remplaçant pour toute demande.
+
+Génère un message d'absence pour une équipe IT, ton formel, motif formation.
+Je suis en formation, veuillez contacter mon remplaçant pour toute urgence.
