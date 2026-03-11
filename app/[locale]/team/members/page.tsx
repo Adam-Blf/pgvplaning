@@ -5,7 +5,6 @@
 // Ces paramètres impactent le calcul automatique des soldes de congés.
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Crown, User, Copy, Check, ChevronDown,
   Briefcase, Building2, Clock, Save, Loader2, Settings2
@@ -192,11 +191,10 @@ export default function TeamMembersPage() {
           const edit = contractEdits[member.user_id];
 
           return (
-            <motion.div
+            <div
               key={member.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              className="animate-fade-up opacity-0"
+              style={{ animationDelay: `${index * 80}ms` }}
             >
               {/* Member Row */}
               <div className="p-4 flex items-center justify-between">
@@ -241,14 +239,9 @@ export default function TeamMembersPage() {
               </div>
 
               {/* Contract Edit Panel — visible only when expanded */}
-              <AnimatePresence>
-                {isEditing && edit && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
+              {isEditing && edit && (
+                  <div
+                    className="overflow-hidden transition-all duration-200"
                   >
                     <div className="px-4 pb-4 bg-[var(--bg-overlay)] mx-4 mb-4 rounded-2xl border border-white/5 space-y-4">
                       <p className="text-xs text-[var(--text-muted)] pt-4 font-medium uppercase tracking-wide">
@@ -333,10 +326,9 @@ export default function TeamMembersPage() {
                         Enregistrer et recalculer les congés
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
-            </motion.div>
+            </div>
           );
         })}
       </div>

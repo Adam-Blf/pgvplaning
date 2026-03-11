@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   UserMinus,
   ChevronUp,
@@ -249,14 +248,12 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-4"
+        <div
+          className="flex flex-col items-center gap-4 animate-fade-in"
         >
           <div className="w-12 h-12 border-2 border-blueprint-500/30 border-t-blueprint-500 rounded-full animate-spin" />
           <p className="text-blueprint-500 font-mono text-xs tracking-widest animate-pulse">CHARGEMENT DU SYSTÈME...</p>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -264,10 +261,8 @@ export default function AdminDashboard() {
   if (!currentUser?.isTeamAdmin) {
     return (
       <div className="min-h-screen bg-[var(--bg-base)] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="text-center max-w-sm"
+        <div
+          className="text-center max-w-sm animate-scale-in"
         >
           <div className="w-20 h-20 rounded-3xl bg-red-500/10 flex items-center justify-center mx-auto mb-6 border border-red-500/20 glow-error-sm">
             <AnimatedBlueprintIcon name="Security" className="w-10 h-10 text-red-500" />
@@ -277,7 +272,7 @@ export default function AdminDashboard() {
           <Link href="/calendar" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blueprint-500/10 text-blueprint-500 hover:bg-blueprint-500 hover:text-white transition-all font-mono text-sm border border-blueprint-500/20">
             ← RETOUR AU CALENDRIER
           </Link>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -310,16 +305,14 @@ export default function AdminDashboard() {
             </div>
 
             {currentUser?.isSuperAdmin && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="px-4 py-2 rounded-xl bg-blueprint-500/10 border border-blueprint-500/30 glow-amber-sm"
+              <div
+                className="px-4 py-2 rounded-xl bg-blueprint-500/10 border border-blueprint-500/30 glow-amber-sm animate-fade-in"
               >
                 <span className="text-blueprint-400 font-mono text-[10px] font-bold tracking-[0.2em] flex items-center gap-2">
                   <AnimatedBlueprintIcon name="Admin" className="w-4 h-4" />
                   SUPER ADMIN ACCESS
                 </span>
-              </motion.div>
+              </div>
             )}
           </div>
         </div>
@@ -328,11 +321,9 @@ export default function AdminDashboard() {
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Team Info Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-1"
+          <div
+            className="lg:col-span-1 animate-fade-up opacity-0"
+            style={{ animationDelay: '0ms' }}
           >
             <div className="card-elevated group">
               <div className="p-6 border-b border-blueprint-500/10">
@@ -354,14 +345,9 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <AnimatePresence mode="wait">
-                {showSettings ? (
-                  <motion.div
-                    key="settings"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="p-6 space-y-5"
+              {showSettings ? (
+                  <div
+                    className="p-6 space-y-5 animate-fade-in"
                   >
                     <div className="space-y-2">
                       <label className="block text-[10px] font-mono font-bold text-blueprint-500/60 tracking-widest uppercase">
@@ -424,14 +410,10 @@ export default function AdminDashboard() {
                         )}
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                 ) : (
-                  <motion.div
-                    key="info"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="p-6 space-y-6"
+                  <div
+                    className="p-6 space-y-6 animate-fade-in"
                   >
                     <div className="p-4 rounded-2xl bg-blueprint-500/5 border border-blueprint-500/10">
                       <p className="text-[10px] font-mono font-bold text-blueprint-500/40 tracking-widest uppercase mb-2">Code d&apos;accès terminal</p>
@@ -458,9 +440,8 @@ export default function AdminDashboard() {
                         <p className="text-sm text-slate-400 leading-relaxed italic">&quot;{team.description}&quot;</p>
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
             </div>
 
             {/* Stats */}
@@ -470,12 +451,10 @@ export default function AdminDashboard() {
                 { label: 'ADMINISTRATEURS', value: members.filter(m => m.role === 'admin' || m.role === 'leader').length, color: 'text-cyan-400', icon: 'Security' as const },
                 { label: 'RATIO CONGÉS', value: Math.round(members.reduce((acc, m) => acc + m.leave_balance, 0) / (members.length || 1)), color: 'text-slate-400', icon: 'Vacation' as const },
               ].map((stat, i) => (
-                <motion.div
+                <div
                   key={stat.label}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 + i * 0.1 }}
-                  className="rounded-2xl bg-[var(--bg-elevated)] border border-blueprint-500/10 p-5 flex items-center justify-between group hover:border-blueprint-500/30 transition-all"
+                  className="rounded-2xl bg-[var(--bg-elevated)] border border-blueprint-500/10 p-5 flex items-center justify-between group hover:border-blueprint-500/30 transition-all animate-fade-up opacity-0"
+                  style={{ animationDelay: `${i * 80}ms` }}
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-blueprint-500/5 border border-blueprint-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -486,17 +465,15 @@ export default function AdminDashboard() {
                       <p className={`text-2xl font-mono font-bold ${stat.color}`}>{stat.value}</p>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Members List */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="lg:col-span-2"
+          <div
+            className="lg:col-span-2 animate-fade-up opacity-0"
+            style={{ animationDelay: '80ms' }}
           >
             <div className="card-elevated">
               <div className="p-6 border-b border-blueprint-500/10 flex items-center justify-between bg-blueprint-500/[0.02]">
@@ -511,12 +488,10 @@ export default function AdminDashboard() {
 
               <div className="divide-y divide-blueprint-500/5">
                 {members.map((member, index) => (
-                  <motion.div
+                  <div
                     key={member.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.05 }}
-                    className="p-5 hover:bg-blueprint-500/[0.03] transition-all group relative overflow-hidden"
+                    className="p-5 hover:bg-blueprint-500/[0.03] transition-all group relative overflow-hidden animate-fade-up opacity-0"
+                    style={{ animationDelay: `${index * 80}ms` }}
                   >
                     <div className="absolute top-0 left-0 w-1 h-full bg-blueprint-500 opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -640,7 +615,7 @@ export default function AdminDashboard() {
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
 
@@ -653,15 +628,12 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Legend */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-12 p-6 rounded-2xl bg-blueprint-500/5 border border-blueprint-500/10"
+        <div
+          className="mt-12 p-6 rounded-2xl bg-blueprint-500/5 border border-blueprint-500/10 animate-fade-in"
         >
           <div className="flex flex-wrap items-center gap-10">
             <span className="text-blueprint-500/40 font-mono text-[10px] font-bold tracking-[0.3em] uppercase underline decoration-blueprint-500/20 underline-offset-8">Protocoles & Terminaux</span>
@@ -687,24 +659,17 @@ export default function AdminDashboard() {
               <span className="text-slate-400 text-[11px] font-mono tracking-wide uppercase">Révocation Accès</span>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Modal Edition Congés */}
-        <AnimatePresence>
           {editingLeaveMember && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
               onClick={() => setEditingLeaveMember(null)}
             >
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
+              <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-[var(--bg-elevated)] border border-blueprint-500/20 rounded-2xl shadow-2xl overflow-hidden"
+                className="w-full max-w-md bg-[var(--bg-elevated)] border border-blueprint-500/20 rounded-2xl shadow-2xl overflow-hidden animate-scale-in"
               >
                 <div className="p-6 border-b border-blueprint-500/10">
                   <h3 className="text-lg font-bold text-white flex items-center gap-3">
@@ -763,10 +728,9 @@ export default function AdminDashboard() {
                     Confirmer
                   </button>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           )}
-        </AnimatePresence>
       </main>
     </div>
   );

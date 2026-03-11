@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Calendar, Info, Timer, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -29,7 +28,7 @@ export function LeaveBalanceCard({
   const percentage = total > 0 ? (used / total) * 100 : 0;
 
   return (
-    <Card className="glass-elevated border-white/10 rounded-3xl overflow-hidden group hover:border-white/20 transition-all duration-500">
+    <Card className="glass-elevated border-white/10 rounded-3xl overflow-hidden group hover:border-white/20 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 animate-fade-up">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className={cn(
@@ -92,7 +91,7 @@ export function LeaveBalanceCard({
           <Progress
             value={percentage}
             className={cn(
-              "h-2 bg-white/5",
+              "h-2 bg-white/5 [&>div]:transition-all [&>div]:duration-700 [&>div]:ease-out",
               color === "blue" ? "[&>div]:bg-blue-500" :
                 color === "cyan" ? "[&>div]:bg-cyan-500" :
                   "[&>div]:bg-emerald-500"

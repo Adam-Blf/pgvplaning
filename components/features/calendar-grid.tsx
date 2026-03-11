@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PremiumIcons } from '@/components/ui/premium-icons';
-import { motion, AnimatePresence } from 'framer-motion';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';
 
@@ -84,49 +83,6 @@ interface CalendarGridProps {
   birthdays?: Birthday[];
 }
 
-// Animation variants
-const cellVariants = {
-  initial: { scale: 0.8, opacity: 0, y: 10 },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: { type: 'spring', stiffness: 400, damping: 25 }
-  },
-  exit: { scale: 0.8, opacity: 0, transition: { duration: 0.1 } },
-  hover: {
-    scale: 1.05,
-    y: -4,
-    transition: { type: 'spring', stiffness: 500, damping: 15 }
-  },
-  tap: { scale: 0.92 },
-};
-
-const monthVariants = {
-  initial: (direction: number) => ({
-    x: direction > 0 ? 30 : -30,
-    opacity: 0,
-    filter: 'blur(10px)',
-  }),
-  animate: {
-    x: 0,
-    opacity: 1,
-    filter: 'blur(0px)',
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 30,
-      mass: 0.8
-    },
-  },
-  exit: (direction: number) => ({
-    x: direction > 0 ? -30 : 30,
-    opacity: 0,
-    filter: 'blur(10px)',
-    transition: { duration: 0.2 },
-  }),
-};
-
 export function CalendarGrid({
   currentTool,
   currentHalfDay,
@@ -140,33 +96,68 @@ export function CalendarGrid({
 }: CalendarGridProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [direction, setDirection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const monthRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
+  // WAAPI: animate month label on change
   const changeMonth = useCallback((delta: number) => {
-    setDirection(delta);
-    const newDate = new Date(currentDate);
-    newDate.setMonth(newDate.getMonth() + delta);
-    setCurrentDate(newDate);
-    onMonthChange?.(newDate.getFullYear(), newDate.getMonth());
+    const el = monthRef.current;
+    if (el) {
+      el.animate([
+        { transform: 'translateX(0)', opacity: 1, filter: 'blur(0px)' },
+        { transform: `translateX(${delta > 0 ? '-20px' : '20px'})`, opacity: 0, filter: 'blur(6px)' },
+      ], { duration: 120, easing: 'ease-in', fill: 'forwards' }).onfinish = () => {
+        const newDate = new Date(currentDate);
+        newDate.setMonth(newDate.getMonth() + delta);
+        setCurrentDate(newDate);
+        onMonthChange?.(newDate.getFullYear(), newDate.getMonth());
+
+        el.animate([
+          { transform: `translateX(${delta > 0 ? '20px' : '-20px'})`, opacity: 0, filter: 'blur(6px)' },
+          { transform: 'translateX(0)', opacity: 1, filter: 'blur(0px)' },
+        ], { duration: 200, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' });
+      };
+    } else {
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() + delta);
+      setCurrentDate(newDate);
+      onMonthChange?.(newDate.getFullYear(), newDate.getMonth());
+    }
   }, [currentDate, onMonthChange]);
 
   const goToToday = useCallback(() => {
     const today = new Date();
-    setDirection(today > currentDate ? 1 : -1);
     setCurrentDate(today);
     onMonthChange?.(today.getFullYear(), today.getMonth());
-  }, [currentDate, onMonthChange]);
+  }, [onMonthChange]);
+
+  // WAAPI: stagger cells on mount / month change
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const cells = grid.children;
+    for (let i = 0; i < cells.length; i++) {
+      const cell = cells[i] as HTMLElement;
+      cell.animate([
+        { opacity: 0, transform: 'scale(0.85) translateY(8px)' },
+        { opacity: 1, transform: 'scale(1) translateY(0)' },
+      ], {
+        duration: 250,
+        delay: i * 8,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'both',
+      });
+    }
+  }, [month, year]);
 
   const applyTool = useCallback((date: Date) => {
     const dayOfWeek = date.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) return;
-
     const dateKey = formatDateKey(date);
-
     if (currentTool === 'ERASER') {
       setDayStatus(dateKey, null, currentHalfDay);
     } else {
@@ -181,37 +172,27 @@ export function CalendarGrid({
   }, [applyTool]);
 
   const handleMouseEnter = useCallback((date: Date) => {
-    if (isMouseDown) {
-      applyTool(date);
-    }
+    if (isMouseDown) applyTool(date);
   }, [isMouseDown, applyTool]);
 
   const handleMouseUp = useCallback(() => {
     setIsMouseDown(false);
   }, []);
 
-  // Helper to check if a date has a birthday
   const getBirthdaysForDate = useCallback((date: Date): Birthday[] => {
     const dayOfMonth = date.getDate();
-    const monthOfYear = date.getMonth() + 1; // 1-indexed
+    const monthOfYear = date.getMonth() + 1;
     return birthdays.filter(b => b.birthDay === dayOfMonth && b.birthMonth === monthOfYear);
   }, [birthdays]);
 
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
-
   let startDayOfWeek = firstDay.getDay() - 1;
   if (startDayOfWeek === -1) startDayOfWeek = 6;
 
   const days: (Date | null)[] = [];
-
-  for (let i = 0; i < startDayOfWeek; i++) {
-    days.push(null);
-  }
-
-  for (let day = 1; day <= lastDay.getDate(); day++) {
-    days.push(new Date(year, month, day));
-  }
+  for (let i = 0; i < startDayOfWeek; i++) days.push(null);
+  for (let day = 1; day <= lastDay.getDate(); day++) days.push(new Date(year, month, day));
 
   return (
     <div
@@ -222,68 +203,52 @@ export function CalendarGrid({
     >
       {/* Header */}
       <div className="flex items-center justify-between pb-6 mb-6 border-b border-[var(--border-subtle)]">
-        <motion.button
-          whileHover={{ scale: 1.1, x: -2 }}
-          whileTap={{ scale: 0.9 }}
+        <button
           onClick={() => changeMonth(-1)}
-          className="p-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-default)] transition-all duration-300"
+          className="p-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-default)] transition-all duration-200 hover:scale-110 active:scale-90"
           aria-label="Mois précédent"
         >
           <ChevronLeft className="w-5 h-5" />
-        </motion.button>
+        </button>
 
         <div className="flex items-center gap-4">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={`${month}-${year}`}
-              custom={direction}
-              variants={monthVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]"
-            >
-              <span className="font-bold text-[var(--text-primary)] text-xl md:text-2xl tracking-tight">
-                {MONTH_NAMES[month]}
-              </span>
-              <span className="text-[var(--text-tertiary)] font-medium text-lg">
-                {year}
-              </span>
-            </motion.div>
-          </AnimatePresence>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+          <div
+            ref={monthRef}
+            className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)]"
+          >
+            <span className="font-bold text-[var(--text-primary)] text-xl md:text-2xl tracking-tight">
+              {MONTH_NAMES[month]}
+            </span>
+            <span className="text-[var(--text-tertiary)] font-medium text-lg">
+              {year}
+            </span>
+          </div>
+          <button
             onClick={goToToday}
-            className="text-xs font-semibold px-4 py-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/30 transition-all duration-300"
+            className="text-xs font-semibold px-4 py-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/30 transition-all duration-200 hover:scale-105 active:scale-95"
           >
             Aujourd&apos;hui
-          </motion.button>
+          </button>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.1, x: 2 }}
-          whileTap={{ scale: 0.9 }}
+        <button
           onClick={() => changeMonth(1)}
-          className="p-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-default)] transition-all duration-300"
+          className="p-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-default)] transition-all duration-200 hover:scale-110 active:scale-90"
           aria-label="Mois suivant"
         >
           <ChevronRight className="w-5 h-5" />
-        </motion.button>
+        </button>
       </div>
 
-      {/* Days Header - Stylized */}
+      {/* Days Header */}
       <div className="grid grid-cols-7 gap-2 md:gap-3 mb-4">
         {DAY_NAMES.map((day, i) => {
           const isWeekend = i >= 5;
           return (
-            <motion.div
+            <div
               key={day}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
               className={cn(
-                'relative text-center py-3 rounded-xl font-semibold text-xs uppercase tracking-widest transition-all duration-300',
+                'relative text-center py-3 rounded-xl font-semibold text-xs uppercase tracking-widest',
                 isWeekend
                   ? 'text-rose-400/60 bg-rose-500/5'
                   : 'text-[var(--text-secondary)] bg-[var(--bg-overlay)]/50'
@@ -293,22 +258,13 @@ export function CalendarGrid({
               {!isWeekend && (
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
               )}
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
       {/* Calendar Grid */}
-      <motion.div
-        className="grid grid-cols-7 gap-2 md:gap-3"
-        initial="initial"
-        animate="animate"
-        variants={{
-          animate: {
-            transition: { staggerChildren: 0.01 },
-          },
-        }}
-      >
+      <div ref={gridRef} className="grid grid-cols-7 gap-2 md:gap-3">
         {days.map((date, index) => {
           if (!date) {
             return <div key={`empty-${index}`} className="aspect-square" />;
@@ -320,52 +276,36 @@ export function CalendarGrid({
           const dateBirthdays = getBirthdaysForDate(date);
           const hasBirthday = dateBirthdays.length > 0;
 
-          // For split days, get individual half-day statuses
           const amStatus = getHalfDayStatus(date, 'AM');
           const pmStatus = getHalfDayStatus(date, 'PM');
           const fullStatus = getDayStatus(date);
+          const statusConfig = fullStatus && fullStatus !== 'OFF' ? STATUS_CONFIG[fullStatus] : null;
 
-          const statusConfig = fullStatus && fullStatus !== 'OFF'
-            ? STATUS_CONFIG[fullStatus]
-            : null;
-
-          // Base cell classes
           const cellBaseClasses = cn(
-            'aspect-square relative flex items-center justify-center font-semibold text-sm rounded-2xl transition-all duration-300',
-            'border backdrop-blur-sm'
+            'aspect-square relative flex items-center justify-center font-semibold text-sm rounded-2xl',
+            'border backdrop-blur-sm transition-all duration-200'
           );
 
-          // Weekend styling
           if (isWeekend) {
             return (
-              <motion.div
+              <div
                 key={formatDateKey(date)}
-                variants={cellVariants}
-                className={cn(
-                  cellBaseClasses,
-                  'opacity-30 cursor-not-allowed grayscale',
-                  'bg-[var(--bg-overlay)]/30 border-transparent text-[var(--text-disabled)]'
-                )}
+                className={cn(cellBaseClasses, 'opacity-30 cursor-not-allowed grayscale bg-[var(--bg-overlay)]/30 border-transparent text-[var(--text-disabled)]')}
               >
                 {date.getDate()}
-              </motion.div>
+              </div>
             );
           }
 
-          // Split day rendering
           if (isSplit) {
             const amConfig = amStatus ? STATUS_CONFIG[amStatus] : null;
             const pmConfig = pmStatus ? STATUS_CONFIG[pmStatus] : null;
-
             return (
-              <motion.div
+              <div
                 key={formatDateKey(date)}
-                variants={cellVariants}
-                whileHover="hover"
-                whileTap="tap"
                 className={cn(
                   cellBaseClasses,
-                  'overflow-hidden cursor-pointer',
+                  'overflow-hidden cursor-pointer hover:scale-105 hover:-translate-y-1 active:scale-[0.92]',
                   'bg-[var(--bg-surface)] border-[var(--border-default)]',
                   isToday && 'ring-2 ring-amber-500/50 ring-offset-2 ring-offset-[var(--bg-base)]'
                 )}
@@ -374,47 +314,29 @@ export function CalendarGrid({
                 role="button"
                 tabIndex={0}
               >
-                {/* Split day background */}
                 <div className="absolute inset-0 flex flex-col w-full h-full">
-                  <div
-                    className={cn(
-                      'flex-1 w-full transition-all duration-300',
-                      amConfig ? amConfig.base : 'bg-transparent'
-                    )}
-                  />
+                  <div className={cn('flex-1 w-full transition-colors duration-200', amConfig ? amConfig.base : 'bg-transparent')} />
                   <div className="h-px w-full bg-[var(--border-subtle)]" />
-                  <div
-                    className={cn(
-                      'flex-1 w-full transition-all duration-300',
-                      pmConfig ? pmConfig.base : 'bg-transparent'
-                    )}
-                  />
+                  <div className={cn('flex-1 w-full transition-colors duration-200', pmConfig ? pmConfig.base : 'bg-transparent')} />
                 </div>
-                <span className="relative z-10 font-bold text-[var(--text-primary)] drop-shadow-md">
-                  {date.getDate()}
-                </span>
+                <span className="relative z-10 font-bold text-[var(--text-primary)] drop-shadow-md">{date.getDate()}</span>
                 {hasBirthday && <BirthdayIndicator names={dateBirthdays.map(b => b.name)} />}
-              </motion.div>
+              </div>
             );
           }
 
-          // Normal day rendering
           return (
-            <motion.div
+            <div
               key={formatDateKey(date)}
-              variants={cellVariants}
-              whileHover="hover"
-              whileTap="tap"
               className={cn(
                 cellBaseClasses,
-                'cursor-pointer group',
+                'cursor-pointer group hover:scale-105 hover:-translate-y-1 active:scale-[0.92]',
                 statusConfig
                   ? cn(statusConfig.base, 'hover:' + statusConfig.glow)
                   : 'bg-[var(--bg-overlay)]/50 text-[var(--text-secondary)] border-[var(--border-subtle)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-default)] hover:text-[var(--text-primary)]',
                 isToday && cn(
                   'ring-2 ring-offset-2 ring-offset-[var(--bg-base)]',
-                  statusConfig ? statusConfig.ring : 'ring-amber-500/50',
-                  !statusConfig && 'animate-pulse-glow'
+                  statusConfig ? statusConfig.ring : 'ring-amber-500/50'
                 )
               )}
               onMouseDown={(e) => handleMouseDown(date, e)}
@@ -422,38 +344,21 @@ export function CalendarGrid({
               role="button"
               tabIndex={0}
             >
-              {/* Today indicator glow */}
               {isToday && !statusConfig && (
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent" />
               )}
-
-              {/* Status indicator dot */}
               {statusConfig && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className={cn(
-                    'absolute top-1.5 right-1.5 w-2 h-2 rounded-full',
-                    statusConfig.dot
-                  )}
-                />
+                <div className={cn('absolute top-1.5 right-1.5 w-2 h-2 rounded-full animate-scale-in', statusConfig.dot)} />
               )}
-
-              <span className={cn(
-                'relative z-10 font-semibold transition-all duration-300',
-                isToday && 'font-bold'
-              )}>
+              <span className={cn('relative z-10 font-semibold', isToday && 'font-bold')}>
                 {date.getDate()}
               </span>
-
-              {/* Hover shine effect */}
-              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
-
+              <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
               {hasBirthday && <BirthdayIndicator names={dateBirthdays.map(b => b.name)} />}
-            </motion.div>
+            </div>
           );
         })}
-      </motion.div>
+      </div>
 
       {/* Legend */}
       <div className="mt-6 pt-6 border-t border-[var(--border-subtle)]">
@@ -461,11 +366,7 @@ export function CalendarGrid({
           {(['WORK', 'REMOTE', 'SCHOOL', 'TRAINER', 'LEAVE'] as DayStatus[]).map((status) => {
             const config = STATUS_CONFIG[status];
             const labels: Record<string, string> = {
-              WORK: 'Bureau',
-              REMOTE: 'Télétravail',
-              SCHOOL: 'Formation',
-              TRAINER: 'Formateur',
-              LEAVE: 'Congé',
+              WORK: 'Bureau', REMOTE: 'Télétravail', SCHOOL: 'Formation', TRAINER: 'Formateur', LEAVE: 'Congé',
             };
             return (
               <div key={status} className="flex items-center gap-2">
@@ -480,37 +381,28 @@ export function CalendarGrid({
   );
 }
 
-// Birthday indicator component with animation
 function BirthdayIndicator({ names }: { names: string[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    ref.current?.animate([
+      { transform: 'scale(0) rotate(-180deg)' },
+      { transform: 'scale(1) rotate(0deg)' },
+    ], { duration: 400, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)', fill: 'forwards' });
+  }, []);
+
   return (
-    <motion.div
-      initial={{ scale: 0, rotate: -180 }}
-      animate={{ scale: 1, rotate: 0 }}
-      className="absolute -top-1.5 -right-1.5 z-20"
-    >
+    <div ref={ref} className="absolute -top-1.5 -right-1.5 z-20" style={{ opacity: 0 }}>
       <div
         className="relative w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30"
         title={`Anniversaire: ${names.join(', ')}`}
       >
         <PremiumIcons.Cake className="w-3 h-3 text-white" />
-        <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.5, 0, 0.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-          className="absolute inset-0 rounded-full bg-pink-400"
-        />
+        <div className="absolute inset-0 rounded-full bg-pink-400 animate-ping-slow" />
         <div className="absolute -top-1 -right-1 w-3 h-3 text-yellow-300">
-          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L14.5 9H22L16 14L18.5 21L12 17L5.5 21L8 14L2 9H9.5L12 2Z" />
-          </svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 9H22L16 14L18.5 21L12 17L5.5 21L8 14L2 9H9.5L12 2Z" /></svg>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

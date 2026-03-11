@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import {
   X,
   ChevronRight,
@@ -92,23 +92,16 @@ export function OnboardingTutorial() {
   const step = steps[currentStep];
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
         {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           onClick={handleClose}
-          className="absolute inset-0 bg-black/80 backdrop-blur-md"
+          className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in"
         />
 
         {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 shadow-2xl"
+        <div
+          className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-zinc-900 shadow-2xl animate-scale-in"
         >
           {/* Progress bar */}
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-white/5 flex">
@@ -134,17 +127,15 @@ export function OnboardingTutorial() {
             <div className="flex flex-col items-center text-center space-y-6">
               {/* Icon Container with Animated Background */}
               <div className="relative">
-                <motion.div
+                <div
                   key={currentStep}
-                  initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
                   className={cn(
-                    "w-24 h-24 rounded-[2rem] bg-gradient-to-br flex items-center justify-center shadow-2xl relative z-10",
+                    "w-24 h-24 rounded-[2rem] bg-gradient-to-br flex items-center justify-center shadow-2xl relative z-10 animate-fade-in",
                     step.color
                   )}
                 >
                   <step.icon className="w-12 h-12 text-white" />
-                </motion.div>
+                </div>
                 <div className={cn(
                   "absolute inset-0 blur-2xl opacity-40 rounded-full",
                   step.color
@@ -152,23 +143,18 @@ export function OnboardingTutorial() {
               </div>
 
               <div className="space-y-2">
-                <motion.h2
+                <h2
                   key={`title-${currentStep}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-2xl font-bold text-white tracking-tight"
+                  className="text-2xl font-bold text-white tracking-tight animate-fade-in"
                 >
                   {step.title}
-                </motion.h2>
-                <motion.p
+                </h2>
+                <p
                   key={`desc-${currentStep}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-[var(--text-secondary)] leading-relaxed"
+                  className="text-[var(--text-secondary)] leading-relaxed animate-fade-in"
                 >
                   {step.description}
-                </motion.p>
+                </p>
               </div>
             </div>
           </div>
@@ -178,7 +164,7 @@ export function OnboardingTutorial() {
               variant="ghost"
               onClick={prevStep}
               className={cn(
-                "rounded-xl h-12 px-4 transition-all",
+                "rounded-xl h-12 px-4 hover:scale-105 active:scale-95 transition-all duration-200",
                 currentStep === 0 ? "opacity-0 pointer-events-none" : "opacity-100"
               )}
             >
@@ -192,7 +178,7 @@ export function OnboardingTutorial() {
                   key={i}
                   className={cn(
                     "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                    i === currentStep ? "w-6 bg-white" : "bg-white/20"
+                    i === currentStep ? "w-6 bg-white animate-scale-in" : "bg-white/20"
                   )}
                 />
               ))}
@@ -200,7 +186,7 @@ export function OnboardingTutorial() {
 
             <Button
               onClick={nextStep}
-              className="rounded-xl h-12 px-6 bg-white text-black hover:bg-zinc-200 transition-all font-bold flex items-center"
+              className="rounded-xl h-12 px-6 bg-white text-black hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all duration-200 font-bold flex items-center"
             >
               {currentStep === steps.length - 1 ? (
                 <>
@@ -215,8 +201,7 @@ export function OnboardingTutorial() {
               )}
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
   );
 }

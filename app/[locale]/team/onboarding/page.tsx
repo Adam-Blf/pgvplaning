@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { UserPlus, Users, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -11,10 +10,8 @@ export default function OnboardingPage() {
         <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--blueprint-500)] via-[var(--cyan-500)] to-[var(--blueprint-500)]" />
 
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8"
+            <div
+                className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 animate-scale-in"
             >
                 <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl group hover:border-[var(--blueprint-500)]/50 transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between">
                     <Link href="/team/create" className="absolute inset-0 z-10" />
@@ -81,7 +78,7 @@ export default function OnboardingPage() {
                         </Button>
                     </CardContent>
                 </Card>
-            </motion.div>
+            </div>
         </div>
     );
 }

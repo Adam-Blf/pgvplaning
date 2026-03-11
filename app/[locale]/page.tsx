@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Calendar,
@@ -58,11 +57,9 @@ export default function HomePage() {
         </div>
 
         <div className="relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-4 mb-8"
+          <div
+            className="flex items-center gap-4 mb-8 animate-fade-up opacity-0"
+            style={{ animationDelay: '0ms' }}
           >
             <Link
               href="/calendar"
@@ -75,13 +72,11 @@ export default function HomePage() {
               <ChevronRight className="w-4 h-4 text-amber-500/60 group-hover:translate-x-0.5 transition-transform" />
             </Link>
             <div className="h-px flex-1 bg-gradient-to-r from-amber-500/30 to-transparent max-w-24" />
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl"
+          <div
+            className="max-w-3xl animate-fade-up opacity-0"
+            style={{ animationDelay: '80ms' }}
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.95]">
               <span className="text-[var(--text-primary)]">Gérez vos </span>
@@ -90,23 +85,19 @@ export default function HomePage() {
               <span className="text-[var(--text-primary)]">comme un </span>
               <span className="text-gradient">pro</span>
             </h1>
-          </motion.div>
+          </div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed"
+          <p
+            className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed animate-fade-up opacity-0"
+            style={{ animationDelay: '160ms' }}
           >
             Gestion intelligente des absences.
             <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-10 flex flex-wrap gap-4"
+          <div
+            className="mt-10 flex flex-wrap gap-4 animate-fade-up opacity-0"
+            style={{ animationDelay: '240ms' }}
           >
             <Link href="/calendar" className="group">
               <button className="btn-primary px-6 py-4 text-base">
@@ -121,13 +112,11 @@ export default function HomePage() {
                 <span>Exporter planning</span>
               </button>
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-16 flex items-center gap-8 md:gap-12"
+          <div
+            className="mt-16 flex items-center gap-8 md:gap-12 animate-fade-up opacity-0"
+            style={{ animationDelay: '320ms' }}
           >
             {stats.map((stat, index) => (
               <div key={stat.label} className="flex items-center gap-3">
@@ -143,23 +132,18 @@ export default function HomePage() {
                 )}
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <section className="py-12">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
+        <div className="animate-fade-in">
           <div className="grid md:grid-cols-3 gap-4">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                className="animate-fade-up opacity-0"
+                style={{ animationDelay: `${400 + index * 80}ms` }}
               >
                 <Link href={feature.href} className="block group">
                   <div className={`card-interactive p-6 h-full ${feature.glow}`}>
@@ -178,18 +162,16 @@ export default function HomePage() {
                     </div>
                   </div>
                 </Link>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
       <section className="py-12 mt-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="relative"
+        <div
+          className="relative animate-fade-up opacity-0"
+          style={{ animationDelay: '640ms' }}
         >
           <div className="card p-8 md:p-12 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent pointer-events-none" />
@@ -213,7 +195,7 @@ export default function HomePage() {
               </Link>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
     </div>
   );

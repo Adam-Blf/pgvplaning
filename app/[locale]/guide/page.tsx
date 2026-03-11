@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
   BookOpen,
   Users,
@@ -17,29 +16,13 @@ import {
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: { opacity: 1, scale: 1 }
-};
-
 export default function GuidePage() {
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-4xl mx-auto space-y-16 pb-20 px-4"
+    <div
+      className="max-w-4xl mx-auto space-y-16 pb-20 px-4 stagger-children"
     >
       {/* Hero Guide */}
-      <motion.div variants={itemVariants} className="text-center space-y-4">
+      <div className="text-center space-y-4 animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="mx-auto w-16 h-16 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center border border-[var(--blueprint-500)]/20 mb-6 shadow-glow-primary">
           <BookOpen className="w-8 h-8 text-[var(--blueprint-500)]" />
         </div>
@@ -50,7 +33,7 @@ export default function GuidePage() {
           Apprenez à maîtriser toutes les fonctionnalités d&apos;Absencia pour simplifier
           le quotidien de votre équipe.
         </p>
-      </motion.div>
+      </div>
 
       {/* Quick Start Steps */}
       <div className="grid md:grid-cols-3 gap-6">
@@ -78,7 +61,7 @@ export default function GuidePage() {
       </div>
 
       {/* Detailed Sections */}
-      <motion.div variants={itemVariants} className="space-y-8">
+      <div className="space-y-8 animate-fade-up opacity-0" style={{ animationDelay: '80ms' }}>
         <div className="flex items-center gap-3 border-l-4 border-[var(--blueprint-500)] pl-6">
           <h2 className="text-3xl font-black text-white tracking-tight">Questions Fréquentes</h2>
         </div>
@@ -116,12 +99,12 @@ export default function GuidePage() {
             Absencia crypte toutes les communications et utilise Firebase pour une gestion sécurisée de l&apos;authentification et des données. Seuls les membres de votre équipe autorisés peuvent consulter le planning commun.
           </GuideAccordionItem>
         </Accordion>
-      </motion.div>
+      </div>
 
       {/* CTA Section */}
-      <motion.div
-        variants={itemVariants}
-        className="p-10 rounded-[3rem] bg-gradient-to-br from-[var(--blueprint-500)]/20 via-transparent to-transparent border border-white/5 relative overflow-hidden"
+      <div
+        className="p-10 rounded-[3rem] bg-gradient-to-br from-[var(--blueprint-500)]/20 via-transparent to-transparent border border-white/5 relative overflow-hidden animate-fade-up opacity-0"
+        style={{ animationDelay: '160ms' }}
       >
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[var(--blueprint-500)]/10 rounded-full blur-3xl" />
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
@@ -139,8 +122,8 @@ export default function GuidePage() {
             <Rocket className="w-5 h-5 ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </button>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

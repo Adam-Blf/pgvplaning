@@ -1,32 +1,16 @@
 'use client';
 
-import { motion } from 'framer-motion';
+
 import { Shield, Scale, Gavel, Eye, Lock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1 }
-    }
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
-};
-
 export default function LegalPage() {
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="max-w-4xl mx-auto space-y-12 pb-20 px-4"
+        <div
+            className="max-w-4xl mx-auto space-y-12 pb-20 px-4 stagger-children"
         >
             {/* Header */}
-            <motion.div variants={itemVariants} className="text-center space-y-4">
+            <div className="text-center space-y-4 animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
                 <div className="mx-auto w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 mb-6">
                     <Shield className="w-8 h-8 text-emerald-500" />
                 </div>
@@ -36,7 +20,7 @@ export default function LegalPage() {
                 <p className="text-[var(--text-tertiary)] max-w-lg mx-auto uppercase tracking-widest text-xs font-bold leading-relaxed">
                     Transparence & Confidentialité - Absencia v10.0.119
                 </p>
-            </motion.div>
+            </div>
 
             <div className="grid gap-8">
                 <LegalSection
@@ -95,7 +79,7 @@ export default function LegalPage() {
                     </p>
                 </footer>
             </div>
-        </motion.div>
+        </div>
     );
 }
 
@@ -108,7 +92,7 @@ interface LegalSectionProps {
 
 function LegalSection({ icon: Icon, title, description, children }: LegalSectionProps) {
     return (
-        <motion.section variants={itemVariants}>
+        <section className="animate-fade-up opacity-0">
             <Card className="glass-elevated border-white/5 bg-white/[0.01] rounded-3xl overflow-hidden shadow-sm">
                 <CardHeader className="p-8 pb-4">
                     <div className="flex items-center gap-4 mb-3">
@@ -125,6 +109,6 @@ function LegalSection({ icon: Icon, title, description, children }: LegalSection
                     {children}
                 </CardContent>
             </Card>
-        </motion.section>
+        </section>
     );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import {
   Users,
   Loader2,
@@ -127,35 +127,24 @@ export default function InvitePage({ params }: InvitePageProps) {
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-orange-500/5 rounded-full blur-2xl" />
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative w-full max-w-md"
+      <div
+        className="relative w-full max-w-md animate-fade-up opacity-0"
       >
         <div className="bg-[var(--bg-secondary)] rounded-2xl border border-[var(--border-subtle)] p-8 shadow-xl">
-          <AnimatePresence mode="wait">
             {/* Loading */}
             {state === 'loading' && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <div
+                className="text-center py-8 animate-fade-in"
               >
                 <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)]">Vérification de l&apos;invitation...</p>
-              </motion.div>
+              </div>
             )}
 
             {/* Invalid invitation */}
             {state === 'invalid' && (
-              <motion.div
-                key="invalid"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <div
+                className="text-center py-8 animate-scale-in"
               >
                 <div className="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
                   <XCircle className="w-8 h-8 text-rose-500" />
@@ -172,17 +161,13 @@ export default function InvitePage({ params }: InvitePageProps) {
                 >
                   Retour à l&apos;accueil
                 </Link>
-              </motion.div>
+              </div>
             )}
 
             {/* Need authentication */}
             {state === 'need_auth' && team && (
-              <motion.div
-                key="need_auth"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center"
+              <div
+                className="text-center animate-scale-in"
               >
                 <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                   <Users className="w-8 h-8 text-amber-500" />
@@ -210,17 +195,13 @@ export default function InvitePage({ params }: InvitePageProps) {
                     Créer un compte
                   </Link>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* Valid - Ready to join */}
             {state === 'valid' && team && (
-              <motion.div
-                key="valid"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center"
+              <div
+                className="text-center animate-scale-in"
               >
                 <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="w-8 h-8 text-amber-500" />
@@ -233,50 +214,37 @@ export default function InvitePage({ params }: InvitePageProps) {
                   <p className="text-xs text-[var(--text-muted)] mt-1">Code: {team.code}</p>
                 </div>
 
-                <motion.button
+                <button
                   onClick={acceptInvitation}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all shadow-lg shadow-amber-500/20"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-amber-500/20"
                 >
                   <Users className="w-5 h-5" />
                   Rejoindre l&apos;équipe
                   <ArrowRight className="w-4 h-4" />
-                </motion.button>
-              </motion.div>
+                </button>
+              </div>
             )}
 
             {/* Joining */}
             {state === 'joining' && (
-              <motion.div
-                key="joining"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <div
+                className="text-center py-8 animate-fade-in"
               >
                 <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)]">Vous rejoignez l&apos;équipe...</p>
-              </motion.div>
+              </div>
             )}
 
             {/* Success */}
             {state === 'success' && team && (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <div
+                className="text-center py-8 animate-scale-in"
               >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4"
+                <div
+                  className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4 animate-scale-in"
                 >
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-                </motion.div>
+                </div>
                 <h1 className="text-xl font-bold text-[var(--text-primary)] mb-2">
                   Bienvenue dans l&apos;équipe !
                 </h1>
@@ -286,17 +254,13 @@ export default function InvitePage({ params }: InvitePageProps) {
                 <p className="text-xs text-[var(--text-muted)] mt-4">
                   Redirection en cours...
                 </p>
-              </motion.div>
+              </div>
             )}
 
             {/* Error */}
             {state === 'error' && (
-              <motion.div
-                key="error"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="text-center py-8"
+              <div
+                className="text-center py-8 animate-scale-in"
               >
                 <div className="w-16 h-16 rounded-2xl bg-rose-500/10 flex items-center justify-center mx-auto mb-4">
                   <XCircle className="w-8 h-8 text-rose-500" />
@@ -313,17 +277,13 @@ export default function InvitePage({ params }: InvitePageProps) {
                 >
                   Réessayer
                 </button>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
 
         {/* Back link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6 text-center"
+        <div
+          className="mt-6 text-center animate-fade-in" style={{ animationDelay: '300ms' }}
         >
           <Link
             href="/"
@@ -331,8 +291,8 @@ export default function InvitePage({ params }: InvitePageProps) {
           >
             ← Retour à l&apos;accueil
           </Link>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

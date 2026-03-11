@@ -211,7 +211,9 @@ export async function POST(request: NextRequest) {
       joined_at: new Date().toISOString()
     };
 
-    const membershipRef = await adminDb.collection('team_members').add(membershipData);
+    // ID format: {teamId}_{userId} (required by Firestore rules)
+    const membershipRef = adminDb.collection('team_members').doc(`${team.id}_${userId}`);
+    await membershipRef.set(membershipData);
 
     // Update user's profile with current team
     await adminDb.collection('profiles').doc(userId).update({ current_team_id: team.id });

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { TeamIndicator } from '@/components/features/team-indicator';
 import { ChristmasCountdown } from '@/components/features/christmas-countdown';
 import { OnboardingTutorial } from '@/components/features/onboarding-tutorial';
@@ -106,19 +106,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
     <div className="min-h-screen flex flex-col bg-background">
       <OnboardingTutorial />
       {/* Header - Floating Glassmorphic with scroll hide */}
-      <AnimatePresence>
-        {isNavbarVisible && (
-          <motion.div
-            initial={{ y: -100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -100, opacity: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 30,
-            }}
-            className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6"
-          >
+      <div
+        className={cn(
+          "fixed top-4 left-0 right-0 z-50 px-4 md:px-6 transition-all duration-300",
+          isNavbarVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0 pointer-events-none"
+        )}
+      >
             <header className="mx-auto max-w-5xl rounded-2xl glass border border-white/5 shadow-2xl shadow-black/20">
               <div className="px-4 md:px-6">
                 <div className="flex items-center justify-between h-14 md:h-16">
@@ -145,11 +138,10 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     {navigation.map((item, i) => {
                       const isActive = pathname === item.href;
                       return (
-                        <motion.div
+                        <div
                           key={item.name}
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.05 + 0.2 }}
+                          className="animate-fade-up"
+                          style={{ animationDelay: `${i * 50}ms` }}
                         >
                           <Link
                             href={item.href}
@@ -163,7 +155,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             <item.icon className={cn("w-4 h-4", isActive ? "animate-pulse" : "")} />
                             <span className="hidden lg:inline">{item.name}</span>
                           </Link>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </nav>
@@ -215,15 +207,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </div>
 
               {/* Mobile Navigation */}
-              <AnimatePresence>
-                {mobileMenuOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="md:hidden border-t border-white/5 overflow-hidden"
-                  >
+              <div
+                className={cn(
+                  "md:hidden border-t border-white/5 overflow-hidden transition-all duration-200",
+                  mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                )}
+              >
                     <div className="px-4 py-3 pb-4">
                       {/* Christmas Countdown for mobile */}
                       <div className="flex justify-center mb-3">
@@ -279,13 +268,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         )}
                       </nav>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              </div>
             </header>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </div>
 
       {/* Spacer for fixed header */}
       <div className="h-24" />

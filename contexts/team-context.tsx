@@ -15,7 +15,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, getDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 
 // ============================================================
@@ -190,7 +190,6 @@ export function TeamProvider({ children }: TeamProviderProps) {
 
     try {
       const memberRef = doc(db, 'team_members', memberId);
-      const { updateDoc } = await import('firebase/firestore');
       await updateDoc(memberRef, {
         status: 'approved',
         updated_at: new Date().toISOString()

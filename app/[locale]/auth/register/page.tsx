@@ -8,7 +8,6 @@ import { useRouter } from '@/i18n/routing';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
-import { motion } from 'framer-motion';
 import { Mail, Lock, User, UserPlus, AlertCircle, Loader2, Cake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,10 +100,8 @@ export default function RegisterPage() {
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--blueprint-500)] opacity-10 blur-[120px]" />
             <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--cyan-500)] opacity-10 blur-[120px]" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md z-10"
+            <div
+                className="w-full max-w-md z-10 animate-fade-up opacity-0"
             >
                 <div className="glass-elevated p-8 rounded-3xl border border-white/10 shadow-2xl">
                     <div className="flex flex-col items-center mb-8">
@@ -231,7 +228,7 @@ export default function RegisterPage() {
                         </Link>
                     </div>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

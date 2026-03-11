@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '@/lib/firebase/client';
-import { motion } from 'framer-motion';
 import { Activity, Mail, Lock, LogIn, Chrome, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
@@ -17,26 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -10 },
-    visible: (i: number) => ({
-      opacity: 1,
-      x: 0,
-      transition: { delay: i * 0.1, duration: 0.4 }
-    })
-  };
-
-  const handleEmailLogin = async (e: React.FormEvent) => {
+  const handleEmailLogin= async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast.error('Veuillez remplir tous les champs');
@@ -89,21 +69,17 @@ export default function LoginPage() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--blueprint-500)] opacity-10 blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--cyan-500)] opacity-10 blur-[120px]" />
 
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="w-full max-w-md z-10"
+      <div
+        className="w-full max-w-md z-10 animate-fade-up opacity-0"
       >
         <div className="glass-elevated p-8 rounded-3xl border border-white/10 shadow-2xl relative">
           {/* Logo Section */}
           <div className="flex flex-col items-center mb-8">
-            <motion.div
-              whileHover={{ rotate: 12 }}
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--blueprint-500)] to-[var(--cyan-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20"
+            <div
+              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--blueprint-500)] to-[var(--cyan-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20 hover:rotate-12 transition-transform duration-200"
             >
               <Activity className="w-8 h-8 text-white" />
-            </motion.div>
+            </div>
             <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Bienvenue</h1>
             <p className="text-[var(--text-tertiary)] text-center">
               Connectez-vous pour accéder à votre espace Absencia
@@ -111,18 +87,16 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm"
+            <div
+              className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-400 text-sm animate-fade-in"
             >
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
-            </motion.div>
+            </div>
           )}
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
-            <motion.div custom={0} variants={itemVariants} className="space-y-2">
+            <div className="space-y-2 animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
               <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)] ml-1">
                 Email
               </label>
@@ -137,9 +111,9 @@ export default function LoginPage() {
                   required
                 />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div custom={1} variants={itemVariants} className="space-y-2">
+            <div className="space-y-2 animate-fade-up opacity-0" style={{ animationDelay: '80ms' }}>
               <label className="text-xs font-semibold uppercase tracking-wider text-[var(--text-tertiary)] ml-1">
                 Mot de passe
               </label>
@@ -154,9 +128,9 @@ export default function LoginPage() {
                   required
                 />
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div custom={2} variants={itemVariants} className="pt-2">
+            <div className="pt-2 animate-fade-up opacity-0" style={{ animationDelay: '160ms' }}>
               <Button
                 type="submit"
                 disabled={loading}
@@ -171,7 +145,7 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
-            </motion.div>
+            </div>
           </form>
 
           <div className="relative my-8">
@@ -183,7 +157,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <motion.div custom={3} variants={itemVariants}>
+          <div className="animate-fade-up opacity-0" style={{ animationDelay: '240ms' }}>
             <Button
               type="button"
               variant="outline"
@@ -194,7 +168,7 @@ export default function LoginPage() {
               <Chrome className="w-5 h-5 mr-2" />
               Google
             </Button>
-          </motion.div>
+          </div>
 
           <div className="mt-8 text-center text-sm text-[var(--text-tertiary)]">
             Vous n'avez pas de compte ?{' '}
@@ -205,15 +179,13 @@ export default function LoginPage() {
         </div>
 
         {/* Footer info */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-8 text-center text-xs text-[var(--text-muted)] tracking-wider uppercase font-medium"
+        <p
+          className="mt-8 text-center text-xs text-[var(--text-muted)] tracking-wider uppercase font-medium animate-fade-in opacity-0"
+          style={{ animationDelay: '800ms' }}
         >
           Absencia par Blackout Prod &copy; 2026
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
     </div>
   );
 }

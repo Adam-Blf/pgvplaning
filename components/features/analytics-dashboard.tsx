@@ -37,7 +37,7 @@ import {
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+
 
 // Configuration des couleurs par statut avec glow effects
 const STATUS_STYLES = {
@@ -90,41 +90,7 @@ const TRENDS = {
   leave: { value: 3, isPositive: true },
 };
 
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
-
-const cardHoverVariants = {
-  rest: { scale: 1, y: 0 },
-  hover: {
-    scale: 1.02,
-    y: -4,
-    transition: {
-      duration: 0.3,
-      ease: [0.16, 1, 0.3, 1],
-    },
-  },
-};
 
 interface AnalyticsDashboardProps {
   className?: string;
@@ -179,10 +145,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
   const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; name: string; color: string }>; label?: string }) => {
     if (active && payload && payload.length) {
       return (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="glass-elevated rounded-xl p-4 shadow-xl"
+        <div
+          className="glass-elevated rounded-xl p-4 shadow-xl animate-fade-up opacity-0"
         >
           <p className="text-sm font-medium text-[var(--text-primary)] mb-2">{label}</p>
           {payload.map((entry, index) => (
@@ -195,7 +159,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               <span className="font-semibold text-[var(--text-primary)]">{entry.value} jours</span>
             </div>
           ))}
-        </motion.div>
+        </div>
       );
     }
     return null;
@@ -207,11 +171,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
       <aside className="w-64 fixed h-full glass border-r border-[var(--border-subtle)] z-50">
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-[var(--border-subtle)]">
-          <motion.div
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          <div
+            className="flex items-center gap-3 animate-fade-up opacity-0"
           >
             <div className="w-10 h-10 rounded-xl gradient-amber flex items-center justify-center shadow-lg glow-amber-sm">
               <Calendar className="w-5 h-5 text-black" />
@@ -220,20 +181,17 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               <h1 className="font-semibold text-[var(--text-primary)]">Absencia</h1>
               <p className="text-xs text-[var(--text-tertiary)]">v9.0.0</p>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Navigation */}
         <nav className="p-4 space-y-1">
-          {navItems.map((item, index) => (
-            <motion.button
+          {navItems.map((item) => (
+            <button
               key={item.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 + 0.2, duration: 0.4 }}
               onClick={() => setActiveNav(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300",
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 animate-fade-up opacity-0",
                 activeNav === item.id
                   ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 glow-amber-sm"
                   : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)]"
@@ -242,22 +200,18 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               <item.icon className="w-5 h-5" />
               {item.label}
               {activeNav === item.id && (
-                <motion.div
-                  layoutId="activeNav"
+                <div
                   className="ml-auto w-1.5 h-1.5 rounded-full bg-amber-400"
                 />
               )}
-            </motion.button>
+            </button>
           ))}
         </nav>
 
         {/* Stats Mini */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-[var(--border-subtle)]">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="card p-4"
+          <div
+            className="card p-4 animate-fade-up opacity-0"
           >
             <div className="flex items-center gap-2 mb-3">
               <Activity className="w-4 h-4 text-amber-400" />
@@ -281,7 +235,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </aside>
 
@@ -289,10 +243,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
       <main className="flex-1 ml-64">
         {/* Header */}
         <header className="h-16 glass-elevated border-b border-[var(--border-subtle)] sticky top-0 z-40 px-8 flex items-center justify-between">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+          <div
+            className="animate-fade-up opacity-0"
           >
             <div className="flex items-center gap-3">
               <h2 className="text-xl font-semibold text-[var(--text-primary)]">
@@ -305,7 +257,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             <p className="text-sm text-[var(--text-secondary)]">
               Vue d&apos;ensemble de votre activite
             </p>
-          </motion.div>
+          </div>
 
           <div className="flex items-center gap-4">
             {/* Chart Toggle */}
@@ -336,11 +288,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
             {/* Profile dropdown */}
             <div className="relative">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[var(--bg-overlay)]"
+                className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-[var(--bg-overlay)] hover:scale-[1.02] active:scale-[0.98]"
               >
                 <div className="w-9 h-9 rounded-full gradient-amber flex items-center justify-center ring-2 ring-amber-500/20">
                   <User className="w-5 h-5 text-black" />
@@ -353,22 +303,17 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                     Admin
                   </p>
                 </div>
-                <motion.div
-                  animate={{ rotate: isProfileOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                <div
+                  className="transition-transform duration-200"
+                  style={{ transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                 >
                   <ChevronDown className="w-4 h-4 text-[var(--text-tertiary)]" />
-                </motion.div>
-              </motion.button>
+                </div>
+              </button>
 
-              <AnimatePresence>
-                {isProfileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute right-0 mt-2 w-48 rounded-xl glass-elevated py-2 shadow-xl"
+              {isProfileOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-48 rounded-xl glass-elevated py-2 shadow-xl animate-fade-up opacity-0"
                   >
                     <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-colors">
                       <User className="w-4 h-4" />
@@ -383,24 +328,19 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       <LogOut className="w-4 h-4" />
                       Deconnexion
                     </button>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="p-8 space-y-6"
+        <div
+          className="p-8 space-y-6 stagger-children"
         >
           {/* KPI Cards - Top Row */}
-          <motion.div
-            variants={itemVariants}
-            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6"
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-fade-up opacity-0"
           >
             <KPICard
               title="Jours au Bureau"
@@ -441,19 +381,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               styles={STATUS_STYLES.leave}
               index={3}
             />
-          </motion.div>
+          </div>
 
           {/* Charts - Middle Row */}
-          <motion.div
-            variants={itemVariants}
-            className="grid grid-cols-1 xl:grid-cols-3 gap-6"
+          <div
+            className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-fade-up opacity-0"
           >
             {/* Area/Bar Chart */}
-            <motion.div
-              variants={cardHoverVariants}
-              initial="rest"
-              whileHover="hover"
-              className="xl:col-span-2 card p-6 hover:border-[var(--border-default)]"
+            <div
+              className="xl:col-span-2 card p-6 hover:border-[var(--border-default)] hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -587,14 +523,11 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   <span className="text-sm text-[var(--text-secondary)]">Teletravail</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Donut Chart */}
-            <motion.div
-              variants={cardHoverVariants}
-              initial="rest"
-              whileHover="hover"
-              className="card p-6 hover:border-[var(--border-default)]"
+            <div
+              className="card p-6 hover:border-[var(--border-default)] hover:scale-[1.02] hover:shadow-lg transition-all duration-200"
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -666,12 +599,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               {/* Custom Legend */}
               <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-[var(--border-subtle)]">
                 {pieData.map((entry, index) => (
-                  <motion.div
+                  <div
                     key={entry.name}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--bg-overlay)] transition-colors cursor-default"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-[var(--bg-overlay)] transition-colors cursor-default animate-fade-up opacity-0"
                   >
                     <div
                       className="w-2.5 h-2.5 rounded-full"
@@ -679,16 +609,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                     />
                     <span className="text-xs text-[var(--text-secondary)]">{entry.name}</span>
                     <span className="text-xs font-medium text-[var(--text-primary)] ml-auto">{entry.value}</span>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
           {/* History Table - Bottom Row */}
-          <motion.div
-            variants={itemVariants}
-            className="card overflow-hidden"
+          <div
+            className="card overflow-hidden animate-fade-up opacity-0"
           >
             <div className="p-6 flex items-center justify-between border-b border-[var(--border-subtle)]">
               <div>
@@ -728,11 +657,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 <tbody className="divide-y divide-[var(--border-subtle)]">
                   <tr>
                     <td colSpan={5} className="px-6 py-16 text-center">
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="inline-flex flex-col items-center gap-4"
+                      <div
+                        className="inline-flex flex-col items-center gap-4 animate-fade-up opacity-0"
                       >
                         <div className="w-16 h-16 rounded-2xl bg-[var(--bg-overlay)] flex items-center justify-center">
                           <FileText className="w-8 h-8 text-[var(--text-muted)]" />
@@ -747,14 +673,14 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                           <FileText className="w-4 h-4" />
                           Creer un export
                         </button>
-                      </motion.div>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </main>
     </div>
   );
@@ -775,55 +701,45 @@ function KPICard({ title, value, percentage, trend, icon: Icon, styles, index }:
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
-      whileHover={{ y: -4, scale: 1.02 }}
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "card p-6 relative overflow-hidden transition-all duration-500",
+        "card p-6 relative overflow-hidden transition-all duration-500 animate-fade-up opacity-0 hover:scale-[1.02] hover:shadow-lg hover:-translate-y-1",
         isHovered && styles.glow,
         isHovered && "border-[var(--border-default)]"
       )}
     >
       {/* Background glow effect */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isHovered ? 0.1 : 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 pointer-events-none"
+      <div
+        className="absolute inset-0 pointer-events-none transition-opacity duration-300"
         style={{
           background: `radial-gradient(circle at 30% 30%, ${styles.color}, transparent 70%)`,
+          opacity: isHovered ? 0.1 : 0,
         }}
       />
 
       <div className="relative z-10">
         <div className="flex items-start justify-between">
-          <motion.div
-            animate={{
-              scale: isHovered ? 1.1 : 1,
-              rotate: isHovered ? 5 : 0
-            }}
-            transition={{ duration: 0.3 }}
+          <div
             className={cn(
               "p-3 rounded-xl border transition-all duration-300",
               styles.bg,
               styles.border,
-              isHovered && styles.glow
+              isHovered && styles.glow,
+              isHovered && "scale-110 rotate-[5deg]"
             )}
           >
             <Icon className={cn("w-6 h-6", styles.text)} />
-          </motion.div>
+          </div>
 
-          <motion.div
-            animate={{ scale: isHovered ? 1.05 : 1 }}
+          <div
             className={cn(
-              "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border",
+              "flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-transform duration-200",
               trend.isPositive
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                : "bg-rose-500/10 text-rose-400 border-rose-500/20",
+              isHovered && "scale-105"
             )}
           >
             {trend.isPositive ? (
@@ -832,21 +748,18 @@ function KPICard({ title, value, percentage, trend, icon: Icon, styles, index }:
               <TrendingDown className="w-3 h-3" />
             )}
             {trend.isPositive ? '+' : '-'}{trend.value}%
-          </motion.div>
+          </div>
         </div>
 
         <div className="mt-5">
           <p className="text-sm text-[var(--text-secondary)]">{title}</p>
           <div className="flex items-end gap-2 mt-1">
-            <motion.p
-              className="text-4xl font-bold"
-              animate={{
-                color: isHovered ? styles.color : 'var(--text-primary)'
-              }}
-              transition={{ duration: 0.3 }}
+            <p
+              className="text-4xl font-bold transition-colors duration-300"
+              style={{ color: isHovered ? styles.color : 'var(--text-primary)' }}
             >
               {value}
-            </motion.p>
+            </p>
             <p className="text-sm text-[var(--text-tertiary)] mb-1.5">
               jours
             </p>
@@ -856,38 +769,32 @@ function KPICard({ title, value, percentage, trend, icon: Icon, styles, index }:
         {/* Progress bar */}
         <div className="mt-5">
           <div className="h-2 rounded-full bg-[var(--bg-overlay)] overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${percentage}%` }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: index * 0.1 }}
-              className="h-full rounded-full relative overflow-hidden"
+            <div
+              className="h-full rounded-full relative overflow-hidden transition-all duration-500 ease-out"
               style={{
+                width: `${percentage}%`,
                 background: `linear-gradient(90deg, ${styles.gradient[0]}, ${styles.gradient[1]})`,
               }}
             >
               {/* Shimmer effect */}
-              <motion.div
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear', delay: 1 }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-[shimmer-slide_2s_linear_infinite_1s]"
                 style={{ width: '50%' }}
               />
-            </motion.div>
+            </div>
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs text-[var(--text-tertiary)]">
               {percentage.toFixed(1)}% du total
             </p>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              className={cn("w-2 h-2 rounded-full", styles.text)}
-              style={{ backgroundColor: styles.color }}
+            <div
+              className={cn("w-2 h-2 rounded-full transition-opacity duration-300", styles.text)}
+              style={{ backgroundColor: styles.color, opacity: isHovered ? 1 : 0 }}
             />
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

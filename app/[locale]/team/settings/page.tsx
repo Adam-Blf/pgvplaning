@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { motion } from 'framer-motion';
 import { Settings, ArrowLeft, Save, Trash2, LogOut, Loader2, AlertTriangle, Copy, Check, Globe } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
@@ -335,16 +334,12 @@ export default function TeamSettingsPage() {
 
       {/* Leave Confirmation Modal */}
       {showLeaveConfirm && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in"
           onClick={() => setShowLeaveConfirm(false)}
         >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            className="card p-6 max-w-md w-full"
+          <div
+            className="card p-6 max-w-md w-full animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">
@@ -374,22 +369,18 @@ export default function TeamSettingsPage() {
                 {leaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Quitter'}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in"
           onClick={() => setShowDeleteConfirm(false)}
         >
-          <motion.div
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            className="card p-6 max-w-md w-full"
+          <div
+            className="card p-6 max-w-md w-full animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">
@@ -420,8 +411,8 @@ export default function TeamSettingsPage() {
                 {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Supprimer définitivement'}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </div>
   );

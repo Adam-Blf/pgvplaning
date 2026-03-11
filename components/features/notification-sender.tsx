@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { Mail, Send, Calendar, AlertCircle, Check, Settings, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from '@/i18n/routing';
@@ -201,21 +201,15 @@ Généré automatiquement par Absencia`;
   // Configuration requise - Design glass avec accent amber
   if (!notificationEmail) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-elevated rounded-2xl p-6 border-amber-500/20"
+      <div
+        className="glass-elevated rounded-2xl p-6 border-amber-500/20 animate-fade-up"
       >
         <div className="flex items-start gap-4">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+          <div
             className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0"
           >
             <AlertCircle className="w-6 h-6 text-amber-500" />
-          </motion.div>
+          </div>
           <div className="flex-1 space-y-3">
             <div>
               <h4 className="font-semibold text-amber-400 text-lg">Configuration requise</h4>
@@ -224,64 +218,47 @@ Généré automatiquement par Absencia`;
               </p>
             </div>
             <Link href="/settings">
-              <motion.button
-                className="btn-secondary text-amber-400 border-amber-500/20 hover:bg-amber-500/10 hover:border-amber-500/30 gap-2"
-                whileHover={{ scale: 1.02, x: 4 }}
-                whileTap={{ scale: 0.98 }}
+              <button
+                className="btn-secondary text-amber-400 border-amber-500/20 hover:bg-amber-500/10 hover:border-amber-500/30 gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
                 <Settings className="w-4 h-4" />
                 Aller aux parametres
-              </motion.button>
+              </button>
             </Link>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   // Aucune absence - Empty state elegant
   if (absencePeriods.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="glass rounded-2xl p-8 text-center"
+      <div
+        className="glass rounded-2xl p-8 text-center animate-fade-up"
       >
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
+        <div
           className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--bg-overlay)] border border-[var(--border-subtle)] flex items-center justify-center"
         >
           <Calendar className="w-8 h-8 text-[var(--text-muted)]" />
-        </motion.div>
-        <motion.h4
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+        </div>
+        <h4
           className="font-semibold text-[var(--text-primary)] text-lg mb-2"
         >
           Aucune absence planifiee
-        </motion.h4>
-        <motion.p
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
+        </h4>
+        <p
           className="text-sm text-[var(--text-tertiary)] max-w-xs mx-auto"
         >
           Marquez des jours en &quot;Conges&quot; ou &quot;Formation&quot; dans le calendrier pour creer des notifications.
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="space-y-5"
+    <div
+      className="space-y-5 animate-fade-up"
     >
       {/* Header avec destinataire */}
       <div className="flex items-center justify-between glass rounded-xl px-4 py-3">
@@ -294,76 +271,54 @@ Généré automatiquement par Absencia`;
             <p className="font-medium text-[var(--text-primary)]">{notificationEmail}</p>
           </div>
         </div>
-        <motion.button
+        <button
           onClick={selectAll}
-          className="text-sm text-amber-400 hover:text-amber-300 font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-amber-500/10"
-          whileTap={{ scale: 0.98 }}
+          className="text-sm text-amber-400 hover:text-amber-300 font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-amber-500/10 active:scale-[0.98] transition-all duration-200"
         >
           {selectedPeriods.size === absencePeriods.length ? 'Tout deselectionner' : 'Tout selectionner'}
-        </motion.button>
+        </button>
       </div>
 
       {/* Liste des periodes */}
       <div className="space-y-2 max-h-72 overflow-y-auto pr-1 scrollbar-hide">
-        <AnimatePresence mode="popLayout">
           {absencePeriods.map((period, index) => {
             const style = STATUS_STYLES[period.type];
             const isSelected = selectedPeriods.has(index);
 
             return (
-              <motion.div
+              <div
                 key={`${period.start}-${period.type}`}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2, delay: index * 0.05 }}
                 onClick={() => togglePeriod(index)}
                 className={cn(
-                  "group relative p-4 rounded-xl border cursor-pointer transition-all duration-300",
+                  "group relative p-4 rounded-xl border cursor-pointer hover:scale-[1.02] active:scale-[0.98] transition-all duration-200",
                   isSelected
                     ? "glass-elevated border-amber-500/30 shadow-[0_0_20px_-10px_rgba(245,158,11,0.3)]"
                     : "glass border-[var(--border-subtle)] hover:border-[var(--border-default)]"
                 )}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
               >
                 {/* Selection glow effect */}
                 {isSelected && (
-                  <motion.div
-                    layoutId="selection-glow"
+                  <div
                     className="absolute inset-0 rounded-xl bg-amber-500/5 pointer-events-none"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
                   />
                 )}
 
                 <div className="relative flex items-center gap-4">
                   {/* Checkbox */}
-                  <motion.div
+                  <div
                     className={cn(
                       "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200",
                       isSelected
                         ? "bg-amber-500 border-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]"
                         : "border-[var(--border-strong)] bg-transparent group-hover:border-amber-500/50"
                     )}
-                    animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
-                    transition={{ duration: 0.2 }}
                   >
-                    <AnimatePresence>
                       {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0, rotate: -45 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          exit={{ scale: 0, rotate: 45 }}
-                          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                        >
+                        <div className="animate-fade-in">
                           <Check className="w-3.5 h-3.5 text-black" />
-                        </motion.div>
+                        </div>
                       )}
-                    </AnimatePresence>
-                  </motion.div>
+                  </div>
 
                   {/* Status indicator dot */}
                   <div className={cn("w-2.5 h-2.5 rounded-full", style.dot)} />
@@ -385,85 +340,49 @@ Généré automatiquement par Absencia`;
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </AnimatePresence>
       </div>
 
       {/* Bouton d'envoi */}
-      <motion.button
+      <button
         onClick={sendNotification}
         disabled={selectedPeriods.size === 0 || isSending}
         className={cn(
           "relative w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition-all duration-300 overflow-hidden",
           selectedPeriods.size === 0
             ? "bg-[var(--bg-overlay)] text-[var(--text-muted)] cursor-not-allowed border border-[var(--border-subtle)]"
-            : "btn-primary"
+            : "btn-primary hover:scale-[1.02] active:scale-[0.98]"
         )}
-        whileHover={selectedPeriods.size > 0 ? { scale: 1.02, y: -2 } : {}}
-        whileTap={selectedPeriods.size > 0 ? { scale: 0.98 } : {}}
       >
         {/* Background animation on sending */}
-        <AnimatePresence>
           {isSending && (
-            <motion.div
-              initial={{ x: '-100%' }}
-              animate={{ x: '100%' }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1, ease: 'linear', repeat: Infinity }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-fade-in"
             />
           )}
-        </AnimatePresence>
 
         {/* Success animation */}
-        <AnimatePresence mode="wait">
           {sendSuccess === true ? (
-            <motion.div
-              key="success"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="flex items-center gap-2"
-            >
+            <div className="flex items-center gap-2 animate-fade-in">
               <CheckCircle2 className="w-5 h-5" />
               <span>Email ouvert !</span>
-            </motion.div>
+            </div>
           ) : sendSuccess === false ? (
-            <motion.div
-              key="error"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="flex items-center gap-2"
-            >
+            <div className="flex items-center gap-2 animate-fade-in">
               <XCircle className="w-5 h-5" />
               <span>Erreur</span>
-            </motion.div>
+            </div>
           ) : isSending ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
-            >
-              <motion.div
-                className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            <div className="flex items-center gap-2 animate-fade-in">
+              <div
+                className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin"
               />
               <span>Ouverture...</span>
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
-              key="default"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2"
-            >
+            <div className="flex items-center gap-2">
               {selectedPeriods.size > 0 ? (
                 <>
                   <Send className="w-5 h-5" />
@@ -478,21 +397,17 @@ Généré automatiquement par Absencia`;
                   <span>Selectionnez des periodes</span>
                 </>
               )}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-      </motion.button>
+      </button>
 
       {/* Footer hint */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+      <p
         className="text-xs text-[var(--text-muted)] text-center flex items-center justify-center gap-2"
       >
         <Mail className="w-3 h-3" />
         Ouvre votre client email avec un message pre-rempli
-      </motion.p>
-    </motion.div>
+      </p>
+    </div>
   );
 }

@@ -104,12 +104,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add user as leader
-    const membershipRef = adminDb.collection('team_members').doc();
+    // Add user as leader — ID format: {teamId}_{userId} (required by Firestore rules)
+    const membershipRef = adminDb.collection('team_members').doc(`${team.id}_${userId}`);
     const membershipData = {
       user_id: userId,
       team_id: team.id,
       role: 'leader',
+      status: 'approved',
       employee_type: 'employee',
       annual_leave_days: leaveDaysEmployee,
       leave_balance: leaveDaysEmployee,

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { useAuth } from '@/hooks/use-auth';
-import { motion } from 'framer-motion';
 import { Users, Shield, ArrowRight, Loader2, Globe, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,10 +67,8 @@ export default function CreateTeamPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-xl"
+      <div
+        className="w-full max-w-xl animate-scale-in"
       >
         <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl overflow-hidden">
           <div className="h-2 bg-gradient-to-r from-[var(--blueprint-500)] to-[var(--cyan-500)]" />
@@ -170,7 +167,7 @@ export default function CreateTeamPage() {
             </p>
           </CardFooter>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

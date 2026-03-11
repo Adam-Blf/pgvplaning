@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { motion } from 'framer-motion';
 import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut, Hash } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
@@ -105,20 +104,16 @@ export default function TeamJoinPage() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="z-10 w-full max-w-md"
+        <div
+          className="z-10 w-full max-w-md animate-scale-in"
         >
           <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl p-8 text-center ring-1 ring-emerald-500/20">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', delay: 0.2 }}
-              className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20"
+            <div
+              className="w-20 h-20 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 animate-scale-in"
+              style={{ animationDelay: '200ms' }}
             >
               <Check className="w-10 h-10 text-emerald-500" />
-            </motion.div>
+            </div>
 
             <h1 className="text-3xl font-bold text-white mb-2">
               Bienvenue !
@@ -132,7 +127,7 @@ export default function TeamJoinPage() {
               <span className="text-xs font-mono text-[var(--text-muted)] tracking-widest uppercase">Redirection en cours...</span>
             </div>
           </Card>
-        </motion.div>
+        </div>
       </div>
     );
   }
@@ -154,10 +149,8 @@ export default function TeamJoinPage() {
         <LogOut className="w-5 h-5" />
       </Button>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
+      <div
+        className="w-full max-w-md relative z-10 animate-fade-up opacity-0"
       >
         <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl overflow-hidden">
           <div className="px-6 py-4 border-b border-white/5 bg-white/5 flex items-center justify-between">
@@ -191,17 +184,15 @@ export default function TeamJoinPage() {
             <form onSubmit={handleSubmit} className="space-y-10">
               <div onPaste={handlePaste} className="flex justify-center gap-2">
                 {code.map((char, index) => (
-                  <motion.input
+                  <input
                     key={index}
                     ref={(el) => { inputRefs.current[index] = el; }}
                     type="text"
                     value={char}
                     onChange={(e) => handleInputChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="w-10 h-14 md:w-11 md:h-16 text-center text-2xl font-mono font-bold rounded-2xl border border-white/10 bg-white/5 text-[var(--blueprint-500)] focus:border-[var(--blueprint-500)]/50 focus:ring-4 focus:ring-[var(--blueprint-500)]/10 focus:outline-none transition-all"
+                    className="w-10 h-14 md:w-11 md:h-16 text-center text-2xl font-mono font-bold rounded-2xl border border-white/10 bg-white/5 text-[var(--blueprint-500)] focus:border-[var(--blueprint-500)]/50 focus:ring-4 focus:ring-[var(--blueprint-500)]/10 focus:outline-none transition-all animate-scale-in opacity-0"
+                    style={{ animationDelay: `${index * 50}ms` }}
                     maxLength={1}
                     autoComplete="off"
                   />
@@ -233,7 +224,7 @@ export default function TeamJoinPage() {
             </form>
           </div>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 }

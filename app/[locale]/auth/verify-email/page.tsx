@@ -4,7 +4,6 @@
 // Firebase a envoyé un email de vérification automatiquement.
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { MailCheck, RefreshCw, ArrowLeft, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -62,15 +61,13 @@ export default function VerifyEmailPage() {
         <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[var(--blueprint-500)] opacity-10 blur-[120px]" />
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-md z-10"
+            <div
+                className="w-full max-w-md z-10 animate-fade-up opacity-0"
             >
                 <div className="glass-elevated p-8 rounded-3xl border border-white/10 shadow-2xl text-center">
                     {verified ? (
                         // Email verified state
-                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+                        <div className="animate-scale-in">
                             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
                                 <CheckCircle className="w-8 h-8 text-emerald-400" />
                             </div>
@@ -83,7 +80,7 @@ export default function VerifyEmailPage() {
                                     Se connecter
                                 </Button>
                             </Link>
-                        </motion.div>
+                        </div>
                     ) : (
                         // Waiting for verification
                         <>
@@ -121,7 +118,7 @@ export default function VerifyEmailPage() {
                         </>
                     )}
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }

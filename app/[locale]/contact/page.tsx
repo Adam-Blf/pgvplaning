@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Mail,
   MessageSquare,
@@ -52,28 +51,12 @@ export default function ContactPage() {
     }, 5000);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
-
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-6xl mx-auto space-y-12 pb-20"
+    <div
+      className="max-w-6xl mx-auto space-y-12 pb-20 stagger-children"
     >
       {/* Header Section */}
-      <motion.div variants={itemVariants} className="text-center space-y-4">
+      <div className="text-center space-y-4 animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--blueprint-500)]/10 border border-[var(--blueprint-500)]/20 text-[var(--blueprint-400)] text-xs font-bold uppercase tracking-widest">
           <Sparkles className="w-3 h-3" />
           Support & Contact
@@ -85,11 +68,11 @@ export default function ContactPage() {
           Notre équipe est là pour vous aider à optimiser la gestion de votre planning.
           Réponse garantie sous 24h.
         </p>
-      </motion.div>
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Contact Info Sidebar */}
-        <motion.div variants={itemVariants} className="space-y-6">
+        <div className="space-y-6 animate-fade-up opacity-0" style={{ animationDelay: '80ms' }}>
           <Card className="glass-elevated border-white/5 bg-white/[0.02] rounded-3xl overflow-hidden group hover:border-[var(--blueprint-500)]/30 transition-all">
             <CardContent className="p-6 flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400 shrink-0 group-hover:scale-110 transition-transform">
@@ -143,10 +126,10 @@ export default function ContactPage() {
               Absencia est utilisé par plus de 500 équipes à travers l&apos;Europe pour la gestion de leurs plannings hospitaliers et administratifs.
             </p>
           </div>
-        </motion.div>
+        </div>
 
         {/* Contact Form */}
-        <motion.div variants={itemVariants} className="lg:col-span-2">
+        <div className="lg:col-span-2 animate-fade-up opacity-0" style={{ animationDelay: '160ms' }}>
           <Card className="glass-elevated border-white/10 bg-white/[0.03] rounded-[2.5rem] overflow-hidden shadow-2xl relative">
             {/* Background Decorative Gradient */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 blur-3xl rounded-full -mr-32 -mt-32" />
@@ -164,13 +147,9 @@ export default function ContactPage() {
             </CardHeader>
 
             <CardContent className="p-8 pt-4 relative">
-              <AnimatePresence mode="wait">
                 {isSubmitted ? (
-                  <motion.div
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-20 text-center space-y-6"
+                  <div
+                    className="flex flex-col items-center justify-center py-20 text-center space-y-6 animate-scale-in"
                   >
                     <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
                       <CheckCircle2 className="w-10 h-10 text-emerald-500" />
@@ -188,7 +167,7 @@ export default function ContactPage() {
                     >
                       Envoyer un nouveau message
                     </Button>
-                  </motion.div>
+                  </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid sm:grid-cols-2 gap-6">
@@ -277,11 +256,10 @@ export default function ContactPage() {
                     </Button>
                   </form>
                 )}
-              </AnimatePresence>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

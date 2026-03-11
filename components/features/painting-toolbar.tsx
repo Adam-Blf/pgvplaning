@@ -1,6 +1,5 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
 import { Eraser, Sun, Moon, Clock, Paintbrush } from 'lucide-react';
 import { PremiumIcons } from '@/components/ui/premium-icons';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
@@ -93,14 +92,8 @@ export function PaintingToolbar({
   onHalfDayChange
 }: PaintingToolbarProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        duration: 0.4,
-        ease: [0.16, 1, 0.3, 1]
-      }}
-      className="glass-elevated rounded-2xl overflow-hidden"
+    <div
+      className="glass-elevated rounded-2xl overflow-hidden animate-fade-up"
     >
       {/* Header */}
       <div className="px-5 py-3 border-b border-[var(--border-subtle)] flex items-center gap-3">
@@ -121,27 +114,19 @@ export function PaintingToolbar({
           </legend>
 
           <div className="flex flex-wrap gap-2">
-            <AnimatePresence mode="popLayout">
               {tools.map((tool, index) => {
                 const isActive = currentTool === tool.id;
                 const Icon = tool.icon;
 
                 return (
-                  <motion.button
+                  <button
                     key={tool.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      delay: index * 0.05,
-                      duration: 0.3,
-                      ease: [0.16, 1, 0.3, 1]
-                    }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={() => onToolChange(tool.id)}
+                    style={{ animationDelay: `${index * 50}ms` }}
                     className={cn(
                       'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
-                      'transition-colors duration-200',
+                      'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
+                      'animate-fade-up opacity-0',
                       isActive ? [
                         tool.bgColor,
                         'text-white',
@@ -159,14 +144,13 @@ export function PaintingToolbar({
                   >
                     {/* Glow effect when active */}
                     {isActive && (
-                      <motion.div
-                        layoutId="tool-glow"
+                      <div
                         className={cn(
                           'absolute inset-0 rounded-xl',
                           tool.bgColor,
-                          'opacity-20 blur-xl'
+                          'opacity-20 blur-xl',
+                          'transition-all duration-300'
                         )}
-                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                       />
                     )}
 
@@ -176,28 +160,23 @@ export function PaintingToolbar({
 
                     {/* Active indicator dot */}
                     {isActive && (
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full shadow-lg z-20"
+                      <div
+                        className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full shadow-lg z-20 animate-scale-in"
                       />
                     )}
-                  </motion.button>
+                  </button>
                 );
               })}
-            </AnimatePresence>
 
             {/* Divider */}
             <div className="w-px h-9 bg-[var(--border-default)] mx-1 self-center hidden sm:block" />
 
             {/* Eraser */}
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => onToolChange('ERASER')}
               className={cn(
                 'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
-                'transition-colors duration-200',
+                'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
                 currentTool === 'ERASER' ? [
                   'bg-[var(--bg-hover)]',
                   'text-[var(--text-primary)]',
@@ -219,13 +198,11 @@ export function PaintingToolbar({
               <span className="hidden sm:inline">Gomme</span>
 
               {currentTool === 'ERASER' && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[var(--text-primary)] rounded-full shadow-lg"
+                <div
+                  className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[var(--text-primary)] rounded-full shadow-lg animate-scale-in"
                 />
               )}
-            </motion.button>
+            </button>
           </div>
         </fieldset>
 
@@ -244,14 +221,12 @@ export function PaintingToolbar({
               const Icon = option.icon;
 
               return (
-                <motion.button
+                <button
                   key={option.id}
-                  whileHover={{ scale: isActive ? 1 : 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => onHalfDayChange(option.id)}
                   className={cn(
                     'relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
-                    'transition-colors duration-200',
+                    'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
                     isActive
                       ? 'text-[var(--text-primary)]'
                       : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
@@ -260,10 +235,8 @@ export function PaintingToolbar({
                 >
                   {/* Background pill for active state */}
                   {isActive && (
-                    <motion.div
-                      layoutId="halfday-pill"
-                      className="absolute inset-0 bg-[var(--bg-overlay)] border border-[var(--border-default)] rounded-lg shadow-sm"
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.5 }}
+                    <div
+                      className="absolute inset-0 bg-[var(--bg-overlay)] border border-[var(--border-default)] rounded-lg shadow-sm transition-all duration-300"
                     />
                   )}
 
@@ -273,12 +246,12 @@ export function PaintingToolbar({
                   )} />
                   <span className="relative z-10 hidden sm:inline">{option.label}</span>
                   <span className="relative z-10 sm:hidden">{option.shortLabel}</span>
-                </motion.button>
+                </button>
               );
             })}
           </div>
         </fieldset>
       </div>
-    </motion.div>
+    </div>
   );
 }

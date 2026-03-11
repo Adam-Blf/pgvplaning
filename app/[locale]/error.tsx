@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Link } from '@/i18n/routing';
 
@@ -21,23 +21,16 @@ export default function Error({ error, reset }: ErrorProps) {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-primary)]">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="card max-w-md w-full text-center p-8"
+      <div
+        className="card max-w-md w-full text-center p-8 animate-fade-up opacity-0"
       >
         <div className="space-y-6">
           {/* Icon */}
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            className="inline-block"
-          >
+          <div className="inline-block animate-pulse">
             <div className="w-20 h-20 mx-auto rounded-full bg-[var(--error-bg)] flex items-center justify-center">
               <AlertTriangle className="w-10 h-10 text-[var(--error)]" />
             </div>
-          </motion.div>
+          </div>
 
           {/* Message */}
           <div className="space-y-2">
@@ -73,7 +66,7 @@ export default function Error({ error, reset }: ErrorProps) {
             </Link>
           </div>
         </div>
-      </motion.div>
+      </div>
     </main>
   );
 }

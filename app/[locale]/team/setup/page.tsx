@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Users, Plus, LogIn, Sparkles, LogOut } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/routing';
 import { auth } from '@/lib/firebase/client';
@@ -51,20 +50,15 @@ export default function TeamSetupPage() {
 
       <div className="w-full max-w-lg relative">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+        <div
+          className="text-center mb-10 animate-fade-up opacity-0"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', delay: 0.2 }}
-            className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 flex items-center justify-center mx-auto mb-6 ring-1 ring-amber-500/20"
+          <div
+            className="w-20 h-20 rounded-3xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 flex items-center justify-center mx-auto mb-6 ring-1 ring-amber-500/20 animate-scale-in"
+            style={{ animationDelay: '200ms' }}
           >
             <Users className="w-10 h-10 text-amber-500" />
-          </motion.div>
+          </div>
 
           <h1 className="text-3xl font-semibold text-zinc-100 mb-3">
             Bienvenue sur <span className="text-amber-500">Absencia</span>
@@ -72,15 +66,14 @@ export default function TeamSetupPage() {
           <p className="text-zinc-500 max-w-sm mx-auto">
             Créez votre équipe ou rejoignez une équipe existante pour commencer à gérer vos plannings.
           </p>
-        </motion.div>
+        </div>
 
         {/* Cards */}
         <div className="grid gap-4">
           {/* Create Team */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
+            className="animate-fade-up opacity-0"
+            style={{ animationDelay: '80ms' }}
           >
             <Link href="/team/create" className="block group">
               <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-amber-500/30 transition-all duration-300 hover:bg-zinc-900/90">
@@ -104,36 +97,31 @@ export default function TeamSetupPage() {
                   </div>
 
                   <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-all">
-                    <motion.span
+                    <span
                       className="text-zinc-600 group-hover:text-amber-500 transition-colors"
-                      animate={{ x: [0, 4, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
                     >
                       →
-                    </motion.span>
+                    </span>
                   </div>
                 </div>
               </div>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Divider */}
-          <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ delay: 0.4 }}
-            className="flex items-center gap-4 py-2"
+          <div
+            className="flex items-center gap-4 py-2 animate-fade-in opacity-0"
+            style={{ animationDelay: '160ms' }}
           >
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
             <span className="text-xs font-mono text-zinc-600">OU</span>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
-          </motion.div>
+          </div>
 
           {/* Join Team */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
+          <div
+            className="animate-fade-up opacity-0"
+            style={{ animationDelay: '240ms' }}
           >
             <Link href="/team/join" className="block group">
               <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-emerald-500/30 transition-all duration-300 hover:bg-zinc-900/90">
@@ -157,26 +145,22 @@ export default function TeamSetupPage() {
                   </div>
 
                   <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500/10 transition-all">
-                    <motion.span
+                    <span
                       className="text-zinc-600 group-hover:text-emerald-500 transition-colors"
-                      animate={{ x: [0, 4, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
                     >
                       →
-                    </motion.span>
+                    </span>
                   </div>
                 </div>
               </div>
             </Link>
-          </motion.div>
+          </div>
         </div>
 
         {/* Footer hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-          className="mt-10 text-center"
+        <div
+          className="mt-10 text-center animate-fade-in opacity-0"
+          style={{ animationDelay: '320ms' }}
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900/50 border border-zinc-800/50">
             <Sparkles className="w-4 h-4 text-amber-500/60" />
@@ -184,7 +168,7 @@ export default function TeamSetupPage() {
               Gérez les congés de votre équipe en toute simplicité
             </span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

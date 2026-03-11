@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import {
   Download,
   Home as HomeIcon,
@@ -88,52 +88,6 @@ const exportCards = [
     buttonHover: 'hover:border-rose-500/40 hover:bg-rose-500/5',
   },
 ];
-
-// Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 24,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 300,
-      damping: 24,
-    },
-  },
-  hover: {
-    y: -4,
-    transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 20,
-    },
-  },
-};
 
 export default function ExportsPage() {
   const { data } = useCalendarData();
@@ -318,14 +272,11 @@ export default function ExportsPage() {
   };
 
   return (
-    <motion.div
-      className="space-y-10"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+    <div
+      className="space-y-10 stagger-children"
     >
       {/* Header avec titre gradient */}
-      <motion.header variants={itemVariants} className="relative">
+      <header className="relative animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="flex items-center gap-4 mb-2">
           <div className="w-12 h-12 rounded-2xl gradient-amber flex items-center justify-center shadow-lg shadow-amber-500/20">
             <FileDown className="w-6 h-6 text-black" />
@@ -339,12 +290,12 @@ export default function ExportsPage() {
             </p>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Notice d'information */}
-      <motion.div
-        variants={itemVariants}
-        className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-sky-500/5 p-5"
+      <div
+        className="relative overflow-hidden rounded-2xl border border-sky-500/20 bg-sky-500/5 p-5 animate-fade-up opacity-0"
+        style={{ animationDelay: '80ms' }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-transparent" />
         <div className="relative flex items-start gap-4">
@@ -361,10 +312,10 @@ export default function ExportsPage() {
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Section Exports ICS */}
-      <motion.section variants={itemVariants}>
+      <section className="animate-fade-up opacity-0" style={{ animationDelay: '160ms' }}>
         {/* [NEW] Section Abonnement Dynamique */}
         <div className="grid md:grid-cols-2 gap-6 mb-10">
           <IcalSubscriptionCard
@@ -392,14 +343,10 @@ export default function ExportsPage() {
         </div>
 
         {/* Alerte si nom non configuré */}
-        <AnimatePresence>
-          {!userName && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-6 overflow-hidden"
-            >
+        {!userName && (
+          <div
+            className="mb-6 overflow-hidden animate-fade-in"
+          >
               <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
@@ -419,32 +366,26 @@ export default function ExportsPage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          </div>
+        )}
 
         {/* Grille des cartes d'export */}
-        <motion.div
-          className="grid md:grid-cols-2 gap-4"
-          variants={containerVariants}
-        >
+        <div className="grid md:grid-cols-2 gap-4">
           {exportCards.map((card, index) => {
             const Icon = card.icon;
             const count = dayCounts[card.id];
             const isDisabled = count === 0;
 
             return (
-              <motion.div
+              <div
                 key={card.id}
-                variants={cardVariants}
-                whileHover={isDisabled ? undefined : 'hover'}
-                custom={index}
                 className={cn(
-                  'relative rounded-2xl border bg-[var(--bg-surface)] overflow-hidden transition-all duration-300',
+                  'relative rounded-2xl border bg-[var(--bg-surface)] overflow-hidden transition-all duration-300 animate-fade-up opacity-0',
                   isDisabled
                     ? 'opacity-50 border-[var(--border-subtle)]'
-                    : `${card.borderColor} hover:border-opacity-60`
+                    : `${card.borderColor} hover:border-opacity-60 hover:-translate-y-1`
                 )}
+                style={{ animationDelay: `${index * 80}ms` }}
               >
                 {/* Gradient background overlay */}
                 <div className={cn(
@@ -454,17 +395,15 @@ export default function ExportsPage() {
 
                 <div className="relative p-5">
                   <div className="flex items-start gap-4 mb-4">
-                    <motion.div
+                    <div
                       className={cn(
-                        'w-12 h-12 rounded-xl flex items-center justify-center border',
+                        'w-12 h-12 rounded-xl flex items-center justify-center border hover:scale-[1.02] active:scale-[0.98] transition-all duration-200',
                         card.iconBg,
                         card.borderColor
                       )}
-                      whileHover={{ scale: 1.05, rotate: 5 }}
-                      transition={{ type: 'spring', stiffness: 400 }}
                     >
                       <Icon className={cn('w-6 h-6', card.iconColor)} />
-                    </motion.div>
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-bold text-[var(--text-primary)]">
@@ -487,72 +426,62 @@ export default function ExportsPage() {
 
                   {/* Boutons de téléchargement */}
                   <div className="flex gap-2">
-                    <motion.button
+                    <button
                       onClick={() => downloadICS(card.id, false)}
                       disabled={isDisabled}
-                      whileTap={{ scale: 0.98 }}
                       className={cn(
                         'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium',
-                        'border border-[var(--border-default)] transition-all duration-200',
+                        'border border-[var(--border-default)] active:scale-[0.98] transition-all duration-200',
                         isDisabled
                           ? 'bg-[var(--bg-overlay)] text-[var(--text-disabled)] cursor-not-allowed'
                           : 'bg-[var(--bg-overlay)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover:border-[var(--border-strong)]'
                       )}
                     >
                       {activeExport === `${card.id}-personal` ? (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-4 h-4"
-                        >
+                        <div className="w-4 h-4 animate-scale-in">
                           <CheckCircle className="w-4 h-4 text-emerald-400" />
-                        </motion.div>
+                        </div>
                       ) : (
                         <User className="w-4 h-4" />
                       )}
                       <span>Personnel</span>
                       <Download className="w-3.5 h-3.5 opacity-60" />
-                    </motion.button>
+                    </button>
 
-                    <motion.button
+                    <button
                       onClick={() => downloadICS(card.id, true)}
                       disabled={isDisabled}
-                      whileTap={{ scale: 0.98 }}
                       className={cn(
                         'flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium',
-                        'border transition-all duration-200',
+                        'border active:scale-[0.98] transition-all duration-200',
                         isDisabled
                           ? 'bg-[var(--bg-overlay)] text-[var(--text-disabled)] cursor-not-allowed border-[var(--border-default)]'
                           : `${card.iconBg} ${card.iconColor} ${card.borderColor} ${card.buttonHover}`
                       )}
                     >
                       {activeExport === `${card.id}-team` ? (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="w-4 h-4"
-                        >
+                        <div className="w-4 h-4 animate-scale-in">
                           <CheckCircle className="w-4 h-4" />
-                        </motion.div>
+                        </div>
                       ) : (
                         <Users className="w-4 h-4" />
                       )}
                       <span>Équipe</span>
                       <Download className="w-3.5 h-3.5 opacity-60" />
-                    </motion.button>
+                    </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
-      </motion.section>
+        </div>
+      </section>
 
       {/* Divider */}
-      <motion.div variants={itemVariants} className="divider" />
+      <div className="divider animate-fade-up opacity-0" style={{ animationDelay: '240ms' }} />
 
       {/* Section Assistant Message d'absence */}
-      <motion.section variants={itemVariants}>
+      <section className="animate-fade-up opacity-0" style={{ animationDelay: '320ms' }}>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
             <Mail className="w-4 h-4 text-[var(--text-secondary)]" />
@@ -566,9 +495,8 @@ export default function ExportsPage() {
           </span>
         </div>
 
-        <motion.div
+        <div
           className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] overflow-hidden"
-          variants={cardVariants}
         >
           {/* Header de la carte */}
           <div className="p-6 border-b border-[var(--border-subtle)] bg-gradient-to-r from-violet-500/5 via-transparent to-transparent">
@@ -613,13 +541,11 @@ export default function ExportsPage() {
               </div>
             </div>
 
-            <motion.button
+            <button
               onClick={generateOOFMessage}
               disabled={isLoading}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
               className={cn(
-                'w-full md:w-auto btn-primary',
+                'w-full md:w-auto btn-primary hover:scale-[1.02] active:scale-[0.98] transition-all duration-200',
                 isLoading && 'opacity-70 cursor-not-allowed'
               )}
             >
@@ -635,55 +561,47 @@ export default function ExportsPage() {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-            </motion.button>
+            </button>
 
             {/* Résultat */}
-            <AnimatePresence mode="wait">
-              {aiResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-                  className="mt-6 pt-6 border-t border-[var(--border-subtle)]"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-400" />
-                      <span className="font-medium text-[var(--text-primary)]">
-                        Message généré
-                      </span>
-                    </div>
-                    <motion.button
-                      onClick={copyToClipboard}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="btn-ghost text-sm"
-                    >
-                      <Copy className="w-4 h-4" />
-                      Copier
-                    </motion.button>
+            {aiResult && (
+              <div
+                className="mt-6 pt-6 border-t border-[var(--border-subtle)] animate-fade-up opacity-0"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                    <span className="font-medium text-[var(--text-primary)]">
+                      Message généré
+                    </span>
                   </div>
-                  <textarea
-                    value={aiResult}
-                    readOnly
-                    rows={5}
-                    className="w-full px-4 py-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] resize-none focus:outline-none"
-                  />
-                  <p className="mt-2 text-xs text-[var(--text-muted)]">
-                    Pensez à remplacer <code className="text-amber-400">[DATE_RETOUR]</code> par votre date de retour effective.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <button
+                    onClick={copyToClipboard}
+                    className="btn-ghost text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copier
+                  </button>
+                </div>
+                <textarea
+                  value={aiResult}
+                  readOnly
+                  rows={5}
+                  className="w-full px-4 py-3 rounded-xl bg-[var(--bg-overlay)] border border-[var(--border-default)] text-[var(--text-primary)] resize-none focus:outline-none"
+                />
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
+                  Pensez à remplacer <code className="text-amber-400">[DATE_RETOUR]</code> par votre date de retour effective.
+                </p>
+              </div>
+            )}
           </div>
-        </motion.div>
-      </motion.section>
+        </div>
+      </section>
 
       {/* Note sur le service */}
-      <motion.div
-        variants={itemVariants}
-        className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5"
+      <div
+        className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 animate-fade-up opacity-0"
+        style={{ animationDelay: '400ms' }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-transparent" />
         <div className="relative flex items-start gap-4">
@@ -700,8 +618,8 @@ export default function ExportsPage() {
             </p>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

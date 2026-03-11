@@ -1,6 +1,5 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
 import {
     Users,
     UserCheck,
@@ -72,26 +71,19 @@ export default function MemberValidationPage() {
             </div>
 
             <div className="grid gap-6">
-                <AnimatePresence mode="popLayout">
                     {pendingMembers.length === 0 ? (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="text-center py-20 bg-white/5 border border-dashed border-white/10 rounded-3xl"
+                        <div
+                            className="text-center py-20 bg-white/5 border border-dashed border-white/10 rounded-3xl animate-fade-up opacity-0"
                         >
                             <CheckCircle2 className="w-12 h-12 text-emerald-500/50 mx-auto mb-4" />
                             <h2 className="text-xl font-semibold opacity-50">Aucune demande en attente</h2>
                             <p className="text-muted-foreground">Votre équipe est à jour.</p>
-                        </motion.div>
+                        </div>
                     ) : (
                         pendingMembers.map((member) => (
-                            <motion.div
+                            <div
                                 key={member.id}
-                                layout
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="group"
+                                className="group animate-scale-in"
                             >
                                 <Card className="glass-elevated border-white/10 hover:border-amber-500/30 transition-all rounded-2xl overflow-hidden">
                                     <CardContent className="p-6">
@@ -140,10 +132,9 @@ export default function MemberValidationPage() {
                                         </div>
                                     </CardContent>
                                 </Card>
-                            </motion.div>
+                            </div>
                         ))
                     )}
-                </AnimatePresence>
             </div>
 
             <div className="rounded-3xl bg-amber-500/5 border border-amber-500/10 p-6">

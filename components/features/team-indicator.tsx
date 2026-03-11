@@ -9,7 +9,6 @@ import { Link, useRouter } from '@/i18n/routing';
 import { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export function TeamIndicator() {
   const { team, isLeader, loading } = useTeam();
@@ -85,12 +84,11 @@ export function TeamIndicator() {
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
-      <motion.button
+      <button
         onClick={() => setShowDropdown(!showDropdown)}
-        whileTap={{ scale: 0.97 }}
         className={cn(
-          "flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all duration-300",
-          "border backdrop-blur-sm",
+          "flex items-center gap-2.5 px-3 py-2 rounded-xl",
+          "border backdrop-blur-sm hover:scale-105 active:scale-95 transition-all duration-200",
           showDropdown
             ? "glass-elevated border-[var(--gold-500)]/30 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]"
             : "glass border-[var(--border-subtle)] hover:border-[var(--border-default)] hover:bg-[var(--bg-overlay)]"
@@ -118,26 +116,23 @@ export function TeamIndicator() {
         </span>
 
         {/* Chevron with rotation */}
-        <motion.div
-          animate={{ rotate: showDropdown ? 180 : 0 }}
-          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        <div
+          className={cn(
+            "transition-transform duration-300",
+            showDropdown ? "rotate-180" : "rotate-0"
+          )}
         >
           <ChevronDown className={cn(
             "w-4 h-4 transition-colors duration-200",
             showDropdown ? "text-[var(--gold-500)]" : "text-[var(--text-tertiary)]"
           )} />
-        </motion.div>
-      </motion.button>
+        </div>
+      </button>
 
       {/* Dropdown Menu */}
-      <AnimatePresence>
-        {showDropdown && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.96 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-0 top-full mt-2 w-72 rounded-2xl glass-elevated border border-[var(--border-default)] shadow-xl z-50 overflow-hidden"
+      {showDropdown && (
+          <div
+            className="absolute right-0 top-full mt-2 w-72 rounded-2xl glass-elevated border border-[var(--border-default)] shadow-xl z-50 overflow-hidden animate-fade-in"
           >
             {/* Header */}
             <div className="p-4 border-b border-[var(--border-subtle)] bg-gradient-to-br from-[var(--bg-overlay)] to-transparent">
@@ -213,22 +208,21 @@ export function TeamIndicator() {
                 <p className="text-[10px] uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">
                   Code d&apos;invitation
                 </p>
-                <motion.button
+                <button
                   onClick={() => copyToClipboard(team.code, 'code')}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-amber-500/30 transition-all duration-300 group"
+                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-amber-500/30 hover:scale-105 active:scale-95 transition-all duration-200 group"
                 >
                   <span className="font-mono text-sm font-semibold gradient-text-amber">
                     {team.code}
                   </span>
                   <div className="w-7 h-7 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center group-hover:bg-amber-500/10 transition-colors">
                     {copied ? (
-                      <Check className="w-4 h-4 text-emerald-500" />
+                      <Check className="w-4 h-4 text-emerald-500 animate-scale-in" />
                     ) : (
                       <Copy className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-amber-500 transition-colors" />
                     )}
                   </div>
-                </motion.button>
+                </button>
               </div>
 
               {/* Lien d'invitation (leaders seulement) */}
@@ -238,10 +232,9 @@ export function TeamIndicator() {
                     Lien d&apos;invitation
                   </p>
                   {inviteUrl ? (
-                    <motion.button
+                    <button
                       onClick={() => copyToClipboard(inviteUrl, 'link')}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 group"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-amber-500/20 hover:border-amber-500/40 hover:scale-105 active:scale-95 transition-all duration-200 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
                         <Link2 className="w-4 h-4 text-amber-500" />
@@ -251,22 +244,21 @@ export function TeamIndicator() {
                       </span>
                       <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-500/20 transition-colors">
                         {copied ? (
-                          <Check className="w-4 h-4 text-emerald-500" />
+                          <Check className="w-4 h-4 text-emerald-500 animate-scale-in" />
                         ) : (
                           <Copy className="w-4 h-4 text-amber-500/70 group-hover:text-amber-500" />
                         )}
                       </div>
-                    </motion.button>
+                    </button>
                   ) : (
-                    <motion.button
+                    <button
                       onClick={generateInviteLink}
                       disabled={isGenerating}
-                      whileTap={{ scale: 0.98 }}
                       className={cn(
                         "w-full flex items-center justify-center gap-2 p-3 rounded-xl",
                         "bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium text-sm",
                         "shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30",
-                        "hover:-translate-y-0.5 transition-all duration-300",
+                        "hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200",
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
@@ -281,7 +273,7 @@ export function TeamIndicator() {
                           Generer un lien
                         </>
                       )}
-                    </motion.button>
+                    </button>
                   )}
                   <p className="text-[10px] text-[var(--text-muted)] text-center mt-2">
                     Valide pendant 7 jours
@@ -307,9 +299,8 @@ export function TeamIndicator() {
                 <span>Se déconnecter</span>
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </div>
   );
 }

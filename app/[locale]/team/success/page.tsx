@@ -3,7 +3,6 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
-import { motion } from 'framer-motion';
 import { Copy, Check, Shield, ArrowRight, Share2, Calendar, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,10 +23,8 @@ function SuccessContent() {
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-xl"
+        <div
+            className="w-full max-w-xl animate-fade-up opacity-0"
         >
             <Card className="glass-elevated border-white/10 shadow-2xl rounded-3xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 p-4 opacity-5">
@@ -35,14 +32,12 @@ function SuccessContent() {
                 </div>
 
                 <CardHeader className="pt-10 pb-6 text-center">
-                    <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ type: 'spring', delay: 0.2 }}
-                        className="mx-auto w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20"
+                    <div
+                        className="mx-auto w-20 h-20 rounded-3xl bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20 animate-scale-in"
+                        style={{ animationDelay: '200ms' }}
                     >
                         <Check className="w-10 h-10 text-emerald-500" />
-                    </motion.div>
+                    </div>
                     <CardTitle className="text-3xl font-bold text-white">Équipe créée !</CardTitle>
                     <CardDescription className="text-[var(--text-tertiary)] pt-2 text-lg">
                         Votre espace Absencia est maintenant prêt.
@@ -105,7 +100,7 @@ function SuccessContent() {
                     </Button>
                 </CardFooter>
             </Card>
-        </motion.div>
+        </div>
     );
 }
 

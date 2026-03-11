@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, Fragment, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import {
   Phone,
   AlertTriangle,
@@ -48,30 +48,6 @@ const STATUS_CONFIG: Record<Status, { label: string; icon: any; bgClass: string;
   ONSITE: { label: 'Site', icon: Building2, bgClass: 'bg-emerald-500/10', textClass: 'text-emerald-400', borderClass: 'border-emerald-500/20' },
   REMOTE: { label: 'TT', icon: Home, bgClass: 'bg-purple-500/10', textClass: 'text-purple-400', borderClass: 'border-purple-500/20' },
   ABSENT: { label: 'Absent', icon: Plane, bgClass: 'bg-rose-500/10', textClass: 'text-rose-400', borderClass: 'border-rose-500/20' },
-};
-
-// ============ ANIMATION VARIANTS ============
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-      ease: [0.16, 1, 0.3, 1]
-    }
-  }
 };
 
 // ============ MAIN COMPONENT ============
@@ -137,13 +113,8 @@ export default function TeamPlannerPage() {
   const handlePrint = () => window.print();
 
   return (
-    <motion.div
-      className="space-y-8"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <motion.div variants={itemVariants} className="relative">
+    <div className="space-y-8 stagger-children">
+      <div className="relative animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20">
@@ -161,7 +132,7 @@ export default function TeamPlannerPage() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       <div className="flex flex-wrap gap-2 print:hidden">
         <button onClick={() => setActiveTab('weekly')} className={cn("btn-ghost", activeTab === 'weekly' && "bg-amber-500/10 text-amber-500")}>Hebdomadaire</button>
@@ -214,6 +185,6 @@ export default function TeamPlannerPage() {
           </tbody>
         </table>
       </div>
-    </motion.div>
+    </div>
   );
 }

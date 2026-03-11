@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { CalendarGrid, Birthday } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
@@ -55,11 +55,9 @@ function QuickStats({ birthdays }: { birthdays: Birthday[] }) {
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.15 }}
-      className="glass-elevated rounded-2xl p-4 hidden lg:block"
+    <div
+      className="glass-elevated rounded-2xl p-4 hidden lg:block animate-scale-in"
+      style={{ animationDelay: '150ms' }}
     >
       <div className="flex items-center gap-2 mb-3">
         <Info className="w-4 h-4 text-[var(--text-muted)]" />
@@ -82,7 +80,7 @@ function QuickStats({ birthdays }: { birthdays: Birthday[] }) {
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -154,36 +152,17 @@ export default function CalendarPage() {
     fetchBirthdays();
   }, []);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 16 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  };
-
   return (
-    <motion.div
-      className="space-y-6 pb-8"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.header variants={itemVariants} className="relative">
+    <div className="space-y-6 pb-8 stagger-children">
+      <header className="relative animate-fade-up opacity-0" style={{ animationDelay: '0ms' }}>
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start gap-4">
-            <motion.div
-              className="relative flex-shrink-0"
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-            >
+            <div className="relative flex-shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
               <div className="w-14 h-14 rounded-2xl gradient-amber flex items-center justify-center shadow-lg glow-amber overflow-hidden">
                 <AnimatedBlueprintIcon name="Office" className="text-white" size="lg" />
               </div>
-            </motion.div>
+            </div>
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-bold">
                 <span className="text-[var(--text-primary)]">
@@ -202,43 +181,41 @@ export default function CalendarPage() {
             <QuickStats birthdays={birthdays} />
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      <motion.div variants={itemVariants} className="divider" />
+      <div className="divider animate-fade-up opacity-0" style={{ animationDelay: '80ms' }} />
 
-      <motion.section variants={itemVariants}>
+      <section className="animate-fade-up opacity-0" style={{ animationDelay: '160ms' }}>
         <PaintingToolbar
           currentTool={currentTool}
           onToolChange={setCurrentTool}
           currentHalfDay={currentHalfDay}
           onHalfDayChange={setCurrentHalfDay}
         />
-      </motion.section>
+      </section>
 
-      <motion.section variants={itemVariants}>
-        <AnimatePresence mode="wait">
-          {isLoading ? (
-            <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <CalendarSkeleton />
-            </motion.div>
-          ) : (
-            <motion.div key="calendar" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-              <CalendarGrid
-                currentTool={currentTool}
-                currentHalfDay={currentHalfDay}
-                getDayStatus={getDayStatus}
-                getHalfDayStatus={getHalfDayStatus}
-                hasSplitDay={hasSplitDay}
-                setDayStatus={setDayStatus}
-                formatDateKey={formatDateKey}
-                birthdays={birthdays}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.section>
+      <section className="animate-fade-up opacity-0" style={{ animationDelay: '240ms' }}>
+        {isLoading ? (
+          <div className="animate-fade-in">
+            <CalendarSkeleton />
+          </div>
+        ) : (
+          <div className="animate-fade-up opacity-0">
+            <CalendarGrid
+              currentTool={currentTool}
+              currentHalfDay={currentHalfDay}
+              getDayStatus={getDayStatus}
+              getHalfDayStatus={getHalfDayStatus}
+              hasSplitDay={hasSplitDay}
+              setDayStatus={setDayStatus}
+              formatDateKey={formatDateKey}
+              birthdays={birthdays}
+            />
+          </div>
+        )}
+      </section>
 
-      <motion.section variants={itemVariants} className="space-y-3">
+      <section className="space-y-3 animate-fade-up opacity-0" style={{ animationDelay: '320ms' }}>
         <button
           onClick={() => setShowLegend(!showLegend)}
           className="w-full sm:hidden flex items-center justify-between px-4 py-3 card-interactive"
@@ -246,44 +223,32 @@ export default function CalendarPage() {
           <span className="text-sm font-medium text-[var(--text-secondary)]">
             {tL('title')}
           </span>
-          <motion.div animate={{ rotate: showLegend ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <div className={`transition-transform duration-200 ${showLegend ? 'rotate-180' : ''}`}>
             <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
-          </motion.div>
+          </div>
         </button>
 
-        <AnimatePresence>
-          {(showLegend || (typeof window !== 'undefined' && window.innerWidth >= 640)) && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className={`overflow-hidden ${!showLegend ? 'hidden sm:block' : ''}`}
-            >
-              <div className="card p-4">
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {legendItems.map((item, index) => (
-                    <motion.div
-                      key={item.label}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05, type: "spring", stiffness: 300 }}
-                      whileHover={{ scale: 1.05, transition: { duration: 0.15 } }}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-default transition-all duration-200 ${item.colorClass} hover:shadow-md`}
-                    >
-                      <div className={`w-2 h-2 rounded-full ${item.dotClass}`} />
-                      <AnimatedBlueprintIcon name={item.iconName} className="w-3.5 h-3.5" animateOnMount={false} />
-                      <span>{item.label}</span>
-                    </motion.div>
-                  ))}
-                </div>
+        {(showLegend || (typeof window !== 'undefined' && window.innerWidth >= 640)) && (
+          <div className={`overflow-hidden ${!showLegend ? 'hidden sm:block' : ''}`}>
+            <div className="card p-4">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {legendItems.map((item) => (
+                  <div
+                    key={item.label}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-default transition-all duration-200 hover:scale-[1.02] ${item.colorClass} hover:shadow-md`}
+                  >
+                    <div className={`w-2 h-2 rounded-full ${item.dotClass}`} />
+                    <AnimatedBlueprintIcon name={item.iconName} className="w-3.5 h-3.5" animateOnMount={false} />
+                    <span>{item.label}</span>
+                  </div>
+                ))}
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.section>
+            </div>
+          </div>
+        )}
+      </section>
 
-      <motion.section variants={itemVariants} className="hidden md:block">
+      <section className="hidden md:block animate-fade-up opacity-0" style={{ animationDelay: '400ms' }}>
         <div className="glass rounded-2xl p-4">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
@@ -299,7 +264,7 @@ export default function CalendarPage() {
             </div>
           </div>
         </div>
-      </motion.section>
-    </motion.div>
+      </section>
+    </div>
   );
 }
