@@ -237,13 +237,26 @@ export default function ExportsPage() {
     toast.success(`${events.length} événements exportés (${forTeam ? 'équipe' : 'personnel'})`);
   };
 
+  const fallbackOOFMessage = (userName: string, reason: string, tone: string, replacer?: string) => {
+    let message = '';
+    if (tone === 'professionnel') {
+      message = `Bonjour,\n\nJe vous remercie pour votre message.\nJe suis actuellement en ${reason} et ne pourrai répondre à vos sollicitations jusqu'à [DATE_RETOUR].\nPour toute demande urgente, vous pouvez contacter ${replacer || 'mon équipe'}.\nJe vous répondrai dès mon retour.\n\nCordialement,\n${userName}`;
+    } else if (tone === 'amical') {
+      message = `Hello !\n\nJe suis en ${reason} jusqu'à [DATE_RETOUR].\nJe ne pourrai pas répondre rapidement, mais je reviens bientôt.\nPour toute urgence, contactez ${replacer || 'mon équipe'}.\nÀ très vite !\n${userName}`;
+    } else {
+      message = `Bonjour,\n\nJe suis absent pour cause de ${reason} jusqu'à [DATE_RETOUR].\nMerci de votre compréhension.\nPour toute demande urgente, contactez ${replacer || 'mon équipe'}.\n\nBien à vous,\n${userName}`;
+    }
+    return message;
+  };
+
   const generateOOFMessage = async () => {
     const userName = localStorage.getItem('user_name') || 'Collaborateur';
+    const replacer = localStorage.getItem('replacer_name') || '';
 
     setIsLoading(true);
     setAiResult('');
 
-    const prompt = `Rédige un message d'absence (Out of Office) court pour ${userName}. Raison: ${aiReason}. Ton: ${aiTone}. Inclus impérativement le texte "[DATE_RETOUR]" là où il faut mettre la date de retour. Ne mets pas d'objet de mail, juste le corps du message.`;
+    const prompt = `Rédige un message d'absence (Out of Office) court pour ${userName}. Raison: ${aiReason}. Ton: ${aiTone}. Inclus impérativement le texte "[DATE_RETOUR]" là où il faut mettre la date de retour. Ne mets pas d'objet de mail, juste le corps du message. Remplaçant: ${replacer || 'aucun'}.`;
 
     try {
       const response = await authFetch('/api/llm', {
@@ -254,13 +267,15 @@ export default function ExportsPage() {
       const result = await response.json();
 
       if (result.error) {
-        toast.error(result.error);
+        setAiResult(fallbackOOFMessage(userName, aiReason, aiTone, replacer));
+        toast.error(result.error + ' (fallback local utilisé)');
       } else {
         setAiResult(result.text);
         toast.success('Message généré avec succès');
       }
     } catch {
-      toast.error('Erreur de connexion au service de génération');
+      setAiResult(fallbackOOFMessage(userName, aiReason, aiTone, replacer));
+      toast.error('Erreur de connexion au service de génération (fallback local utilisé)');
     } finally {
       setIsLoading(false);
     }
