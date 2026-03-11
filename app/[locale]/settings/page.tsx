@@ -33,6 +33,8 @@ import { Switch } from '@/components/ui/switch';
 export default function SettingsPage() {
   const { user, profile, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [emailNotif, setEmailNotif] = useState(true);
+  const [teamAlerts, setTeamAlerts] = useState(false);
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
@@ -56,6 +58,8 @@ export default function SettingsPage() {
         color: profile.color || '#3B82F6',
         icalToken: profile.icalToken || '',
       });
+      setEmailNotif(profile.emailNotif !== false);
+      setTeamAlerts(profile.teamAlerts === true);
     }
   }, [profile, user]);
 
@@ -77,6 +81,8 @@ export default function SettingsPage() {
         sector: formData.sector,
         color: formData.color,
         icalToken: formData.icalToken || generateToken(),
+        emailNotif,
+        teamAlerts,
         updatedAt: new Date(),
       });
 
@@ -268,14 +274,14 @@ export default function SettingsPage() {
                   <Label className="text-base">Notifications Email</Label>
                   <p className="text-sm text-[var(--text-tertiary)]">Recevoir un récapitulatif hebdomadaire</p>
                 </div>
-                <Switch checked={true} />
+                <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
               </div>
               <div className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-[var(--blueprint-500)]/30 transition-all">
                 <div className="space-y-0.5">
                   <Label className="text-base">Alertes d&apos;Équipe</Label>
                   <p className="text-sm text-[var(--text-tertiary)]">Être notifié quand un membre pose un congé</p>
                 </div>
-                <Switch checked={false} />
+                <Switch checked={teamAlerts} onCheckedChange={setTeamAlerts} />
               </div>
             </CardContent>
           </Card>

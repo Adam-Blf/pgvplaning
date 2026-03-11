@@ -26,6 +26,8 @@ export interface UserProfile {
     birth_date?: string; // Format YYYY-MM-DD
     first_name?: string;
     last_name?: string;
+    emailNotif?: boolean;
+    teamAlerts?: boolean;
     createdAt: Timestamp;
     updatedAt: Timestamp;
 }
