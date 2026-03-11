@@ -143,9 +143,14 @@ export function DashboardShell({ children }: DashboardShellProps) {
                     {/* Login link if not authenticated */}
                     {!isAuthenticated && !loading && (
                       <Link
-                      <Menu className="w-5 h-5" />
+                        href="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
+                      >
+                        <LogIn className="w-4 h-4" />
+                        <span>Se connecter</span>
+                      </Link>
                     )}
-                  </button>
                 </div>
               </div>
 
