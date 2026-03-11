@@ -92,7 +92,7 @@ export default function CalendarPage() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showLegend, setShowLegend] = useState(false);
-  const { getDayStatus, getHalfDayStatus, hasSplitDay, setDayStatus, formatDateKey } = useCalendarData();
+  const { getDayStatus, getHalfDayStatus, hasSplitDay, setDayStatus, formatDateKey, validateAndPush } = useCalendarData();
 
   // Configuration de la légende harmonisée avec toolbar et calendrier
   const legendItems = [
@@ -285,6 +285,12 @@ export default function CalendarPage() {
         >
           S’abonner au calendrier (webcal)
         </a>
+      </section>
+
+      <section className="hidden md:block animate-fade-up opacity-0" style={{ animationDelay: '700ms' }}>
+        <button className="btn btn-primary mt-6" onClick={validateAndPush}>
+          Valider & Pousser le calendrier
+        </button>
       </section>
     </div>
   );
