@@ -79,11 +79,11 @@ export default function HomePage() {
             style={{ animationDelay: '80ms' }}
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.95]">
-              <span className="text-[var(--text-primary)]">Gérez vos </span>
-              <span className="gradient-text-amber">absences</span>
+              <span className="text-[var(--text-primary)]">Gérez votre </span>
+              <span className="gradient-text-amber">équipe</span>
               <br />
-              <span className="text-[var(--text-primary)]">comme un </span>
-              <span className="gradient-text-amber">pro</span>
+              <span className="text-[var(--text-primary)]">quel que soit votre </span>
+              <span className="gradient-text-amber">secteur</span>
             </h1>
           </div>
 
@@ -91,8 +91,10 @@ export default function HomePage() {
             className="mt-6 text-lg md:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed animate-fade-up opacity-0"
             style={{ animationDelay: '160ms' }}
           >
-            Gestion intelligente des absences.
-            <span className="text-[var(--text-primary)] font-medium"> Exportez en ICS</span> pour tous vos calendriers.
+            Solution universelle pour gérer plannings, absences, activités et événements.
+            <span className="text-[var(--text-primary)] font-medium"> Adaptée aux entreprises, associations, collectivités, clubs, groupes projet...</span>
+            <br />
+            <span className="text-[var(--blueprint-500)] font-semibold">Sécurité cloud & conformité RGPD</span>.
           </p>
 
           <div
