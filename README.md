@@ -85,6 +85,10 @@ Architecture cloud sécurisée (Firebase/Supabase, hébergement Vercel & OVHclou
 - Collectivité : suivi des équipes terrain
 - Club sportif : gestion des entraînements
 - Groupe projet : coordination des tâches
+- Équipe étudiante : organisation d'événements
+- Service public : planification des interventions
+- Start-up : gestion flexible des horaires
+- Comité : suivi des réunions et tâches
 
 ---
 
