@@ -67,8 +67,15 @@ export function TeamIndicator() {
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setShowDropdown(false);
+    };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   if (loading) {
@@ -85,10 +92,14 @@ export function TeamIndicator() {
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
       <button
+        type="button"
         onClick={() => setShowDropdown(!showDropdown)}
+        aria-expanded={showDropdown}
+        aria-haspopup="true"
+        aria-label={`Menu équipe ${team.name}`}
         className={cn(
           "flex items-center gap-2.5 px-3 py-2 rounded-xl",
-          "border backdrop-blur-sm hover:scale-105 active:scale-95 transition-all duration-200",
+          "border backdrop-blur-sm hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200",
           showDropdown
             ? "glass-elevated border-[var(--gold-500)]/30 shadow-[0_0_20px_-5px_rgba(245,158,11,0.3)]"
             : "glass border-[var(--border-subtle)] hover:border-[var(--border-default)] hover:bg-[var(--bg-overlay)]"
@@ -132,6 +143,7 @@ export function TeamIndicator() {
       {/* Dropdown Menu */}
       {showDropdown && (
           <div
+            role="menu"
             className="absolute right-0 top-full mt-2 w-72 rounded-2xl glass-elevated border border-[var(--border-default)] shadow-xl z-50 overflow-hidden animate-fade-in"
           >
             {/* Header */}
@@ -175,6 +187,7 @@ export function TeamIndicator() {
             {/* Menu Items */}
             <div className="p-2 stagger-children">
               <Link
+                role="menuitem"
                 href="/team/members"
                 onClick={() => setShowDropdown(false)}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-all duration-200 group"
@@ -187,6 +200,7 @@ export function TeamIndicator() {
 
               {isLeader && (
                 <Link
+                  role="menuitem"
                   href="/team/settings"
                   onClick={() => setShowDropdown(false)}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-all duration-200 group"
@@ -209,8 +223,10 @@ export function TeamIndicator() {
                   Code d&apos;invitation
                 </p>
                 <button
+                  type="button"
+                  aria-label="Copier le code"
                   onClick={() => copyToClipboard(team.code, 'code')}
-                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-amber-500/30 hover:scale-105 active:scale-95 transition-all duration-200 group"
+                  className="w-full flex items-center justify-between p-3 rounded-xl glass border border-[var(--border-subtle)] hover:border-amber-500/30 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
                 >
                   <span className="font-mono text-sm font-semibold gradient-text-amber">
                     {team.code}
@@ -233,8 +249,10 @@ export function TeamIndicator() {
                   </p>
                   {inviteUrl ? (
                     <button
+                      type="button"
+                      aria-label="Copier le lien"
                       onClick={() => copyToClipboard(inviteUrl, 'link')}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-amber-500/20 hover:border-amber-500/40 hover:scale-105 active:scale-95 transition-all duration-200 group"
+                      className="w-full flex items-center gap-3 p-3 rounded-xl gradient-amber-soft border border-amber-500/20 hover:border-amber-500/40 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200 group"
                     >
                       <div className="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
                         <Link2 className="w-4 h-4 text-amber-500" />
@@ -252,13 +270,14 @@ export function TeamIndicator() {
                     </button>
                   ) : (
                     <button
+                      type="button"
                       onClick={generateInviteLink}
                       disabled={isGenerating}
                       className={cn(
                         "w-full flex items-center justify-center gap-2 p-3 rounded-xl",
                         "bg-gradient-to-r from-amber-500 to-amber-600 text-black font-medium text-sm",
                         "shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30",
-                        "hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-200",
+                        "hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-[transform,border-color,background-color,box-shadow] duration-200",
                         "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                       )}
                     >
@@ -286,6 +305,7 @@ export function TeamIndicator() {
             <div className="divider mx-4" />
             <div className="p-2">
               <button
+                type="button"
                 onClick={async () => {
                   setShowDropdown(false);
                   if (auth) await signOut(auth);

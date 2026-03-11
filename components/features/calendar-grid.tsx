@@ -283,7 +283,7 @@ export function CalendarGrid({
 
           const cellBaseClasses = cn(
             'aspect-square relative flex items-center justify-center font-semibold text-sm rounded-2xl',
-            'border backdrop-blur-sm transition-all duration-200'
+            'border backdrop-blur-sm transition-[transform,box-shadow,border-color] duration-200'
           );
 
           if (isWeekend) {
@@ -311,8 +311,10 @@ export function CalendarGrid({
                 )}
                 onMouseDown={(e) => handleMouseDown(date, e)}
                 onMouseEnter={() => handleMouseEnter(date)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleMouseDown(date, e as unknown as React.MouseEvent); } }}
                 role="button"
                 tabIndex={0}
+                aria-label={`${date.getDate()} ${date.toLocaleDateString('fr-FR', { month: 'long' })} - Demi-journée`}
               >
                 <div className="absolute inset-0 flex flex-col w-full h-full">
                   <div className={cn('flex-1 w-full transition-colors duration-200', amConfig ? amConfig.base : 'bg-transparent')} />
@@ -341,8 +343,10 @@ export function CalendarGrid({
               )}
               onMouseDown={(e) => handleMouseDown(date, e)}
               onMouseEnter={() => handleMouseEnter(date)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleMouseDown(date, e as unknown as React.MouseEvent); } }}
               role="button"
               tabIndex={0}
+              aria-label={`${date.getDate()} ${date.toLocaleDateString('fr-FR', { month: 'long' })}${fullStatus && fullStatus !== 'OFF' ? ` - ${fullStatus}` : ''}`}
             >
               {isToday && !statusConfig && (
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent" />
@@ -397,10 +401,10 @@ function BirthdayIndicator({ names }: { names: string[] }) {
         className="relative w-6 h-6 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/30"
         title={`Anniversaire: ${names.join(', ')}`}
       >
-        <PremiumIcons.Cake className="w-3 h-3 text-white" />
+        <PremiumIcons.Cake className="w-3 h-3 text-white" aria-hidden="true" />
         <div className="absolute inset-0 rounded-full bg-pink-400 animate-ping-slow" />
         <div className="absolute -top-1 -right-1 w-3 h-3 text-yellow-300">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L14.5 9H22L16 14L18.5 21L12 17L5.5 21L8 14L2 9H9.5L12 2Z" /></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L14.5 9H22L16 14L18.5 21L12 17L5.5 21L8 14L2 9H9.5L12 2Z" /></svg>
         </div>
       </div>
     </div>

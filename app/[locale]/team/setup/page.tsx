@@ -41,8 +41,10 @@ export default function TeamSetupPage() {
 
       {/* Logout button */}
       <button
+        type="button"
+        aria-label="Se déconnecter"
         onClick={handleLogout}
-        className="fixed top-4 right-4 p-2 rounded-lg bg-zinc-900/50 border border-zinc-800/50 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-all z-50"
+        className="fixed top-4 right-4 p-2 rounded-lg bg-zinc-900/50 border border-zinc-800/50 text-zinc-500 hover:text-red-500 hover:border-red-500/30 transition-[color,background-color,border-color,box-shadow] z-50"
         title="Déconnexion"
       >
         <LogOut className="w-5 h-5" />
@@ -76,9 +78,9 @@ export default function TeamSetupPage() {
             style={{ animationDelay: '80ms' }}
           >
             <Link href="/team/create" className="block group">
-              <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-amber-500/30 transition-all duration-300 hover:bg-zinc-900/90">
+              <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-amber-500/30 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-zinc-900/90">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:ring-amber-500/40 transition-all">
+                  <div className="w-14 h-14 rounded-xl bg-amber-500/10 flex items-center justify-center ring-1 ring-amber-500/20 group-hover:ring-amber-500/40 transition-[box-shadow]">
                     <Plus className="w-7 h-7 text-amber-500" />
                   </div>
 
@@ -96,7 +98,7 @@ export default function TeamSetupPage() {
                     </p>
                   </div>
 
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-amber-500/10 transition-[background-color]">
                     <span
                       className="text-zinc-600 group-hover:text-amber-500 transition-colors"
                     >
@@ -124,9 +126,9 @@ export default function TeamSetupPage() {
             style={{ animationDelay: '240ms' }}
           >
             <Link href="/team/join" className="block group">
-              <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-emerald-500/30 transition-all duration-300 hover:bg-zinc-900/90">
+              <div className="rounded-2xl bg-zinc-900/80 border border-zinc-800/50 backdrop-blur-sm p-6 hover:border-emerald-500/30 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-zinc-900/90">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-all">
+                  <div className="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-[box-shadow]">
                     <LogIn className="w-7 h-7 text-emerald-500" />
                   </div>
 
@@ -144,7 +146,7 @@ export default function TeamSetupPage() {
                     </p>
                   </div>
 
-                  <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500/10 transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center group-hover:bg-emerald-500/10 transition-[background-color]">
                     <span
                       className="text-zinc-600 group-hover:text-emerald-500 transition-colors"
                     >

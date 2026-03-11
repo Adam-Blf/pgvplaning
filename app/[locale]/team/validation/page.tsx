@@ -18,8 +18,9 @@ import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 
 export default function MemberValidationPage() {
-    const { members, isLeader, approveMember, loading } = useTeam();
+    const { members, isLeader, approveMember, loading, refreshTeam } = useTeam();
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [rejectingId, setRejectingId] = useState<string | null>(null);
 
     const pendingMembers = useMemo(() => {
         return members.filter(m => m.status === 'pending');
@@ -34,6 +35,22 @@ export default function MemberValidationPage() {
             toast.error("Erreur lors de la validation.");
         } finally {
             setProcessingId(null);
+        }
+    };
+
+    const handleReject = async (id: string, name: string) => {
+        setRejectingId(id);
+        try {
+            const { db } = await import('@/lib/firebase/client');
+            if (!db) throw new Error('Firestore not initialized');
+            const { deleteDoc, doc } = await import('firebase/firestore');
+            await deleteDoc(doc(db, 'team_members', id));
+            toast.success(`${name} a été retiré de la liste.`);
+            await refreshTeam();
+        } catch {
+            toast.error("Erreur lors du rejet.");
+        } finally {
+            setRejectingId(null);
         }
     };
 
@@ -109,14 +126,24 @@ export default function MemberValidationPage() {
                                             <div className="flex items-center gap-3">
                                                 <Button
                                                     variant="outline"
+                                                    type="button"
+                                                    onClick={() => handleReject(member.id, member.profile?.displayName || '')}
+                                                    disabled={rejectingId === member.id || processingId === member.id}
                                                     className="rounded-xl border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white"
                                                 >
-                                                    <UserX className="w-4 h-4 mr-2" />
-                                                    Rejeter
+                                                    {rejectingId === member.id ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                    ) : (
+                                                        <>
+                                                            <UserX className="w-4 h-4 mr-2" />
+                                                            Rejeter
+                                                        </>
+                                                    )}
                                                 </Button>
                                                 <Button
+                                                    type="button"
                                                     onClick={() => handleApprove(member.id, member.profile?.displayName || '')}
-                                                    disabled={processingId === member.id}
+                                                    disabled={processingId === member.id || rejectingId === member.id}
                                                     className="rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold shadow-lg shadow-amber-500/20"
                                                 >
                                                     {processingId === member.id ? (

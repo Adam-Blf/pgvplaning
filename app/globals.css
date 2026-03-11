@@ -184,6 +184,32 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Reduce motion for users who prefer it (UX guideline #9, #99) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Touch optimization: eliminate 300ms tap delay (UX guideline #25) */
+  button, a, [role="button"], input, select, textarea, [tabindex] {
+    touch-action: manipulation;
+  }
+
+  /* Visible focus for keyboard users, hidden for mouse (UX guideline #28) */
+  :focus-visible {
+    outline: 2px solid var(--blueprint-500, #3B82F6);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
   body {
     @apply bg-[var(--bg-base)] text-[var(--text-primary)] antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";

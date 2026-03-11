@@ -159,7 +159,7 @@ export default function TeamMembersPage() {
             <p className="text-sm text-[var(--text-muted)]">Code d&apos;invitation</p>
             <p className="text-xl font-mono font-bold text-[var(--accent)] tracking-wider">{team.code}</p>
           </div>
-          <button onClick={copyCode} className="btn btn-secondary">
+          <button type="button" onClick={copyCode} className="btn btn-secondary">
             {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
             {copied ? 'Copié' : 'Copier'}
           </button>
@@ -227,8 +227,10 @@ export default function TeamMembersPage() {
                   {/* Contract management button — only for leader, only for non-leader members */}
                   {isLeader && member.role !== 'leader' && (
                     <button
+                      type="button"
                       onClick={() => openContractPanel(member.user_id)}
                       className="btn btn-secondary text-xs"
+                      aria-label={`Modifier le contrat de ${member.profile?.full_name || member.profile?.email || 'membre'}`}
                     >
                       <Briefcase className="w-3.5 h-3.5" />
                       Contrat
@@ -315,6 +317,7 @@ export default function TeamMembersPage() {
 
                       {/* Save button */}
                       <button
+                        type="button"
                         onClick={() => saveContract(member.user_id)}
                         disabled={saving === member.user_id}
                         className="btn btn-primary w-full"

@@ -107,7 +107,9 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nom@exemple.com"
-                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-all outline-none text-white"
+                  autoComplete="email"
+                  spellCheck={false}
+                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
                   required
                 />
               </div>
@@ -124,7 +126,8 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-all outline-none text-white"
+                  autoComplete="current-password"
+                  className="w-full bg-[var(--bg-overlay)] border border-white/5 rounded-2xl py-3 pl-12 pr-4 focus:ring-2 focus:ring-[var(--blueprint-500)]/20 focus:border-[var(--blueprint-500)]/50 transition-[border-color,box-shadow] outline-none text-white"
                   required
                 />
               </div>
@@ -134,7 +137,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-2xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base shadow-lg shadow-blue-500/20 transition-all duration-300"
+                className="w-full h-12 rounded-2xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base shadow-lg shadow-blue-500/20 transition-[transform,color,background-color,border-color,box-shadow] duration-300"
               >
                 {loading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -163,7 +166,7 @@ export default function LoginPage() {
               variant="outline"
               disabled={loading}
               onClick={handleGoogleLogin}
-              className="w-full h-12 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-medium transition-all"
+              className="w-full h-12 rounded-2xl bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-white font-medium transition-[transform,color,background-color,border-color,box-shadow]"
             >
               <Chrome className="w-5 h-5 mr-2" />
               Google

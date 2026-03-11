@@ -120,12 +120,13 @@ export function PaintingToolbar({
 
                 return (
                   <button
+                    type="button"
                     key={tool.id}
                     onClick={() => onToolChange(tool.id)}
                     style={{ animationDelay: `${index * 50}ms` }}
                     className={cn(
                       'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
-                      'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
+                      'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-[transform,background-color,border-color,box-shadow] duration-200',
                       'animate-fade-up opacity-0',
                       isActive ? [
                         tool.bgColor,
@@ -140,6 +141,7 @@ export function PaintingToolbar({
                         'hover:bg-[var(--bg-hover)]',
                       ]
                     )}
+                    aria-label={tool.label}
                     aria-pressed={isActive}
                   >
                     {/* Glow effect when active */}
@@ -173,10 +175,11 @@ export function PaintingToolbar({
 
             {/* Eraser */}
             <button
+              type="button"
               onClick={() => onToolChange('ERASER')}
               className={cn(
                 'relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium',
-                'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
+                'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-[transform,background-color,border-color,box-shadow] duration-200',
                 currentTool === 'ERASER' ? [
                   'bg-[var(--bg-hover)]',
                   'text-[var(--text-primary)]',
@@ -191,6 +194,7 @@ export function PaintingToolbar({
                   'hover:text-[var(--text-primary)]',
                 ]
               )}
+              aria-label="Gomme"
               aria-pressed={currentTool === 'ERASER'}
               title="Effacer / Réinitialiser"
             >
@@ -222,15 +226,17 @@ export function PaintingToolbar({
 
               return (
                 <button
+                  type="button"
                   key={option.id}
                   onClick={() => onHalfDayChange(option.id)}
                   className={cn(
                     'relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
-                    'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-all duration-200',
+                    'hover:scale-105 hover:-translate-y-0.5 active:scale-95 transition-[transform,background-color,border-color,box-shadow] duration-200',
                     isActive
                       ? 'text-[var(--text-primary)]'
                       : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]'
                   )}
+                  aria-label={option.label}
                   aria-pressed={isActive}
                 >
                   {/* Background pill for active state */}

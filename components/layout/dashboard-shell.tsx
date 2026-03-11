@@ -43,7 +43,7 @@ const baseNavigation = [
 ];
 
 // Routes that should not display the shell (auth and team setup pages)
-const authRoutes = ['/login', '/auth', '/setup', '/team/setup', '/team/create', '/team/join', '/invite'];
+const authRoutes = ['/login', '/auth', '/team/setup', '/team/create', '/team/join', '/invite'];
 
 export function DashboardShell({ children }: DashboardShellProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -145,8 +145,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         >
                           <Link
                             href={item.href}
+                            aria-current={isActive ? 'page' : undefined}
                             className={cn(
-                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 active:scale-90 cursor-pointer',
+                              'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-[transform,color,background-color,box-shadow] duration-300 active:scale-90 cursor-pointer',
                               isActive
                                 ? 'bg-[var(--crimson-500)] text-white shadow-lg shadow-crimson-500/30 scale-105'
                                 : 'text-[var(--text-secondary)] hover:text-white hover:bg-white/10'
@@ -170,12 +171,14 @@ export function DashboardShell({ children }: DashboardShellProps) {
                       <div className="flex items-center gap-2">
                         <TeamIndicator />
                         <button
+                          type="button"
                           onClick={async () => {
                             if (auth) await signOut(auth);
                             router.push('/login');
                           }}
-                          className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-all"
+                          className="p-2 rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 transition-[color,background-color] duration-200"
                           title="Se déconnecter"
+                          aria-label="Se déconnecter"
                         >
                           <LogOut className="w-4 h-4" />
                         </button>
@@ -212,6 +215,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   "md:hidden border-t border-white/5 overflow-hidden transition-all duration-200",
                   mobileMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                 )}
+                style={{ overscrollBehavior: 'contain' }}
               >
                     <div className="px-4 py-3 pb-4">
                       {/* Christmas Countdown for mobile */}
@@ -255,6 +259,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         {/* Logout link for mobile if authenticated */}
                         {isAuthenticated && (
                           <button
+                            type="button"
                             onClick={async () => {
                               setMobileMenuOpen(false);
                               if (auth) await signOut(auth);

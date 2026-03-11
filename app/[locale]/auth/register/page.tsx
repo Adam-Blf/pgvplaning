@@ -183,6 +183,8 @@ export default function RegisterPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="jean@entreprise.com"
+                                    autoComplete="email"
+                                    spellCheck={false}
                                     className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl"
                                     required
                                 />
@@ -200,6 +202,7 @@ export default function RegisterPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
+                                    autoComplete="new-password"
                                     className="pl-10 h-11 bg-[var(--bg-overlay)] border-white/5 rounded-xl"
                                     required
                                     minLength={6}

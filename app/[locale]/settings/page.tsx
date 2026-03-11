@@ -230,17 +230,27 @@ export default function SettingsPage() {
                   Couleur sur le Calendrier d&apos;Équipe
                 </Label>
                 <div className="flex flex-wrap gap-3">
-                  {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#64748B'].map((c) => (
+                  {[
+                    { hex: '#EF4444', label: 'Rouge' },
+                    { hex: '#F59E0B', label: 'Ambre' },
+                    { hex: '#10B981', label: 'Émeraude' },
+                    { hex: '#3B82F6', label: 'Bleu' },
+                    { hex: '#6366F1', label: 'Indigo' },
+                    { hex: '#8B5CF6', label: 'Violet' },
+                    { hex: '#EC4899', label: 'Rose' },
+                    { hex: '#64748B', label: 'Gris' },
+                  ].map(({ hex: c, label }) => (
                     <button
                       key={c}
                       type="button"
+                      aria-label={label}
                       onClick={() => setFormData({ ...formData, color: c })}
                       className={cn(
-                        "w-10 h-10 rounded-xl border-2 transition-all hover:scale-110",
+                        "w-10 h-10 rounded-xl border-2 transition-[transform,color,background-color,border-color,box-shadow] hover:scale-110",
                         formData.color === c ? "border-white scale-110 shadow-lg" : "border-transparent opacity-60 hover:opacity-100"
                       )}
                       style={{ backgroundColor: c }}
-                      title={c}
+                      title={label}
                     />
                   ))}
                   <div className="flex items-center gap-2 ml-auto">
@@ -269,14 +279,14 @@ export default function SettingsPage() {
               <CardDescription>Choisissez comment vous souhaitez être informé</CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
-              <div className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-[var(--blueprint-500)]/30 transition-all">
+              <div className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-[var(--blueprint-500)]/30 transition-[border-color,box-shadow]">
                 <div className="space-y-0.5">
                   <Label className="text-base">Notifications Email</Label>
                   <p className="text-sm text-[var(--text-tertiary)]">Recevoir un récapitulatif hebdomadaire</p>
                 </div>
                 <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
               </div>
-              <div className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-[var(--blueprint-500)]/30 transition-all">
+              <div className="flex items-center justify-between p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-[var(--blueprint-500)]/30 transition-[border-color,box-shadow]">
                 <div className="space-y-0.5">
                   <Label className="text-base">Alertes d&apos;Équipe</Label>
                   <p className="text-sm text-[var(--text-tertiary)]">Être notifié quand un membre pose un congé</p>
@@ -321,7 +331,7 @@ export default function SettingsPage() {
               <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
                 La suppression du compte est irréversible et effacera toutes vos données.
               </p>
-              <Button variant="outline" className="w-full border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white rounded-xl">
+              <Button type="button" variant="outline" className="w-full border-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white rounded-xl">
                 Supprimer mon compte
               </Button>
             </CardContent>

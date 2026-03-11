@@ -18,7 +18,7 @@ type Tool = DayStatus | 'ERASER';
 // Composant Skeleton pour le chargement
 function CalendarSkeleton() {
   return (
-    <div className="card p-6 space-y-4">
+    <div className="card p-6 space-y-4" aria-busy="true" aria-label="Chargement…">
       <div className="flex items-center justify-between">
         <div className="skeleton h-8 w-40 rounded-lg" />
         <div className="flex gap-2">
@@ -158,7 +158,7 @@ export default function CalendarPage() {
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-96 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="relative flex-shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200">
+            <div className="relative flex-shrink-0 hover:scale-[1.02] active:scale-[0.98] transition-transform duration-200">
               <div className="w-14 h-14 rounded-2xl gradient-amber flex items-center justify-center shadow-lg glow-amber overflow-hidden">
                 <AnimatedBlueprintIcon name="Office" className="text-white" size="lg" />
               </div>
@@ -217,6 +217,7 @@ export default function CalendarPage() {
 
       <section className="space-y-3 animate-fade-up opacity-0" style={{ animationDelay: '320ms' }}>
         <button
+          type="button"
           onClick={() => setShowLegend(!showLegend)}
           className="w-full sm:hidden flex items-center justify-between px-4 py-3 card-interactive"
         >
@@ -235,7 +236,7 @@ export default function CalendarPage() {
                 {legendItems.map((item) => (
                   <div
                     key={item.label}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-default transition-all duration-200 hover:scale-[1.02] ${item.colorClass} hover:shadow-md`}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium cursor-default transition-colors duration-200 ${item.colorClass}`}
                   >
                     <div className={`w-2 h-2 rounded-full ${item.dotClass}`} />
                     <AnimatedBlueprintIcon name={item.iconName} className="w-3.5 h-3.5" animateOnMount={false} />

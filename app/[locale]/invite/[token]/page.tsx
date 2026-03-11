@@ -182,14 +182,14 @@ export default function InvitePage({ params }: InvitePageProps) {
                 <div className="space-y-3">
                   <Link
                     href={`/login?redirect=/invite/${token}`}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 transition-[transform,color,background-color,border-color,box-shadow]"
                   >
                     <LogIn className="w-4 h-4" />
                     Se connecter
                   </Link>
                   <Link
                     href={`/login?redirect=/invite/${token}&mode=signup`}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl font-medium transition-all"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl font-medium transition-[transform,color,background-color,border-color,box-shadow]"
                   >
                     <UserPlus className="w-4 h-4" />
                     Créer un compte
@@ -215,8 +215,9 @@ export default function InvitePage({ params }: InvitePageProps) {
                 </div>
 
                 <button
+                  type="button"
                   onClick={acceptInvitation}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg shadow-amber-500/20"
+                  className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-semibold rounded-xl hover:from-amber-400 hover:to-orange-400 hover:scale-[1.02] active:scale-[0.98] transition-[transform,color,background-color,border-color,box-shadow] duration-200 shadow-lg shadow-amber-500/20"
                 >
                   <Users className="w-5 h-5" />
                   Rejoindre l&apos;équipe
@@ -272,6 +273,7 @@ export default function InvitePage({ params }: InvitePageProps) {
                   {error || 'Une erreur est survenue.'}
                 </p>
                 <button
+                  type="button"
                   onClick={() => validateInvitation()}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-colors"
                 >
