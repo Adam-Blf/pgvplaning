@@ -275,6 +275,17 @@ export default function CalendarPage() {
           Exporter en Webcal (.ics)
         </button>
       </section>
+
+      <section className="hidden md:block animate-fade-up opacity-0" style={{ animationDelay: '600ms' }}>
+        <a
+          href={typeof window !== 'undefined' ? window.location.origin.replace('http', 'webcal') + '/api/ical' : '/api/ical'}
+          className="btn btn-secondary"
+          target="_blank"
+          rel="noopener"
+        >
+          S’abonner au calendrier (webcal)
+        </a>
+      </section>
     </div>
   );
 }
