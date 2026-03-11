@@ -28,18 +28,32 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://absencia.beloucif.com'),
   title: {
-    default: "Absencia - Gestion des Absences d'Équipe",
-    template: "%s | Absencia"
+    default: "PGV Planning - Gestion d'Équipe Universelle",
+    template: "%s | PGV Planning"
   },
-  description: "Absencia est la solution SaaS premium pour gérer les absences, congés, télétravail et plannings de vos équipes. Optimisez votre gestion RH avec un outil moderne, rapide et sécurisé.",
-  keywords: ["absences", "gestion de planning", "RH SaaS", "congés payés", "télétravail", "Absencia", "Adam Beloucif", "calendrier d'équipe", "export ICS"],
+  description: "PGV Planning est la solution SaaS premium pour gérer plannings, absences, activités et événements de tout type d'équipe : entreprise, association, collectivité, club, groupe projet. Sécurité cloud, conformité RGPD, interface moderne.",
+  keywords: [
+    "gestion d'équipe",
+    "planning",
+    "SaaS",
+    "cloud",
+    "RGPD",
+    "association",
+    "collectivité",
+    "club",
+    "projet",
+    "PME",
+    "export ICS",
+    "Adam Beloucif",
+    "PGV Planning"
+  ],
   authors: [{ name: "Adam Beloucif", url: "https://beloucif.com" }],
   creator: "Adam Beloucif",
   openGraph: {
-    title: "Absencia - Gestion des Absences d'Équipe",
-    description: "Gérez vos équipes comme un pro avec Absencia. Congés, télétravail et plannings en un seul endroit.",
+    title: "PGV Planning - Gestion d'Équipe Universelle",
+    description: "Gérez vos équipes, plannings et activités comme un pro. Adapté à tous secteurs, sécurité cloud, RGPD.",
     url: 'https://absencia.beloucif.com',
-    siteName: 'Absencia',
+    siteName: 'PGV Planning',
     locale: "fr_FR",
     type: "website",
     images: [
@@ -47,14 +61,14 @@ export const metadata: Metadata = {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Absencia Dashboard Preview',
+        alt: 'PGV Planning Dashboard Preview',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Absencia - Gestion des Absences d'Équipe",
-    description: "La gestion RH simplifiée pour les équipes modernes.",
+    title: "PGV Planning - Gestion d'Équipe Universelle",
+    description: "Gestion d'équipe, plannings et activités pour tous secteurs. Sécurité cloud, RGPD.",
     creator: "@BlackoutProd",
     images: ['/og-image.png'],
   },
