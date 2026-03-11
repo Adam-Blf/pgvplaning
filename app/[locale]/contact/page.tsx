@@ -123,7 +123,7 @@ export default function ContactPage() {
               <span className="font-bold">Présence Mondiale</span>
             </div>
             <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
-              Absencia est utilisé par plus de 500 équipes à travers l&apos;Europe pour la gestion de leurs plannings hospitaliers et administratifs.
+              Absencia est utilisé par plus de 500 équipes à travers l&apos;Europe pour la gestion de leurs plannings professionnels et associatifs.
             </p>
           </div>
         </div>

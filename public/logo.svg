@@ -23,7 +23,7 @@
   <!-- Inner ring -->
   <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(6,182,212,0.2)" stroke-width="2"/>
 
-  <!-- Lightning bolt / Medical cross hybrid -->
+  <!-- Lightning bolt / Team energy symbol -->
   <g filter="url(#glow)">
     <!-- Main bolt shape -->
     <path d="M280 100 L200 240 L250 240 L220 400 L320 220 L260 220 L300 100 Z"
