@@ -31,10 +31,10 @@ export default function MentionsLegalesPage() {
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Éditeur du site</h2>
         </div>
         <div className="space-y-3 text-[var(--text-secondary)]">
-          <p><strong className="text-[var(--text-primary)]">Raison sociale :</strong> Blackout Prod</p>
-          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Application de gestion d&apos;équipe</p>
+          <p><strong className="text-[var(--text-primary)]">Raison sociale :</strong> PGV Planning</p>
+          <p><strong className="text-[var(--text-primary)]">Forme juridique :</strong> Solution SaaS de gestion d'équipe</p>
           <p><strong className="text-[var(--text-primary)]">Directeur de la publication :</strong> Adam Beloucif</p>
-          <p><strong className="text-[var(--text-primary)]">Email :</strong> contact@blackoutprod.fr</p>
+          <p><strong className="text-[var(--text-primary)]">Email :</strong> adam.beloucif@efrei.net</p>
         </div>
       </section>
 
@@ -47,9 +47,9 @@ export default function MentionsLegalesPage() {
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Hébergement</h2>
         </div>
         <div className="space-y-3 text-[var(--text-secondary)]">
-          <p><strong className="text-[var(--text-primary)]">Hébergeur :</strong> Vercel Inc.</p>
-          <p><strong className="text-[var(--text-primary)]">Adresse :</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, USA</p>
-          <p><strong className="text-[var(--text-primary)]">Site web :</strong> <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline">https://vercel.com</a></p>
+          <p><strong className="text-[var(--text-primary)]">Hébergeur :</strong> Vercel Inc. & OVHcloud</p>
+          <p><strong className="text-[var(--text-primary)]">Adresse :</strong> 340 S Lemon Ave #4133, Walnut, CA 91789, USA (Vercel) / 2 rue Kellermann, 59100 Roubaix, France (OVHcloud)</p>
+          <p><strong className="text-[var(--text-primary)]">Site web :</strong> <a href="https://vercel.com" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline">https://vercel.com</a> & <a href="https://www.ovhcloud.com" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:underline">https://www.ovhcloud.com</a></p>
         </div>
       </section>
 
@@ -67,19 +67,19 @@ export default function MentionsLegalesPage() {
             vous disposez de droits sur vos données personnelles.
           </p>
           <div className="p-4 rounded-lg bg-[var(--bg-tertiary)] border border-[var(--border-subtle)]">
-            <h3 className="font-semibold text-[var(--text-primary)] mb-2">Stockage local uniquement</h3>
+            <h3 className="font-semibold text-[var(--text-primary)] mb-2">Stockage cloud sécurisé</h3>
             <p className="text-sm">
-              Cette application stocke vos données de planning <strong>exclusivement dans votre navigateur</strong> (localStorage).
-              Aucune donnée personnelle n&apos;est transmise à des serveurs externes ou collectée par l&apos;éditeur.
+              Cette application stocke vos données de planning <strong>dans le cloud</strong> (hébergement sécurisé chez Vercel et OVHcloud).
+              Vos données sont protégées et accessibles uniquement par votre équipe.
             </p>
           </div>
-          <h3 className="font-semibold text-[var(--text-primary)]">Vos droits :</h3>
+          <h3 className="font-semibold text-[var(--text-primary)]">Vos droits RGPD :</h3>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Droit d&apos;accès à vos données</li>
-            <li>Droit de rectification</li>
-            <li>Droit à l&apos;effacement (droit à l&apos;oubli)</li>
-            <li>Droit à la portabilité des données</li>
-            <li>Droit d&apos;opposition au traitement</li>
+            <li>Accès à vos données</li>
+            <li>Rectification</li>
+            <li>Suppression</li>
+            <li>Portabilité</li>
+            <li>Opposition au traitement</li>
           </ul>
           <p className="text-sm text-[var(--text-muted)]">
             Pour exercer ces droits, vous pouvez nous contacter à l&apos;adresse indiquée ci-dessus ou effacer
