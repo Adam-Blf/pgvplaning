@@ -270,20 +270,157 @@ types/
 - **Auth Token** : Toutes les API calls utilisent `authFetch` avec Bearer token Firebase.
 - **Purge script** : Nettoyage Firestore + Auth + Supabase en une commande.
 
+### v14.2.0
+
+- **Firestore fix** : Résolution erreur Firestore undefined et synchronisation AuthContext avec structure profil.
+- **Suppression race condition** : Suppression de la création de profil côté client dans auth-context.
+
+### v14.0.0
+
+- **Server-side auth** : Migration de la création de profil et mise à jour auth vers API server-side pour performance maximale.
+- **Bouton déconnexion** : Ajout dans la navbar desktop, mobile et dropdown équipe.
+- **PWA** : Application installable avec Service Worker, manifest et icônes.
+- **Auth token** : Toutes les API calls utilisent `authFetch` avec Bearer token.
+- **Vérification email** : Suppression de la vérification email obligatoire.
+
+### v13.9.0
+
+- **Robustesse inscription** : Amélioration de la robustesse du processus d'inscription et fix erreur auth-26.
+
+### v13.8.0
+
+- **Cohérence nommage** : Harmonisation finale du nommage et polish UI.
+
+### v13.7.0
+
+- **Date de naissance** : Ajout de la date de naissance à l'inscription et correction du système d'anniversaires.
+
+### v13.6.0
+
+- **Nom / Prénom séparés** : Séparation du prénom et du nom dans le formulaire d'inscription.
+
+### v13.5.0
+
+- **Performance** : Parallélisation des tâches post-inscription pour réduire la latence.
+
+### v13.4.0
+
+- **Nettoyage** : Suppression des guides de configuration et de l'exemple .env.
+
+### v13.3.0
+
+- **SEO** : Nettoyage final, purge des données et optimisation SEO.
+
+### v13.2.0
+
+- **Loading loop** : Résolution de la boucle de chargement infinie.
+- **SEO** : Ajout sitemap.xml, robots.txt et configuration du domaine.
+- **Config** : Mise à jour de la configuration domaine pour absencia.beloucif.com.
+
 ### v13.1.0
 
 - **Système Hybride** : Réintroduction de Supabase pour Analytics et Audit Log.
 - **Sécurité Leader** : Restriction du Dashboard Analytics au chef de groupe via RLS.
 - **Règles métier** : Configuration du nombre minimal de présences.
-- **Fix UI** : Résolution du crash 500 lié au contexte `next-intl`.
+- **Membership SaaS** : Validation des membres et sécurité du team planner.
+- **Fix UI** : Résolution du crash 500 lié au contexte `next-intl` hors contexte.
+- **Icônes** : Organisation des icônes Icons8 et optimisation du layout i18n.
 
 ### v13.0.0
 
-- Transition vers Next.js 15 et React 19.
-- Refonte du Dashboard principal.
-- i18n complète (next-intl FR/EN).
-- Gestion des contrats et feeds iCal.
-- Validation Zod, HTTP headers sécurisés.
+- **Contrats** : Gestion des contrats employé/cadre avec feeds iCal équipe et couleurs membre.
+- **Sécurité** : Validation Zod, HTTP headers sécurisés, règles de présence minimum, accès Analytics restreint.
+- **Supabase sync** : Corrections des types pour la synchronisation Supabase.
+- **Déploiement** : Ajout `.npmrc` avec legacy-peer-deps pour compatibilité Vercel.
+
+### v11.0.0
+
+- **Internationalisation** : Implémentation complète de next-intl (FR / EN).
+- **Calendrier i18n** : Traduction de la page calendrier et correction des fichiers de traduction.
+
+### v10.0.0 — Master Blueprint
+
+- **Design Blueprint** : Migration vers le design system Master Blueprint (fond sombre, accents cyan).
+- **Fonts** : Localisation des polices avec next/font/google et mise à jour de la config Tailwind.
+- **Phase 3** : Pages maintenance et institution complétées.
+- **Polish** : Dernières retouches suivant les règles du design system master.
+
+### v9.0.0 — Ambient Dark
+
+- **Ambient Dark** : Refonte complète du design system avec thème sombre ambiant.
+- **Composants redesignés** : calendar-grid, painting-toolbar, LeaveBalanceCard, analytics-dashboard, TeamIndicator, onboarding tutorial, NotificationSender.
+- **Pages redesignées** : paramètres, exports, calendrier, Team Planner.
+- **Page guide** : Ajout de la page guide utilisateur.
+- **Navbar** : Masquage au scroll pour plus d'espace.
+
+### v8.0.0 — Absencia Rebrand
+
+- **Rebrand** : Renommage en « Absencia » avec police Space Grotesk.
+- **Design system overhaul** : Refonte complète avec nouvelles migrations consolidées.
+- **Noël** : Ajout du compte à rebours de Noël avec animations festives.
+- **Invitations** : Système de liens d'invitation pour rejoindre une équipe.
+- **Favicon** : Nouveau design calendrier + checkmark.
+
+### v7.0.0 — Amber/Gold Design
+
+- **Design amber/gold** : Refonte UX/UI avec design system amber/gold.
+- **Congés séparés** : Jours de congés distincts employé vs cadre (forfait jour).
+- **Migrations** : Migration consolidée avec toutes les features (secteur, congés par statut, admin, anniversaires).
+- **Mot de passe** : Animation de révélation du mot de passe avec gardiens curieux.
+
+### v6.0.0 — Team Authentication
+
+- **Auth équipe** : Système d'authentification basé sur les équipes.
+- **Leave management** : Système de gestion des congés avec types employé/cadre.
+- **Audit** : Système de journalisation des audits.
+- **Admin** : Système d'administration et affichage des anniversaires au calendrier.
+- **Architecture** : Améliorations d'architecture et script de migration consolidé.
+- **Sécurité** : Audit de sécurité, rate limiting, protection CSP et SSRF.
+- **Performance** : Lazy load du dashboard Analytics (-132KB).
+
+### v5.0.0 — Dark Industrial
+
+- **Dark Industrial** : Refonte design system Dark Industrial Blackout Prod.
+- **Simplification** : Suppression stats, page analytics, ajout branding Blackout Prod.
+- **Formateur** : Ajout du statut Formateur/Réunion.
+- **Demi-journées** : Support AM/PM pour granularité fine.
+- **Onboarding** : Tutoriel onboarding première visite avec cookies.
+- **Contact** : Pages Contact et Mentions légales.
+- **Exports** : Amélioration exports ICS avec compteur de jours.
+
+### v4.0.0 — UX Service Public (DSFR)
+
+- **DSFR** : Refonte complète UX/UI style Service Public (DSFR).
+- **Setup** : Page de configuration automatique de la base de données.
+- **Inscription** : Ajout des champs prénom, nom et téléphone.
+- **Menu utilisateur** : Ajout du menu utilisateur dans le header.
+- **Auth** : Ajout de l'authentification Supabase.
+
+### v3.0.0 — Orion SaaS Dashboard
+
+- **Orion UI** : Conversion vers Orion UI Kit (SaaS Dark Mode).
+- **Analytics** : Dashboard analytics professionnel style Orion.
+- **Dark mode** : Force dark mode et amélioration du design.
+
+### v2.0.0 — IA & Notifications
+
+- **LLM** : Infrastructure LLM avec Ollama puis Hugging Face.
+- **Notifications** : Ajout des notifications email.
+- **IA automatique** : Génération automatique avec Hugging Face.
+- **Favicon** : Ajout du favicon.
+- **Fix UI** : Correction des problèmes de contraste dans le générateur IA.
+
+### v1.0.0 — Calendrier Interactif
+
+- **Calendrier** : Calendrier interactif avec sélection par clic/glissé.
+- **Exports** : Export ICS pour Google Calendar, Outlook, Apple Calendar.
+- **IA Gemini** : Aide à la rédaction de mails d'absence.
+- **Liquid Glass UI** : Design Aceternity UI avec Spotlight, TextGenerateEffect, BackgroundBeams.
+- **Fix** : Correction du mismatch d'hydratation SSR.
+
+### v0.0.0 — Initial
+
+- **Commit initial** : Structure du projet PGV Planning.
 
 ---
 
