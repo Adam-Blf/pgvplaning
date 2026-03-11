@@ -811,3 +811,122 @@
     @apply bg-[var(--bg-overlay)] rounded-lg animate-shimmer;
   }
 }
+
+/* ============================================
+   PRINT STYLES — Team Planner landscape
+   ============================================ */
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 8mm;
+  }
+
+  html, body {
+    background: white !important;
+    color: black !important;
+    font-size: 9px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide everything except the printable area */
+  .print\\:hidden,
+  nav, header, footer,
+  [role="navigation"],
+  .glass-elevated,
+  button:not(.print-visible) {
+    display: none !important;
+  }
+
+  .print\\:block {
+    display: block !important;
+  }
+
+  .print\\:table {
+    display: table !important;
+  }
+
+  /* Print table */
+  .print-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8px !important;
+  }
+
+  .print-table th,
+  .print-table td {
+    border: 0.5px solid #ccc !important;
+    padding: 2px 3px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+  }
+
+  .print-table th {
+    background: #f0f0f0 !important;
+    font-weight: 700 !important;
+    font-size: 7px !important;
+  }
+
+  .print-table td.member-name {
+    text-align: left !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    padding-left: 6px !important;
+    min-width: 100px !important;
+  }
+
+  .print-table .weekend-col {
+    background: #f5f5f5 !important;
+  }
+
+  /* Status colors for print */
+  .print-status-work { background: #3b82f6 !important; color: white !important; }
+  .print-status-remote { background: #10b981 !important; color: white !important; }
+  .print-status-school { background: #f59e0b !important; color: white !important; }
+  .print-status-trainer { background: #8b5cf6 !important; color: white !important; }
+  .print-status-leave { background: #f43f5e !important; color: white !important; }
+  .print-status-sick { background: #ef4444 !important; color: white !important; }
+  .print-status-holiday { background: #6b7280 !important; color: white !important; }
+
+  .print-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 4px !important;
+    border-bottom: 1px solid #ccc !important;
+  }
+
+  .print-header h1 {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: black !important;
+  }
+
+  .print-header .print-date {
+    font-size: 10px !important;
+    color: #666 !important;
+  }
+
+  .print-legend {
+    display: flex !important;
+    gap: 12px !important;
+    margin-top: 6px !important;
+    font-size: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .print-legend span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+
+  .print-legend .dot {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 2px !important;
+    display: inline-block !important;
+  }
+}
