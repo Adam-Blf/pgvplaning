@@ -31,9 +31,35 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const sanitizeInput = (input: string) => {
+    // Supprime les balises et caractères dangereux
+    return input.replace(/<[^>]*>?/gm, '').replace(/[\"'`]/g, '');
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Validation stricte
+    const name = sanitizeInput(formData.name);
+    const email = sanitizeInput(formData.email);
+    const subject = sanitizeInput(formData.subject);
+    const message = sanitizeInput(formData.message);
+
+    if (!validateEmail(email)) {
+      toast.error('Adresse email invalide');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!name || !subject || !message) {
+      toast.error('Tous les champs sont obligatoires');
+      setIsSubmitting(false);
+      return;
+    }
 
     // Simulation de l'envoi
     await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -96,7 +122,7 @@ export default function ContactPage() {
               <div className="space-y-1">
                 <h4 className="font-bold text-white">Email Direct</h4>
                 <p className="text-sm text-[var(--text-tertiary)]">Général & Partenariats</p>
-                <a href="mailto:contact@blackoutprod.fr" className="text-[var(--blueprint-500)] hover:text-[var(--cyan-400)] text-sm font-medium hover:underline">
+                <a href="mailto:contact@blackoutprod.fr" className="text-[var(--blueprint-500)] hover:text-[var(--cyan-400)] text-sm font-medium hover:underline" rel="noopener noreferrer" target="_blank">
                   contact@blackoutprod.fr
                 </a>
               </div>
