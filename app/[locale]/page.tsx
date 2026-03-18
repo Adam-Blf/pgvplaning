@@ -12,9 +12,11 @@ import {
   ChevronRight,
   CalendarDays,
 } from 'lucide-react';
+import { HeroProMax } from '@/components/ui/hero-pro-max';
 import { Link } from '@/i18n/routing';
 
-export default function HomePage() {
+// Section d'accueil visuelle HeroProMax
+
   const features = [
     {
       icon: Calendar,
@@ -50,6 +52,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-[calc(100vh-8rem)] flex flex-col">
+      <HeroProMax />
       <section className="relative py-16 md:py-24">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-sky-500/[0.07] rounded-full blur-[100px] -translate-y-1/2" />
