@@ -457,3 +457,10 @@ MIT - Blackout Prod
 **Adam Beloucif** - Développeur Full Stack & Designer Produit
 
 [![GitHub](https://img.shields.io/badge/GitHub-Adam--Blf-181717?logo=github)](https://github.com/Adam-Blf)
+
+
+---
+
+<p align="center">
+  <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> · Data Engineer & Fullstack Developer · <a href="https://github.com/Adam-Blf">GitHub</a></sub>
+</p>
