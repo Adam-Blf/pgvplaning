@@ -1,12 +1,11 @@
 # PGV Planning
 
-![Status](https://img.shields.io/badge/status-production-green)
-![Version](https://img.shields.io/badge/version-18.0.0-blue)
-![Auth](https://img.shields.io/badge/auth-Firebase-orange)
-![Security](https://img.shields.io/badge/security-RGPD%20Cloud-brightgreen)
-![Architecture](https://img.shields.io/badge/architecture-Hybrid%20Firestore--Supabase-blue)
-![PWA](https://img.shields.io/badge/PWA-installable-purple)
-![Design](https://img.shields.io/badge/design-Blueprint%20Dark-0ea5e9)
+![Status](https://img.shields.io/badge/status-production-brightgreen)
+![Next.js](https://img.shields.io/badge/Next.js_15-000?logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white)
+![Vercel](https://img.shields.io/badge/deploy-Vercel-000?logo=vercel&logoColor=white)
 
 **Solution universelle de gestion d'équipe · Design Blueprint on Dark**
 
