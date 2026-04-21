@@ -8,7 +8,7 @@
 ![PWA](https://img.shields.io/badge/PWA-installable-purple)
 ![Design](https://img.shields.io/badge/design-Blueprint%20Dark-0ea5e9)
 
-**Solution universelle de gestion d'équipe — Design Blueprint on Dark**
+**Solution universelle de gestion d'équipe · Design Blueprint on Dark**
 
 Application web moderne (PWA) permettant de gérer les plannings, absences, congés, télétravail et activités de tout type d'équipe :
 - Entreprises
@@ -254,22 +254,22 @@ types/
 
 ### Classes utilitaires
 
-- `glass` / `glass-elevated` — Effet verre avec backdrop-filter
-- `gradient-text-amber` — Dégradé texte blueprint → cyan
-- `glow-amber` / `glow-amber-sm` — Effet lueur blueprint
-- `card-glow` — Carte avec lueur au hover
-- `btn-primary` / `btn-secondary` / `btn-ghost` — Boutons blueprint
-- `badge-amber` / `badge-success` / `badge-error` — Badges colorés
-- `surface` / `surface-elevated` / `surface-overlay` — Surfaces
+- `glass` / `glass-elevated` · Effet verre avec backdrop-filter
+- `gradient-text-amber` · Dégradé texte blueprint → cyan
+- `glow-amber` / `glow-amber-sm` · Effet lueur blueprint
+- `card-glow` · Carte avec lueur au hover
+- `btn-primary` / `btn-secondary` / `btn-ghost` · Boutons blueprint
+- `badge-amber` / `badge-success` / `badge-error` · Badges colorés
+- `surface` / `surface-elevated` / `surface-overlay` · Surfaces
 
 ---
 
 ## Changelog
 
-### v18.0.0 — Blueprint Dark Redesign
+### v18.0.0 · Blueprint Dark Redesign
 
 #### Design & UX
-- **Blueprint on Dark** : Refonte complète du design system — thème sombre technique avec grille blueprint en fond.
+- **Blueprint on Dark** : Refonte complète du design system · thème sombre technique avec grille blueprint en fond.
 - **Typographie** : Migration vers Outfit (titres/UI) + JetBrains Mono (données/nombres).
 - **Animations WAAPI** : Migration complète de framer-motion vers Web Animations API + CSS Keyframes (32 fichiers).
 - **Audit UX/A11y** : Application des guidelines Vercel Web Interface, Anthropic Frontend Design et UX Pro Max.
@@ -282,7 +282,7 @@ types/
 - **Validation des membres** : Le leader peut approuver ou rejeter les demandes d'adhésion.
 - **Notifications interactives** : Switches fonctionnels dans les réglages avec sauvegarde Firestore.
 - **Couleurs membre** : Le leader attribue une couleur personnalisée à chaque membre de l'équipe.
-- **Types de contrat** : Cadre forfait jour, cadre forfait heure, employé — heures configurables.
+- **Types de contrat** : Cadre forfait jour, cadre forfait heure, employé · heures configurables.
 - **Quitter l'équipe** : Un membre peut quitter ; le leader peut supprimer l'équipe.
 - **RTT / RTJ** : Soldes congés adaptés au type de contrat.
 
@@ -362,14 +362,14 @@ types/
 - **Internationalisation** : Implémentation complète de next-intl (FR / EN).
 - **Calendrier i18n** : Traduction de la page calendrier et correction des fichiers de traduction.
 
-### v10.0.0 — Master Blueprint
+### v10.0.0 · Master Blueprint
 
 - **Design Blueprint** : Migration vers le design system Master Blueprint (fond sombre, accents cyan).
 - **Fonts** : Localisation des polices avec next/font/google et mise à jour de la config Tailwind.
 - **Phase 3** : Pages maintenance et institution complétées.
 - **Polish** : Dernières retouches suivant les règles du design system master.
 
-### v9.0.0 — Ambient Dark
+### v9.0.0 · Ambient Dark
 
 - **Ambient Dark** : Refonte complète du design system avec thème sombre ambiant.
 - **Composants redesignés** : calendar-grid, painting-toolbar, LeaveBalanceCard, analytics-dashboard, TeamIndicator, onboarding tutorial, NotificationSender.
@@ -377,7 +377,7 @@ types/
 - **Page guide** : Ajout de la page guide utilisateur.
 - **Navbar** : Masquage au scroll pour plus d'espace.
 
-### v8.0.0 — Absencia Rebrand
+### v8.0.0 · Absencia Rebrand
 
 - **Rebrand** : Renommage en « Absencia » avec police Space Grotesk.
 - **Design system overhaul** : Refonte complète avec nouvelles migrations consolidées.
@@ -385,14 +385,14 @@ types/
 - **Invitations** : Système de liens d'invitation pour rejoindre une équipe.
 - **Favicon** : Nouveau design calendrier + checkmark.
 
-### v7.0.0 — Amber/Gold Design
+### v7.0.0 · Amber/Gold Design
 
 - **Design amber/gold** : Refonte UX/UI avec design system amber/gold.
 - **Congés séparés** : Jours de congés distincts employé vs cadre (forfait jour).
 - **Migrations** : Migration consolidée avec toutes les features (secteur, congés par statut, admin, anniversaires).
 - **Mot de passe** : Animation de révélation du mot de passe avec gardiens curieux.
 
-### v6.0.0 — Team Authentication
+### v6.0.0 · Team Authentication
 
 - **Auth équipe** : Système d'authentification basé sur les équipes.
 - **Leave management** : Système de gestion des congés avec types employé/cadre.
@@ -402,7 +402,7 @@ types/
 - **Sécurité** : Audit de sécurité, rate limiting, protection CSP et SSRF.
 - **Performance** : Lazy load du dashboard Analytics (-132KB).
 
-### v5.0.0 — Dark Industrial
+### v5.0.0 · Dark Industrial
 
 - **Dark Industrial** : Refonte design system Dark Industrial Blackout Prod.
 - **Simplification** : Suppression stats, page analytics, ajout branding Blackout Prod.
@@ -412,7 +412,7 @@ types/
 - **Contact** : Pages Contact et Mentions légales.
 - **Exports** : Amélioration exports ICS avec compteur de jours.
 
-### v4.0.0 — UX Service Public (DSFR)
+### v4.0.0 · UX Service Public (DSFR)
 
 - **DSFR** : Refonte complète UX/UI style Service Public (DSFR).
 - **Setup** : Page de configuration automatique de la base de données.
@@ -420,13 +420,13 @@ types/
 - **Menu utilisateur** : Ajout du menu utilisateur dans le header.
 - **Auth** : Ajout de l'authentification Supabase.
 
-### v3.0.0 — Orion SaaS Dashboard
+### v3.0.0 · Orion SaaS Dashboard
 
 - **Orion UI** : Conversion vers Orion UI Kit (SaaS Dark Mode).
 - **Analytics** : Dashboard analytics professionnel style Orion.
 - **Dark mode** : Force dark mode et amélioration du design.
 
-### v2.0.0 — IA & Notifications
+### v2.0.0 · IA & Notifications
 
 - **LLM** : Infrastructure LLM avec Ollama puis Hugging Face.
 - **Notifications** : Ajout des notifications email.
@@ -434,7 +434,7 @@ types/
 - **Favicon** : Ajout du favicon.
 - **Fix UI** : Correction des problèmes de contraste dans le générateur IA.
 
-### v1.0.0 — Calendrier Interactif
+### v1.0.0 · Calendrier Interactif
 
 - **Calendrier** : Calendrier interactif avec sélection par clic/glissé.
 - **Exports** : Export ICS pour Google Calendar, Outlook, Apple Calendar.
@@ -442,7 +442,7 @@ types/
 - **Liquid Glass UI** : Design Aceternity UI avec Spotlight, TextGenerateEffect, BackgroundBeams.
 - **Fix** : Correction du mismatch d'hydratation SSR.
 
-### v0.0.0 — Initial
+### v0.0.0 · Initial
 
 - **Commit initial** : Structure du projet PGV Planning.
 
@@ -462,5 +462,5 @@ MIT - Blackout Prod
 ---
 
 <p align="center">
-  <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> · Data Engineer & Fullstack Developer · <a href="https://github.com/Adam-Blf">GitHub</a></sub>
+  <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> · Data Engineer &amp; Fullstack Developer · <a href="https://github.com/Adam-Blf">GitHub</a> · <a href="https://www.linkedin.com/in/adambeloucif/">LinkedIn</a></sub>
 </p>
