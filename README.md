@@ -26,6 +26,29 @@ Architecture cloud sécurisée (Firebase/Supabase, hébergement Vercel & OVHclou
 
 > 🌐 **Production** : [absencia.beloucif.com](https://absencia.beloucif.com)
 
+## Architecture
+
+```mermaid
+flowchart TB
+    PWA["Next.js 15 PWA<br/>App Router · TypeScript · Tailwind · shadcn"]
+    MW["middleware.ts<br/>i18n next-intl · auth · routage"]
+    CAL["Calendrier interactif<br/>presence · conges · activites · demi-journees"]
+    FIRE["Firebase Firestore<br/>donnees temps reel · Security Rules"]
+    SUPA["Supabase<br/>analytics historique · RLS · audit log"]
+    GEMINI["Google Gemini<br/>redaction mails d'absence"]
+    EMAIL["Resend + React Email<br/>invitations · notifications"]
+    ICS["Export ICS<br/>Google · Outlook · Apple Calendar"]
+    HOST["Vercel + OVHcloud<br/>hebergement · RGPD"]
+
+    PWA --> MW --> CAL
+    CAL --> FIRE
+    CAL --> SUPA
+    CAL --> GEMINI
+    CAL --> EMAIL
+    CAL --> ICS
+    HOST -.heberge.-> PWA
+```
+
 ---
 
 ## Fonctionnalités
