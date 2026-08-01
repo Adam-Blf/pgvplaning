@@ -1,5 +1,7 @@
 # PGV Planning
 
+[![version](https://img.shields.io/badge/version-18.0.0-000091?style=flat-square)](https://github.com/Adam-Blf/pgvplaning/releases)
+
 <!-- adam-badges:start -->
 [![commits](https://img.shields.io/github/commit-activity/t/Adam-Blf/pgvplaning?color=001329&label=commits&style=flat-square)](https://github.com/Adam-Blf/pgvplaning/commits) [![visites](https://hits.sh/github.com/Adam-Blf/pgvplaning.svg?style=flat-square&label=visites&color=001329)](https://hits.sh/github.com/Adam-Blf/pgvplaning/) [![last commit](https://img.shields.io/github/last-commit/Adam-Blf/pgvplaning?color=D4A437&style=flat-square&label=dernier%20push)](https://github.com/Adam-Blf/pgvplaning/commits) [![top language](https://img.shields.io/github/languages/top/Adam-Blf/pgvplaning?style=flat-square)](https://github.com/Adam-Blf/pgvplaning) [![license](https://img.shields.io/github/license/Adam-Blf/pgvplaning?style=flat-square&color=D4A437)](LICENSE)
 <!-- adam-badges:end -->
