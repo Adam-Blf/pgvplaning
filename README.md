@@ -6,7 +6,6 @@
 [![commits](https://img.shields.io/github/commit-activity/t/Adam-Blf/pgvplaning?color=001329&label=commits&style=flat-square)](https://github.com/Adam-Blf/pgvplaning/commits) [![visites](https://hits.sh/github.com/Adam-Blf/pgvplaning.svg?style=flat-square&label=visites&color=001329)](https://hits.sh/github.com/Adam-Blf/pgvplaning/) [![last commit](https://img.shields.io/github/last-commit/Adam-Blf/pgvplaning?color=D4A437&style=flat-square&label=dernier%20push)](https://github.com/Adam-Blf/pgvplaning/commits) [![top language](https://img.shields.io/github/languages/top/Adam-Blf/pgvplaning?style=flat-square)](https://github.com/Adam-Blf/pgvplaning) [![license](https://img.shields.io/github/license/Adam-Blf/pgvplaning?style=flat-square&color=D4A437)](LICENSE)
 <!-- adam-badges:end -->
 
-
 ![Status](https://img.shields.io/badge/status-production-brightgreen)
 ![Next.js](https://img.shields.io/badge/Next.js_15-000?logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
@@ -487,20 +486,12 @@ MIT - Blackout Prod
 
 [![GitHub](https://img.shields.io/badge/GitHub-Adam--Blf-181717?logo=github)](https://github.com/Adam-Blf)
 
-
 ---
 
 <p align="center">
   <sub>Par <a href="https://adam.beloucif.com">Adam Beloucif</a> - Data Engineer &amp; Fullstack Developer - <a href="https://github.com/Adam-Blf">GitHub</a> - <a href="https://www.linkedin.com/in/adambeloucif/">LinkedIn</a></sub>
 </p>
 
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=Adam-Blf%2Fpgvplaning&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=Adam-Blf/pgvplaning&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=Adam-Blf/pgvplaning&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=Adam-Blf/pgvplaning&type=date&legend=top-left" />
  </picture>
 </a>
