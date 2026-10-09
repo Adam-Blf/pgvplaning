@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { AlertTriangle, Refresh, Home } from "reicon-react";
 import { Link } from '@/i18n/routing';
 
 interface ErrorProps {
@@ -53,7 +53,7 @@ export default function Error({ error, reset }: ErrorProps) {
               onClick={reset}
               className="btn-primary flex items-center justify-center gap-2"
             >
-              <RefreshCw className="w-4 h-4" />
+              <Refresh className="w-4 h-4" />
               Réessayer
             </button>
 

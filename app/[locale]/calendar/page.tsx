@@ -6,10 +6,7 @@ import { CalendarGrid, Birthday } from '@/components/features/calendar-grid';
 import { PaintingToolbar } from '@/components/features/painting-toolbar';
 import { useCalendarData, DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { useTranslations } from 'next-intl';
-import {
-  Info,
-  ChevronDown
-} from 'lucide-react';
+import { InfoCircle, ChevronDown } from "reicon-react";
 import { AnimatedBlueprintIcon } from '@/components/ui/animated-blueprint-icon';
 import { authFetch } from '@/lib/auth-fetch';
 
@@ -60,7 +57,7 @@ function QuickStats({ birthdays }: { birthdays: Birthday[] }) {
       style={{ animationDelay: '150ms' }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <Info className="w-4 h-4 text-[var(--text-muted)]" />
+        <InfoCircle className="w-4 h-4 text-[var(--text-muted)]" />
         <span className="text-sm font-medium text-[var(--text-secondary)]">
           {t('quickStats')}
         </span>
@@ -253,7 +250,7 @@ export default function CalendarPage() {
         <div className="glass rounded-2xl p-4">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0">
-              <Info className="w-4 h-4 text-[var(--blueprint-500)]" />
+              <InfoCircle className="w-4 h-4 text-[var(--blueprint-500)]" />
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-[var(--text-secondary)]">

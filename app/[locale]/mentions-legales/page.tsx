@@ -1,6 +1,6 @@
 'use client';
 
-import { Scale, Building2, Server, Shield, Mail } from 'lucide-react';
+import { Judge, Building, Server, Shield, Envelope } from "reicon-react";
 import { Link } from '@/i18n/routing';
 
 export default function MentionsLegalesPage() {
@@ -12,7 +12,7 @@ export default function MentionsLegalesPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-xl bg-[var(--accent-subtle)] flex items-center justify-center">
-              <Scale className="w-6 h-6 text-[var(--accent)]" />
+              <Judge className="w-6 h-6 text-[var(--accent)]" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-[var(--text-primary)]">Mentions Légales</h1>
@@ -26,7 +26,7 @@ export default function MentionsLegalesPage() {
       <section className="card">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-[var(--accent)]" />
+            <Building className="w-5 h-5 text-[var(--accent)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Éditeur du site</h2>
         </div>
@@ -92,7 +92,7 @@ export default function MentionsLegalesPage() {
       <section className="card">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-lg bg-[var(--accent-subtle)] flex items-center justify-center">
-            <Scale className="w-5 h-5 text-[var(--accent)]" />
+            <Judge className="w-5 h-5 text-[var(--accent)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">Propriété intellectuelle</h2>
         </div>
@@ -113,7 +113,7 @@ export default function MentionsLegalesPage() {
       {/* Contact */}
       <div className="notice notice-info">
         <div className="w-10 h-10 rounded-lg bg-[var(--info-bg)] flex items-center justify-center flex-shrink-0">
-          <Mail className="w-5 h-5 text-[var(--info)]" />
+          <Envelope className="w-5 h-5 text-[var(--info)]" />
         </div>
         <div>
           <h4 className="font-semibold text-[var(--text-primary)] mb-1">Une question ?</h4>

@@ -1,16 +1,6 @@
 'use client';
 
-import {
-    Users,
-    UserCheck,
-    UserX,
-    ShieldCheck,
-    Clock,
-    Search,
-    CheckCircle2,
-    XCircle,
-    Loader2
-} from 'lucide-react';
+import { Users, UserCheck, UserX, ShieldCheck, Clock, Search, CheckCircle, XCircle, Loader } from "reicon-react";
 import { useTeam } from '@/contexts/team-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -92,7 +82,7 @@ export default function MemberValidationPage() {
                         <div
                             className="text-center py-20 glass border border-dashed border-[var(--border-default)] rounded-3xl animate-fade-up opacity-0"
                         >
-                            <CheckCircle2 className="w-12 h-12 text-emerald-500/50 mx-auto mb-4" />
+                            <CheckCircle className="w-12 h-12 text-emerald-500/50 mx-auto mb-4" />
                             <h2 className="text-xl font-semibold opacity-50">Aucune demande en attente</h2>
                             <p className="text-muted-foreground">Votre équipe est à jour.</p>
                         </div>
@@ -132,7 +122,7 @@ export default function MemberValidationPage() {
                                                     className="rounded-xl border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white"
                                                 >
                                                     {rejectingId === member.id ? (
-                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        <Loader className="w-4 h-4 animate-spin" />
                                                     ) : (
                                                         <>
                                                             <UserX className="w-4 h-4 mr-2" />
@@ -147,7 +137,7 @@ export default function MemberValidationPage() {
                                                     className="rounded-xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold shadow-lg shadow-sky-500/20"
                                                 >
                                                     {processingId === member.id ? (
-                                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                                        <Loader className="w-4 h-4 animate-spin" />
                                                     ) : (
                                                         <>
                                                             <UserCheck className="w-4 h-4 mr-2" />

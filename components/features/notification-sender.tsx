@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Mail, Send, Calendar, AlertCircle, Check, Settings, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
+import { Envelope, Send, Calendar, AlertCircle, Check, Gear, Sparkles, CheckCircle, XCircle } from "reicon-react";
 import { toast } from 'sonner';
 import { Link } from '@/i18n/routing';
 import { useCalendarData, DayStatus, isDayData, DayData } from '@/hooks/use-calendar-data';
@@ -221,7 +221,7 @@ Généré automatiquement par Absencia`;
               <button
                 className="btn-secondary text-amber-400 border-amber-500/20 hover:bg-amber-500/10 hover:border-amber-500/30 gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
               >
-                <Settings className="w-4 h-4" />
+                <Gear className="w-4 h-4" />
                 Aller aux parametres
               </button>
             </Link>
@@ -264,7 +264,7 @@ Généré automatiquement par Absencia`;
       <div className="flex items-center justify-between glass rounded-xl px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-            <Mail className="w-4 h-4 text-amber-400" />
+            <Envelope className="w-4 h-4 text-amber-400" />
           </div>
           <div className="text-sm">
             <span className="text-[var(--text-tertiary)]">Destinataire</span>
@@ -366,7 +366,7 @@ Généré automatiquement par Absencia`;
         {/* Success animation */}
           {sendSuccess === true ? (
             <div className="flex items-center gap-2 animate-fade-in">
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" />
               <span>Email ouvert !</span>
             </div>
           ) : sendSuccess === false ? (
@@ -405,7 +405,7 @@ Généré automatiquement par Absencia`;
       <p
         className="text-xs text-[var(--text-muted)] text-center flex items-center justify-center gap-2"
       >
-        <Mail className="w-3 h-3" />
+        <Envelope className="w-3 h-3" />
         Ouvre votre client email avec un message pre-rempli
       </p>
     </div>

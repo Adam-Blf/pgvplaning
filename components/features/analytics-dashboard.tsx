@@ -15,25 +15,7 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
-import {
-  TrendingUp,
-  TrendingDown,
-  Calendar,
-  Briefcase,
-  GraduationCap,
-  Palmtree,
-  Monitor,
-  FileText,
-  BarChart3,
-  PieChart as PieChartIcon,
-  Table,
-  User,
-  Settings,
-  Home,
-  LogOut,
-  ChevronDown,
-  Activity,
-} from 'lucide-react';
+import { TrendUp, TrendDown, Calendar, Briefcase, GraduationCap, Suitcase, Monitor, FileText, ChartBar, ChartPie as PieChartIcon, Grid2, User, Gear, Home, ArrowDoorOut, ChevronDown, WavePulse } from "reicon-react";
 import { useCalendarData } from '@/hooks/use-calendar-data';
 import { useCalendarStats } from '@/hooks/use-calendar-stats';
 import { cn } from '@/lib/utils';
@@ -135,10 +117,10 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
   const navItems = [
     { id: 'home', icon: Home, label: 'Accueil' },
-    { id: 'analytics', icon: BarChart3, label: 'Analytics' },
+    { id: 'analytics', icon: ChartBar, label: 'Analytics' },
     { id: 'calendar', icon: Calendar, label: 'Calendrier' },
     { id: 'exports', icon: FileText, label: 'Exports' },
-    { id: 'settings', icon: Settings, label: 'Parametres' },
+    { id: 'settings', icon: Gear, label: 'Parametres' },
   ];
 
   // Custom tooltip component
@@ -214,7 +196,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             className="card p-4 animate-fade-up opacity-0"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Activity className="w-4 h-4 text-amber-400" />
+              <WavePulse className="w-4 h-4 text-amber-400" />
               <span className="text-xs font-medium text-[var(--text-secondary)]">Activite du mois</span>
             </div>
             <div className="flex justify-between items-end">
@@ -320,12 +302,12 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       Mon Profil
                     </button>
                     <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-colors">
-                      <Settings className="w-4 h-4" />
+                      <Gear className="w-4 h-4" />
                       Parametres
                     </button>
                     <div className="divider my-2" />
                     <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 transition-colors">
-                      <LogOut className="w-4 h-4" />
+                      <ArrowDoorOut className="w-4 h-4" />
                       Deconnexion
                     </button>
                   </div>
@@ -377,7 +359,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               value={stats.leave}
               percentage={stats.percentages.leave}
               trend={TRENDS.leave}
-              icon={Palmtree}
+              icon={Suitcase}
               styles={STATUS_STYLES.leave}
               index={3}
             />
@@ -401,7 +383,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   </p>
                 </div>
                 <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                  <BarChart3 className="w-5 h-5 text-amber-400" />
+                  <ChartBar className="w-5 h-5 text-amber-400" />
                 </div>
               </div>
 
@@ -629,7 +611,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 </p>
               </div>
               <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                <Table className="w-5 h-5 text-amber-400" />
+                <Grid2 className="w-5 h-5 text-amber-400" />
               </div>
             </div>
 
@@ -743,9 +725,9 @@ function KPICard({ title, value, percentage, trend, icon: Icon, styles, index }:
             )}
           >
             {trend.isPositive ? (
-              <TrendingUp className="w-3 h-3" />
+              <TrendUp className="w-3 h-3" />
             ) : (
-              <TrendingDown className="w-3 h-3" />
+              <TrendDown className="w-3 h-3" />
             )}
             {trend.isPositive ? '+' : '-'}{trend.value}%
           </div>

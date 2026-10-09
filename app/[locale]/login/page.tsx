@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '@/lib/firebase/client';
-import { Activity, Mail, Lock, LogIn, Chrome, AlertCircle, Loader2 } from 'lucide-react';
+import { WavePulse, Envelope, Lock, ArrowDoorIn, Chrome, AlertCircle, Loader } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
@@ -80,7 +80,7 @@ export default function LoginPage() {
             <div
               className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--blueprint-500)] to-[var(--cyan-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20 hover:rotate-12 transition-transform duration-200"
             >
-              <Activity className="w-8 h-8 text-white" />
+              <WavePulse className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight gradient-text-amber mb-2">Bienvenue</h1>
             <p className="text-[var(--text-tertiary)] text-center">
@@ -103,7 +103,7 @@ export default function LoginPage() {
                 Email
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
+                <Envelope className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                 <input
                   type="email"
                   value={email}
@@ -142,10 +142,10 @@ export default function LoginPage() {
                 className="w-full btn-primary py-3 text-base font-semibold"
               >
                 {loading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
-                    <LogIn className="w-5 h-5" />
+                    <ArrowDoorIn className="w-5 h-5" />
                     Se connecter
                   </>
                 )}

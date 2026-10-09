@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc, Timestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
-import { Mail, Lock, User, UserPlus, AlertCircle, Loader2, Cake } from 'lucide-react';
+import { Envelope, Lock, User, UserAdd, AlertCircle, Loader, Cake } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -121,7 +121,7 @@ export default function RegisterPage() {
                     <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--blueprint-500)]/5 via-transparent to-transparent rounded-2xl" />
                     <div className="flex flex-col items-center mb-8">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--blueprint-500)] to-[var(--cyan-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
-                            <UserPlus className="w-8 h-8 text-white" />
+                            <UserAdd className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight gradient-text-amber mb-2">Créer un profil</h1>
                         <p className="text-[var(--text-tertiary)] text-center text-sm">
@@ -191,7 +191,7 @@ export default function RegisterPage() {
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-sm font-medium text-[var(--text-secondary)]">Email professionnel</Label>
                             <div className="relative group">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
+                                <Envelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-[var(--blueprint-500)] transition-colors" />
                                 <Input
                                     id="email"
                                     type="email"
@@ -232,7 +232,7 @@ export default function RegisterPage() {
                             className="w-full btn-primary py-3 text-base font-semibold"
                         >
                             {loading ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <Loader className="w-5 h-5 animate-spin" />
                             ) : (
                                 'Créer mon compte'
                             )}

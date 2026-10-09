@@ -1,20 +1,7 @@
 'use client';
 
 import { ReactNode, useState, useMemo, useEffect, useRef } from 'react';
-import {
-  Calendar,
-  LayoutDashboard,
-  Settings,
-  FileDown,
-  Menu,
-  X,
-  Activity,
-  Users,
-  LogIn,
-  BookOpen,
-  ShieldCheck,
-  LogOut,
-} from 'lucide-react';
+import { Calendar, Element, Gear, FileDown, Menu, X, WavePulse, Users, ArrowDoorIn, BookOpen, ShieldCheck, ArrowDoorOut } from "reicon-react";
 import { cn } from '@/lib/utils';
 import { Link, usePathname, useRouter } from '@/i18n/routing';
 
@@ -29,16 +16,16 @@ interface DashboardShellProps {
   children: ReactNode;
                     )}
 const baseNavigation = [
-  { name: 'Accueil', href: '/', icon: LayoutDashboard, requiresAuth: false },
+  { name: 'Accueil', href: '/', icon: Element, requiresAuth: false },
   { name: 'Calendrier', href: '/calendar', icon: Calendar, requiresAuth: false },
   { name: 'Team Planner', href: '/team-planner', icon: Users, requiresAuth: true },
   { name: 'Membres', href: '/team/members', icon: Users, requiresAuth: true },
   { name: 'Validation', href: '/team/validation', icon: ShieldCheck, requiresAuth: true, requiresLeader: true },
-  { name: 'Setup', href: '/team/setup', icon: LogIn, requiresAuth: true },
+  { name: 'Setup', href: '/team/setup', icon: ArrowDoorIn, requiresAuth: true },
   { name: 'Exporter', href: '/exports', icon: FileDown, requiresAuth: false },
   { name: 'Guide', href: '/guide', icon: BookOpen, requiresAuth: false },
-  { name: 'Paramètres', href: '/settings', icon: Settings, requiresAuth: false },
-  { name: 'Analytics', href: '/analytics', icon: Activity, requiresAuth: true, requiresLeader: true },
+  { name: 'Paramètres', href: '/settings', icon: Gear, requiresAuth: false },
+  { name: 'Analytics', href: '/analytics', icon: WavePulse, requiresAuth: true, requiresLeader: true },
 ];
 
 // Routes that should not display the shell (auth and team setup pages)
@@ -74,7 +61,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                   <Link href="/" className="flex items-center gap-3 no-underline group">
                     <div className="relative">
                       <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-[var(--blueprint-500)] to-cyan-400 flex items-center justify-center transition-transform duration-500 group-hover:rotate-12 shadow-glow-primary">
-                        <Activity className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                        <WavePulse className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       </div>
                       <div className="absolute -inset-2 bg-[var(--blueprint-500)] rounded-xl opacity-0 blur-lg group-hover:opacity-40 transition-opacity duration-700" />
                     </div>
@@ -145,7 +132,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
                       >
-                        <LogIn className="w-4 h-4" />
+                        <ArrowDoorIn className="w-4 h-4" />
                         <span>Se connecter</span>
                       </Link>
                     )}
@@ -195,7 +182,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-primary bg-primary/5 hover:bg-primary/10 transition-colors"
                           >
-                            <LogIn className="w-4 h-4" />
+                            <ArrowDoorIn className="w-4 h-4" />
                             <span>Se connecter</span>
                           </Link>
                         )}
@@ -211,7 +198,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
                             }}
                             className="flex items-center gap-3 px-4 py-3 mt-2 rounded-xl text-red-400 hover:bg-red-500/10 transition-colors w-full"
                           >
-                            <LogOut className="w-4 h-4" />
+                            <ArrowDoorOut className="w-4 h-4" />
                             <span>Se déconnecter</span>
                           </button>
                         )}
@@ -236,7 +223,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div className="w-full py-8 md:py-12 px-2 md:px-4">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/5 group hover:border-[var(--blueprint-500)]/30 transition-all cursor-default">
-              <Activity className="w-3.5 h-3.5 text-[var(--blueprint-500)] group-hover:animate-pulse" />
+              <WavePulse className="w-3.5 h-3.5 text-[var(--blueprint-500)] group-hover:animate-pulse" />
               <span className="text-xs font-medium text-muted-foreground group-hover:text-white transition-colors">
                 Absencia par Blackout Prod
               </span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader2, Settings, UserPlus, LogOut } from 'lucide-react';
+import { Users, Crown, ChevronDown, Link2, Copy, Check, Loader, Gear, UserAdd, ArrowDoorOut } from "reicon-react";
 import { useTeam } from '@/contexts/team-context';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
@@ -206,7 +206,7 @@ export function TeamIndicator() {
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] transition-all duration-200 group"
                 >
                   <div className="w-8 h-8 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] flex items-center justify-center group-hover:border-[var(--border-default)] transition-colors">
-                    <Settings className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--blueprint-500)] transition-colors" />
+                    <Gear className="w-4 h-4 text-[var(--text-tertiary)] group-hover:text-[var(--blueprint-500)] transition-colors" />
                   </div>
                   <span>Parametres equipe</span>
                 </Link>
@@ -283,12 +283,12 @@ export function TeamIndicator() {
                     >
                       {isGenerating ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader className="w-4 h-4 animate-spin" />
                           Generation...
                         </>
                       ) : (
                         <>
-                          <UserPlus className="w-4 h-4" />
+                          <UserAdd className="w-4 h-4" />
                           Generer un lien
                         </>
                       )}
@@ -314,7 +314,7 @@ export function TeamIndicator() {
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 group w-full"
               >
                 <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:border-red-500/30 transition-colors">
-                  <LogOut className="w-4 h-4" />
+                  <ArrowDoorOut className="w-4 h-4" />
                 </div>
                 <span>Se déconnecter</span>
               </button>

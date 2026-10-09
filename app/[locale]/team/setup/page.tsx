@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Plus, LogIn, Sparkles, LogOut } from 'lucide-react';
+import { Users, Plus, ArrowDoorIn, Sparkles, ArrowDoorOut } from "reicon-react";
 import { Link, useRouter } from '@/i18n/routing';
 import { auth } from '@/lib/firebase/client';
 import { signOut } from 'firebase/auth';
@@ -47,7 +47,7 @@ export default function TeamSetupPage() {
         className="fixed top-4 right-4 p-2 rounded-lg bg-[var(--bg-overlay)]/50 border border-[var(--border-default)] text-[var(--text-muted)] hover:text-red-500 hover:border-red-500/30 transition-[color,background-color,border-color,box-shadow] z-50"
         title="Déconnexion"
       >
-        <LogOut className="w-5 h-5" />
+        <ArrowDoorOut className="w-5 h-5" />
       </button>
 
       <div className="w-full max-w-lg relative">
@@ -131,7 +131,7 @@ export default function TeamSetupPage() {
               <div className="glass rounded-2xl p-6 hover:border-emerald-500/30 transition-[background-color,border-color,box-shadow] duration-300">
                 <div className="flex items-center gap-5">
                   <div className="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center ring-1 ring-emerald-500/20 group-hover:ring-emerald-500/40 transition-[box-shadow]">
-                    <LogIn className="w-7 h-7 text-emerald-500" />
+                    <ArrowDoorIn className="w-7 h-7 text-emerald-500" />
                   </div>
 
                   <div className="flex-1">
