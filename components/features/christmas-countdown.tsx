@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { Gift, Snowflake, TreePine } from 'lucide-react';
+import { Gift, Snowflake, Tree } from "reicon-react";
 
 export function ChristmasCountdown() {
   const [daysUntilChristmas, setDaysUntilChristmas] = useState<number | null>(null);
@@ -48,7 +48,7 @@ export function ChristmasCountdown() {
         </div>
         <span className="text-xs font-medium text-red-400">Joyeux Noël !</span>
         <div className="animate-pulse-glow">
-          <TreePine className="w-4 h-4 text-green-400" />
+          <Tree className="w-4 h-4 text-green-400" />
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export function ChristmasCountdown() {
       )}
 
       <div className="hover:scale-105 transition-all duration-200">
-        <TreePine className="w-4 h-4 text-green-400" />
+        <Tree className="w-4 h-4 text-green-400" />
       </div>
 
       <div className="flex items-baseline gap-1">

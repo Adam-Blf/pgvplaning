@@ -1,23 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  Save,
-  Check,
-  Mail,
-  User,
-  Settings,
-  Bell,
-  Shield,
-  Sparkles,
-  ChevronRight,
-  Info,
-  Building2,
-  Briefcase,
-  Loader2,
-  Trash2,
-  AlertTriangle
-} from 'lucide-react';
+import { Floppy2, Check, Envelope, User, Gear, Bell, Shield, Sparkles, ChevronRight, InfoCircle, Building, Briefcase, Loader, Trash2, AlertTriangle } from "reicon-react";
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -100,7 +84,7 @@ export default function SettingsPage() {
   if (authLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-[var(--blueprint-500)]" />
+        <Loader className="w-10 h-10 animate-spin text-[var(--blueprint-500)]" />
       </div>
     );
   }
@@ -110,7 +94,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center border border-[var(--blueprint-500)]/20">
-          <Settings className="w-7 h-7 text-[var(--blueprint-500)]" />
+          <Gear className="w-7 h-7 text-[var(--blueprint-500)]" />
         </div>
         <div>
           <h1 className="text-3xl font-bold gradient-text-amber tracking-tight">Paramètres</h1>
@@ -302,7 +286,7 @@ export default function SettingsPage() {
           <Card className="glass-elevated border-white/10 rounded-3xl overflow-hidden self-start">
             <CardHeader className="bg-gradient-to-br from-[var(--blueprint-500)]/10 to-transparent p-6">
               <div className="w-12 h-12 rounded-2xl bg-[var(--blueprint-500)] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
-                <Save className="w-6 h-6 text-white" />
+                <Floppy2 className="w-6 h-6 text-white" />
               </div>
               <CardTitle>Actions</CardTitle>
             </CardHeader>
@@ -312,7 +296,7 @@ export default function SettingsPage() {
                 disabled={loading}
                 className="w-full h-12 bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/20"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sauvegarder"}
+                {loading ? <Loader className="w-5 h-5 animate-spin" /> : "Sauvegarder"}
               </Button>
               <p className="text-[10px] text-center text-[var(--text-muted)] uppercase tracking-widest font-bold">
                 Dernière mise à jour : {profile?.updatedAt ? new Date(profile.updatedAt.seconds * 1000).toLocaleDateString() : 'Jamais'}

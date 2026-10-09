@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight } from "reicon-react";
 import Image from "next/image";
 
 export function HeroProMax() {

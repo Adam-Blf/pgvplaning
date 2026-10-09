@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Info, Timer, TrendingUp } from 'lucide-react';
+import { Calendar, InfoCircle, Stopwatch, TrendUp } from "reicon-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -50,7 +50,7 @@ export function LeaveBalanceCard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button className="p-2 rounded-full hover:bg-white/5 text-[var(--text-muted)] transition-colors">
-                  <Info className="w-4 h-4" />
+                  <InfoCircle className="w-4 h-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent className="bg-[var(--bg-surface)] border-white/10 text-xs">
@@ -63,7 +63,7 @@ export function LeaveBalanceCard({
         <div className="mt-4">
           <CardTitle className="text-lg font-bold text-white tracking-tight">{title}</CardTitle>
           <CardDescription className="text-[var(--text-tertiary)] flex items-center gap-1.5 mt-1">
-            <Timer className="w-3.5 h-3.5" />
+            <Stopwatch className="w-3.5 h-3.5" />
             Exercice {new Date().getFullYear()}
           </CardDescription>
         </div>
@@ -109,7 +109,7 @@ export function LeaveBalanceCard({
               "flex items-center gap-1",
               percentage > 80 ? "text-rose-400" : "text-emerald-400"
             )}>
-              <TrendingUp className="w-3 h-3" />
+              <TrendUp className="w-3 h-3" />
               Tendance {percentage > 50 ? 'haute' : 'normale'}
             </span>
           </div>
@@ -119,13 +119,13 @@ export function LeaveBalanceCard({
           <div className="flex items-center gap-3 pt-2 border-t border-white/5">
             {weeklyHours ? (
               <div className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
-                <Timer className="w-3 h-3" />
+                <Stopwatch className="w-3 h-3" />
                 <span className="font-mono">{weeklyHours}h/sem</span>
               </div>
             ) : null}
             {bonusDays !== undefined && bonusDays > 0 ? (
               <div className="flex items-center gap-1 text-xs text-amber-400">
-                <TrendingUp className="w-3 h-3" />
+                <TrendUp className="w-3 h-3" />
                 <span className="font-mono">+{bonusDays}j bonus</span>
               </div>
             ) : null}

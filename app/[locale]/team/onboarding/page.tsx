@@ -1,6 +1,6 @@
 'use client';
 
-import { UserPlus, Users, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
+import { UserAdd, Users, ArrowRight, ShieldCheck, UserCheck } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Link } from '@/i18n/routing';

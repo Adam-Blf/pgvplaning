@@ -1,14 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  UserMinus,
-  ChevronUp,
-  ChevronDown,
-  Save,
-  Loader2,
-  AlertTriangle,
-} from 'lucide-react';
+import { UserMinus, ChevronUp, ChevronDown, Floppy2, Loader, AlertTriangle } from "reicon-react";
 import { toast } from 'sonner';
 import { Link } from '@/i18n/routing';
 import Image from 'next/image';
@@ -401,10 +394,10 @@ export default function AdminDashboard() {
                         className="flex-1 px-4 py-3 rounded-xl bg-blueprint-500 text-white text-sm font-bold hover:bg-blueprint-600 transition-all glow-amber-sm disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {savingSettings ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader className="w-4 h-4 animate-spin" />
                         ) : (
                           <>
-                            <Save className="w-4 h-4" />
+                            <Floppy2 className="w-4 h-4" />
                             Appliquer
                           </>
                         )}
@@ -580,7 +573,7 @@ export default function AdminDashboard() {
                               title="Promouvoir au rang Admin"
                             >
                               {actionLoading === member.id ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Loader className="w-4 h-4 animate-spin" />
                               ) : (
                                 <ChevronUp className="w-5 h-5" />
                               )}
@@ -593,7 +586,7 @@ export default function AdminDashboard() {
                               title="Rétrograder au rang Membre"
                             >
                               {actionLoading === member.id ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <Loader className="w-4 h-4 animate-spin" />
                               ) : (
                                 <ChevronDown className="w-5 h-5" />
                               )}
@@ -724,7 +717,7 @@ export default function AdminDashboard() {
                     disabled={savingLeaves}
                     className="flex-1 px-4 py-3 rounded-xl bg-blueprint-500 text-white font-bold hover:bg-blueprint-600 transition-all glow-amber-sm disabled:opacity-50 text-sm flex items-center justify-center gap-2"
                   >
-                    {savingLeaves ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    {savingLeaves ? <Loader className="w-4 h-4 animate-spin" /> : <Floppy2 className="w-4 h-4" />}
                     Confirmer
                   </button>
                 </div>

@@ -2,7 +2,7 @@
 
 import { Link } from '@/i18n/routing';
 
-import { Home, Ghost } from 'lucide-react';
+import { Home, Ghost } from "reicon-react";
 
 export default function NotFound() {
   return (

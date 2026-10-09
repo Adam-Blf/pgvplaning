@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { Settings, ArrowLeft, Save, Trash2, LogOut, Loader2, AlertTriangle, Copy, Check, Globe } from 'lucide-react';
+import { Gear, ArrowLeft, Floppy2, Trash2, ArrowDoorOut, Loader, AlertTriangle, Copy, Check, Globe } from "reicon-react";
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { useTeam } from '@/contexts/team-context';
@@ -139,7 +139,7 @@ export default function TeamSettingsPage() {
   if (teamLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--blueprint-500)]" />
+        <Loader className="w-8 h-8 animate-spin text-[var(--blueprint-500)]" />
       </div>
     );
   }
@@ -160,7 +160,7 @@ export default function TeamSettingsPage() {
         </Link>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
-            <Settings className="w-5 h-5 text-[var(--blueprint-500)]" />
+            <Gear className="w-5 h-5 text-[var(--blueprint-500)]" />
           </div>
           <h1 className="text-xl font-bold gradient-text-amber">
             Paramètres de l&apos;équipe
@@ -282,9 +282,9 @@ export default function TeamSettingsPage() {
             className="btn bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold shadow-lg shadow-sky-500/20 rounded-xl mt-6"
           >
             {saving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader className="w-4 h-4 animate-spin" />
             ) : (
-              <Save className="w-4 h-4" />
+              <Floppy2 className="w-4 h-4" />
             )}
             Enregistrer
           </button>
@@ -308,7 +308,7 @@ export default function TeamSettingsPage() {
               onClick={() => setShowLeaveConfirm(true)}
               className="btn bg-amber-500/10 text-amber-600 hover:bg-amber-500/20"
             >
-              <LogOut className="w-4 h-4" />
+              <ArrowDoorOut className="w-4 h-4" />
               Quitter
             </button>
           </div>
@@ -366,7 +366,7 @@ export default function TeamSettingsPage() {
                 disabled={leaving}
                 className="btn bg-amber-500 text-white hover:bg-amber-600"
               >
-                {leaving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Quitter'}
+                {leaving ? <Loader className="w-4 h-4 animate-spin" /> : 'Quitter'}
               </button>
             </div>
           </div>
@@ -408,7 +408,7 @@ export default function TeamSettingsPage() {
                 disabled={deleting}
                 className="btn bg-red-500 text-white hover:bg-red-600"
               >
-                {deleting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Supprimer définitivement'}
+                {deleting ? <Loader className="w-4 h-4 animate-spin" /> : 'Supprimer définitivement'}
               </button>
             </div>
           </div>

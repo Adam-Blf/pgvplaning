@@ -1,6 +1,6 @@
 'use client';
 
-import { Eraser, Sun, Moon, Clock, Paintbrush } from 'lucide-react';
+import { Eraser, Sun, Moon, Clock, Paintbrush } from "reicon-react";
 import { PremiumIcons } from '@/components/ui/premium-icons';
 import { DayStatus, HalfDay } from '@/hooks/use-calendar-data';
 import { cn } from '@/lib/utils';

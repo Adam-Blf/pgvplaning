@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from '@/i18n/routing';
-import { Copy, Check, Shield, ArrowRight, Share2, Calendar, Loader2 } from 'lucide-react';
+import { Copy, Check, Shield, ArrowRight, Share, Calendar, Loader } from "reicon-react";
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -69,7 +69,7 @@ function SuccessContent() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 rounded-xl border border-white/5 bg-white/5 flex items-start gap-3">
-                            <Share2 className="w-5 h-5 text-[var(--blueprint-500)] shrink-0 mt-0.5" />
+                            <Share className="w-5 h-5 text-[var(--blueprint-500)] shrink-0 mt-0.5" />
                             <div>
                                 <h4 className="text-sm font-bold text-white mb-1">Partage facile</h4>
                                 <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
@@ -107,7 +107,7 @@ function SuccessContent() {
 export default function TeamSuccessPage() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-base)]">
-            <Suspense fallback={<Loader2 className="w-10 h-10 animate-spin text-[var(--blueprint-500)]" />}>
+            <Suspense fallback={<Loader className="w-10 h-10 animate-spin text-[var(--blueprint-500)]" />}>
                 <SuccessContent />
             </Suspense>
         </div>

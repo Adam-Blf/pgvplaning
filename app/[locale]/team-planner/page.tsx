@@ -2,21 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
 
-import {
-  Printer,
-  Calendar,
-  Users,
-  Building2,
-  Home,
-  Plane,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Sparkles,
-  GraduationCap,
-  Briefcase,
-  Heart,
-} from 'lucide-react';
+import { Printer, Calendar, Users, Building, Home, Airplane, ChevronLeft, ChevronRight, Clock, Sparkles, GraduationCap, Briefcase, Heart } from "reicon-react";
 import { cn } from '@/lib/utils';
 import { useTeam } from '@/contexts/team-context';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -262,7 +248,7 @@ export default function TeamPlannerPage() {
       {/* ===== SCREEN STATS (hidden on print) ===== */}
       <div className="print:hidden grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-up opacity-0" style={{ animationDelay: '150ms' }}>
         <div className="glass rounded-xl p-4 flex items-center gap-3">
-          <Building2 className="w-5 h-5 text-blue-400" />
+          <Building className="w-5 h-5 text-blue-400" />
           <div>
             <div className="text-lg font-bold tabular-nums">{teamMembers.length}</div>
             <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Membres</div>

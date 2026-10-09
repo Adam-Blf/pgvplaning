@@ -1,18 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Mail,
-  MessageSquare,
-  User,
-  Send,
-  Loader2,
-  CheckCircle2,
-  MapPin,
-  Clock,
-  Sparkles,
-  Globe
-} from 'lucide-react';
+import { Envelope, Message, User, Send, Loader, CheckCircle, Pin, Clock, Sparkles, Globe } from "reicon-react";
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -67,7 +56,7 @@ export default function ContactPage() {
     setIsSubmitting(false);
     setIsSubmitted(true);
     toast.success('Message envoyé avec succès !', {
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+      icon: <CheckCircle className="w-4 h-4 text-emerald-500" />
     });
 
     setTimeout(() => {
@@ -101,7 +90,7 @@ export default function ContactPage() {
           <Card className="glass-elevated border-white/5 bg-white/[0.02] rounded-3xl overflow-hidden group hover:border-[var(--blueprint-500)]/30 transition-all">
             <CardContent className="p-6 flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400 shrink-0 group-hover:scale-110 transition-transform">
-                <MapPin className="w-6 h-6" />
+                <Pin className="w-6 h-6" />
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-white">Siège Social</h4>
@@ -117,7 +106,7 @@ export default function ContactPage() {
           <Card className="glass-elevated border-white/5 bg-white/[0.02] rounded-3xl overflow-hidden group hover:border-[var(--blueprint-500)]/30 transition-all">
             <CardContent className="p-6 flex items-start gap-4">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform">
-                <Mail className="w-6 h-6" />
+                <Envelope className="w-6 h-6" />
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-white">Email Direct</h4>
@@ -162,7 +151,7 @@ export default function ContactPage() {
             <CardHeader className="p-8 pb-4 relative">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-10 h-10 rounded-xl bg-[var(--blueprint-500)] flex items-center justify-center shadow-lg shadow-blue-500/20">
-                  <MessageSquare className="w-5 h-5 text-white" />
+                  <Message className="w-5 h-5 text-white" />
                 </div>
                 <CardTitle className="text-2xl font-bold text-white">Envoyez-nous un message</CardTitle>
               </div>
@@ -177,7 +166,7 @@ export default function ContactPage() {
                     className="flex flex-col items-center justify-center py-20 text-center space-y-6 animate-scale-in"
                   >
                     <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
-                      <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                      <CheckCircle className="w-10 h-10 text-emerald-500" />
                     </div>
                     <div className="space-y-2">
                       <h3 className="text-2xl font-bold text-white">C&apos;est en route !</h3>
@@ -214,7 +203,7 @@ export default function ContactPage() {
                       <div className="space-y-2">
                         <Label htmlFor="email" className="text-sm font-semibold text-[var(--text-secondary)]">Adresse Email</Label>
                         <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                          <Envelope className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                           <Input
                             id="email"
                             name="email"
@@ -269,7 +258,7 @@ export default function ContactPage() {
                     >
                       {isSubmitting ? (
                         <>
-                          <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                          <Loader className="w-5 h-5 mr-3 animate-spin" />
                           Envoi en cours...
                         </>
                       ) : (

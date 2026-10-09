@@ -1,7 +1,7 @@
 'use client';
 
 
-import { Shield, Scale, Gavel, Eye, Lock } from 'lucide-react';
+import { Shield, Judge, Eye, Lock } from "reicon-react";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function LegalPage() {
@@ -24,7 +24,7 @@ export default function LegalPage() {
 
             <div className="grid gap-8">
                 <LegalSection
-                    icon={Gavel}
+                    icon={Judge}
                     title="Édition du site"
                     description="En vertu de l'article 6 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, il est précisé aux utilisateurs du site Absencia l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi."
                 >
@@ -47,7 +47,7 @@ export default function LegalPage() {
                 </LegalSection>
 
                 <LegalSection
-                    icon={Scale}
+                    icon={Judge}
                     title="RGPD & Protection des données"
                     description="Absencia s'engage à ce que la collecte et le traitement de vos données, effectués à partir du site, soient conformes au règlement général sur la protection des données (RGPD)."
                 >

@@ -3,16 +3,7 @@
 import { useState, useEffect, useCallback, use } from 'react';
 import { useRouter } from '@/i18n/routing';
 
-import {
-  Users,
-  Loader2,
-  CheckCircle2,
-  XCircle,
-  LogIn,
-  UserPlus,
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
+import { Users, Loader, CheckCircle, XCircle, ArrowDoorIn, UserAdd, Sparkles, ArrowRight } from "reicon-react";
 import { auth } from '@/lib/firebase/client';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { Link } from '@/i18n/routing';
@@ -149,7 +140,7 @@ export default function InvitePage({ params }: InvitePageProps) {
               <div
                 className="text-center py-8 animate-fade-in"
               >
-                <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
+                <Loader className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)]">Vérification de l&apos;invitation...</p>
               </div>
             )}
@@ -204,7 +195,7 @@ export default function InvitePage({ params }: InvitePageProps) {
                     href={`/login?redirect=/invite/${token}`}
                     className="w-full flex items-center justify-center gap-2 py-3 px-4 btn-primary font-semibold rounded-xl"
                   >
-                    <LogIn className="w-4 h-4" />
+                    <ArrowDoorIn className="w-4 h-4" />
                     Se connecter
                   </Link>
                   <Link
@@ -213,7 +204,7 @@ export default function InvitePage({ params }: InvitePageProps) {
                       : `/auth/register?redirect=/invite/${token}`}
                     className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[var(--bg-overlay)] hover:bg-[var(--bg-hover)] border border-[var(--border-default)] rounded-xl font-medium transition-colors"
                   >
-                    <UserPlus className="w-4 h-4" />
+                    <UserAdd className="w-4 h-4" />
                     Créer un compte
                   </Link>
                 </div>
@@ -253,7 +244,7 @@ export default function InvitePage({ params }: InvitePageProps) {
               <div
                 className="text-center py-8 animate-fade-in"
               >
-                <Loader2 className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
+                <Loader className="w-12 h-12 text-amber-500 animate-spin mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)]">Vous rejoignez l&apos;équipe...</p>
               </div>
             )}
@@ -266,7 +257,7 @@ export default function InvitePage({ params }: InvitePageProps) {
                 <div
                   className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4 animate-scale-in"
                 >
-                  <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                  <CheckCircle className="w-8 h-8 text-emerald-500" />
                 </div>
                 <h1 className="text-xl font-bold text-[var(--text-primary)] mb-2">
                   Bienvenue dans l&apos;équipe !

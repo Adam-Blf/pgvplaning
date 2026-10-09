@@ -4,7 +4,7 @@
 // Firebase a envoyé un email de vérification automatiquement.
 
 import { useState } from 'react';
-import { MailCheck, RefreshCw, ArrowLeft, CheckCircle } from 'lucide-react';
+import { EnvelopeCheck, Refresh, ArrowLeft, CheckCircle } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Link } from '@/i18n/routing';
@@ -85,7 +85,7 @@ export default function VerifyEmailPage() {
                         // Waiting for verification
                         <>
                             <div className="w-16 h-16 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center mx-auto mb-6 border border-[var(--blueprint-500)]/20">
-                                <MailCheck className="w-8 h-8 text-[var(--blueprint-500)]" />
+                                <EnvelopeCheck className="w-8 h-8 text-[var(--blueprint-500)]" />
                             </div>
                             <h1 className="text-2xl font-bold text-white mb-2">Vérifiez votre email</h1>
                             <p className="text-[var(--text-tertiary)] mb-2">
@@ -104,7 +104,7 @@ export default function VerifyEmailPage() {
                                     variant="outline"
                                     className="w-full h-11 rounded-xl border-white/10 text-[var(--text-primary)] hover:bg-white/5"
                                 >
-                                    <RefreshCw className={`w-4 h-4 mr-2 ${resending ? 'animate-spin' : ''}`} />
+                                    <Refresh className={`w-4 h-4 mr-2 ${resending ? 'animate-spin' : ''}`} />
                                     {resending ? 'Envoi...' : 'Renvoyer l\'email'}
                                 </Button>
 

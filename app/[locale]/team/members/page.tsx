@@ -1,10 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Users, UserPlus, Settings, Trash2, Shield, ShieldCheck, Crown,
-  Copy, ChevronDown, ChevronUp, Loader2, AlertTriangle, Clock, Gift, Save
-} from 'lucide-react';
+import { Users, UserAdd, Gear, Trash2, Shield, ShieldCheck, Crown, Copy, ChevronDown, ChevronUp, Loader, AlertTriangle, Clock, Gift, Floppy2 } from "reicon-react";
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase/client';
@@ -199,7 +196,7 @@ export default function TeamMembersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--accent)]" />
+        <Loader className="w-8 h-8 animate-spin text-[var(--accent)]" />
       </div>
     );
   }
@@ -238,7 +235,7 @@ export default function TeamMembersPage() {
             className="w-full p-4 flex items-center justify-between text-left"
           >
             <span className="flex items-center gap-2 font-semibold text-[var(--text-primary)]">
-              <UserPlus className="w-5 h-5 text-[var(--blueprint-500)]" />
+              <UserAdd className="w-5 h-5 text-[var(--blueprint-500)]" />
               Pré-créer un membre
             </span>
             {preCreateOpen
@@ -310,7 +307,7 @@ export default function TeamMembersPage() {
                 disabled={preCreating}
                 className="btn btn-primary w-full"
               >
-                {preCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                {preCreating ? <Loader className="w-4 h-4 animate-spin" /> : <UserAdd className="w-4 h-4" />}
                 Créer &amp; Envoyer lien
               </button>
 
@@ -379,7 +376,7 @@ export default function TeamMembersPage() {
                       onClick={() => toggleEdit(member)}
                       className="btn btn-secondary text-xs"
                     >
-                      <Settings className="w-3.5 h-3.5" />
+                      <Gear className="w-3.5 h-3.5" />
                       {isEditing ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
                   )}
@@ -466,8 +463,8 @@ export default function TeamMembersPage() {
                         className="btn btn-primary flex-1"
                       >
                         {saving === member.id
-                          ? <Loader2 className="w-4 h-4 animate-spin" />
-                          : <Save className="w-4 h-4" />}
+                          ? <Loader className="w-4 h-4 animate-spin" />
+                          : <Floppy2 className="w-4 h-4" />}
                         Enregistrer
                       </button>
 

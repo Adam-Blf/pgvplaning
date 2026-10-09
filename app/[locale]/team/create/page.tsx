@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from '@/i18n/routing';
 import { useAuth } from '@/hooks/use-auth';
-import { Users, Shield, ArrowRight, Loader2, Globe, Lock } from 'lucide-react';
+import { Users, Shield, ArrowRight, Loader, Globe, Lock } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -153,7 +153,7 @@ export default function CreateTeamPage() {
               className="w-full h-12 rounded-xl bg-[var(--blueprint-500)] hover:bg-[var(--blueprint-600)] text-white font-bold text-base transition-all shadow-lg shadow-sky-500/20"
             >
               {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader className="w-5 h-5 animate-spin" />
               ) : (
                 <>
                   Confirmer et Créer

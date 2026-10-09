@@ -1,18 +1,6 @@
 'use client';
 
-import {
-  BookOpen,
-  Users,
-  Calendar,
-  Zap,
-  ShieldCheck,
-  Rocket,
-  ChevronRight,
-  PlusCircle,
-  Link,
-  CheckCircle2,
-  FileDown
-} from 'lucide-react';
+import { BookOpen, Users, Calendar, Bolt, ShieldCheck, Rocket, ChevronRight, PlusCircle, Link, CheckCircle, FileDown } from "reicon-react";
 import { Card, CardContent } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -53,7 +41,7 @@ export default function GuidePage() {
         />
         <GuideStep
           index={3}
-          icon={CheckCircle2}
+          icon={CheckCircle}
           title="Validation"
           description="Gérez les demandes de congés en temps réel."
           color="emerald"
@@ -110,7 +98,7 @@ export default function GuidePage() {
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-white flex items-center justify-center md:justify-start gap-2">
-              <Zap className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+              <Bolt className="w-6 h-6 text-yellow-400 fill-yellow-400" />
               Prêt pour l&apos;efficacité ?
             </h3>
             <p className="text-[var(--text-tertiary)] max-w-md">

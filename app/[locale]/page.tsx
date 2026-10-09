@@ -1,17 +1,6 @@
 'use client';
 
-import {
-  ArrowRight,
-  Calendar,
-  FileDown,
-  Users,
-  Sparkles,
-  Clock,
-  Shield,
-  Zap,
-  ChevronRight,
-  CalendarDays,
-} from 'lucide-react';
+import { ArrowRight, Calendar, FileDown, Users, Sparkles, Clock, Shield, Bolt, ChevronRight, CalendarDays } from "reicon-react";
 import { HeroProMax } from '@/components/ui/hero-pro-max';
 import { Link } from '@/i18n/routing';
 
@@ -47,7 +36,7 @@ import { Link } from '@/i18n/routing';
   const stats = [
     { value: '2min', label: 'Setup', icon: Clock, color: 'text-[var(--blueprint-500)]' },
     { value: '100%', label: 'Sécurisé', icon: Shield, color: 'text-emerald-500' },
-    { value: 'ICS', label: 'Export', icon: Zap, color: 'text-violet-500' },
+    { value: 'ICS', label: 'Export', icon: Bolt, color: 'text-violet-500' },
   ];
 
   return (

@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { BarChart3, PieChart, Table } from 'lucide-react';
+import { ChartBar, ChartPie, Grid2 } from "reicon-react";
 
 // Skeleton component for loading state
 function AnalyticsSkeleton() {
@@ -60,10 +60,10 @@ function AnalyticsSkeleton() {
                   <div className="h-5 w-48 bg-slate-700 rounded animate-pulse" />
                   <div className="h-4 w-64 bg-slate-700 rounded animate-pulse" />
                 </div>
-                <BarChart3 className="w-5 h-5 text-slate-600" />
+                <ChartBar className="w-5 h-5 text-slate-600" />
               </div>
               <div className="h-72 bg-slate-700/30 rounded-xl animate-pulse flex items-center justify-center">
-                <BarChart3 className="w-16 h-16 text-slate-600" />
+                <ChartBar className="w-16 h-16 text-slate-600" />
               </div>
             </div>
             <div className="rounded-2xl bg-slate-800/50 border-slate-700 border p-6">
@@ -72,10 +72,10 @@ function AnalyticsSkeleton() {
                   <div className="h-5 w-40 bg-slate-700 rounded animate-pulse" />
                   <div className="h-4 w-32 bg-slate-700 rounded animate-pulse" />
                 </div>
-                <PieChart className="w-5 h-5 text-slate-600" />
+                <ChartPie className="w-5 h-5 text-slate-600" />
               </div>
               <div className="h-64 bg-slate-700/30 rounded-xl animate-pulse flex items-center justify-center">
-                <PieChart className="w-16 h-16 text-slate-600" />
+                <ChartPie className="w-16 h-16 text-slate-600" />
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ function AnalyticsSkeleton() {
                 <div className="h-5 w-40 bg-slate-700 rounded animate-pulse" />
                 <div className="h-4 w-56 bg-slate-700 rounded animate-pulse" />
               </div>
-              <Table className="w-5 h-5 text-slate-600" />
+              <Grid2 className="w-5 h-5 text-slate-600" />
             </div>
             <div className="p-4 space-y-3">
               {[...Array(3)].map((_, i) => (

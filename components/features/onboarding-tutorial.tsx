@@ -2,16 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import {
-  X,
-  ChevronRight,
-  ChevronLeft,
-  Sparkles,
-  Users,
-  Calendar,
-  FileDown,
-  Rocket,
-} from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Sparkles, Users, Calendar, FileDown, Rocket } from "reicon-react";
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 

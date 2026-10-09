@@ -2,26 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 
-import {
-  Download,
-  Home as HomeIcon,
-  GraduationCap,
-  Plane,
-  Mail,
-  Copy,
-  Loader2,
-  Sparkles,
-  Info,
-  CheckCircle,
-  FileDown,
-  AlertTriangle,
-  Users,
-  User,
-  ArrowRight,
-  Calendar,
-  Wand2,
-  Link2,
-} from 'lucide-react';
+import { Download, Home as HomeIcon, GraduationCap, Airplane, Envelope, Copy, Loader, Sparkles, InfoCircle, CheckCircle, FileDown, AlertTriangle, Users, User, ArrowRight, Calendar, MagicWand, Link2 } from "reicon-react";
 import { toast } from 'sonner';
 import { useCalendarData, DayStatus, isDayData } from '@/hooks/use-calendar-data';
 import { useAuth } from '@/hooks/use-auth';
@@ -77,7 +58,7 @@ const exportCards = [
     id: 'LEAVE' as DayStatus,
     title: 'Congés',
     description: 'Exporter tous les congés posés',
-    icon: Plane,
+    icon: Airplane,
     color: 'rose',
     gradient: 'from-rose-500/20 to-rose-600/5',
     iconBg: 'bg-rose-500/10',
@@ -315,7 +296,7 @@ export default function ExportsPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-transparent to-transparent" />
         <div className="relative flex items-start gap-4">
           <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center flex-shrink-0">
-            <Info className="w-5 h-5 text-sky-400" />
+            <InfoCircle className="w-5 h-5 text-sky-400" />
           </div>
           <div>
             <h4 className="font-semibold text-[var(--text-primary)] mb-1">
@@ -499,13 +480,13 @@ export default function ExportsPage() {
       <section className="animate-fade-up opacity-0" style={{ animationDelay: '320ms' }}>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 rounded-lg bg-[var(--bg-overlay)] flex items-center justify-center">
-            <Mail className="w-4 h-4 text-[var(--text-secondary)]" />
+            <Envelope className="w-4 h-4 text-[var(--text-secondary)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)]">
             Générateur de message d&apos;absence
           </h2>
           <span className="badge-amber">
-            <Wand2 className="w-3 h-3" />
+            <MagicWand className="w-3 h-3" />
             IA
           </span>
         </div>
@@ -566,7 +547,7 @@ export default function ExportsPage() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader className="w-4 h-4 animate-spin" />
                   Génération en cours...
                 </>
               ) : (

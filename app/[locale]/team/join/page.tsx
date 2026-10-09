@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from '@/i18n/routing';
-import { LogIn, ArrowLeft, Loader2, Check, ArrowRight, LogOut, Hash } from 'lucide-react';
+import { ArrowDoorIn, ArrowLeft, Loader, Check, ArrowRight, ArrowDoorOut, Hashtag } from "reicon-react";
 import { Link } from '@/i18n/routing';
 import { toast } from 'sonner';
 import { auth } from '@/lib/firebase/client';
@@ -146,7 +146,7 @@ export default function TeamJoinPage() {
         className="absolute top-6 right-6 text-[var(--text-muted)] hover:text-red-400 hover:bg-red-400/10 rounded-full"
         title="Déconnexion"
       >
-        <LogOut className="w-5 h-5" />
+        <ArrowDoorOut className="w-5 h-5" />
       </Button>
 
       <div
@@ -168,7 +168,7 @@ export default function TeamJoinPage() {
             {/* Header */}
             <div className="flex flex-col items-center gap-4 mb-10">
               <div className="w-16 h-16 rounded-2xl bg-[var(--blueprint-500)]/10 flex items-center justify-center border border-[var(--blueprint-500)]/20 shadow-lg shadow-blue-500/10">
-                <Hash className="w-8 h-8 text-[var(--blueprint-500)]" />
+                <Hashtag className="w-8 h-8 text-[var(--blueprint-500)]" />
               </div>
               <div className="text-center">
                 <CardTitle className="text-2xl font-bold gradient-text-amber">
@@ -206,7 +206,7 @@ export default function TeamJoinPage() {
                   className="w-full h-14 rounded-2xl bg-[var(--blueprint-500)] text-white font-bold text-base hover:bg-[var(--blueprint-600)] shadow-lg shadow-blue-500/20 disabled:opacity-30 group"
                 >
                   {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
                       Rejoindre l&apos;équipe
